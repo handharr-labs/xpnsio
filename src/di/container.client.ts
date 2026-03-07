@@ -1,10 +1,21 @@
 import 'client-only';
 
-// Client-side DI container — new instance per DIProvider mount.
-// Wire use cases here as features are added (use /wire-di skill).
+import { AuthDataSourceImpl } from '@/data/data-sources/auth/AuthDataSourceImpl';
+import { AuthRepositoryImpl } from '@/data/repositories/AuthRepositoryImpl';
+import { SignInWithGoogleUseCaseImpl } from '@/domain/use-cases/auth/SignInWithGoogleUseCase';
+import { SignOutUseCaseImpl } from '@/domain/use-cases/auth/SignOutUseCase';
+import { GetCurrentUserUseCaseImpl } from '@/domain/use-cases/auth/GetCurrentUserUseCase';
 
 export function createClientContainer() {
-  return {};
+  // Auth
+  const authDataSource = new AuthDataSourceImpl();
+  const authRepository = new AuthRepositoryImpl(authDataSource);
+
+  return {
+    get signInWithGoogleUseCase() { return new SignInWithGoogleUseCaseImpl(authRepository); },
+    get signOutUseCase() { return new SignOutUseCaseImpl(authRepository); },
+    get getCurrentUserUseCase() { return new GetCurrentUserUseCaseImpl(authRepository); },
+  };
 }
 
 export type ClientContainer = ReturnType<typeof createClientContainer>;
