@@ -25,7 +25,7 @@
 ## Accounts Created
 
 - [x] **Supabase** — project `xpnsio`, org `handharr-labs` — Active
-- [ ] **Vercel** — sign up with GitHub
+- [x] **Vercel** — project `xpnsio` connected to GitHub
 - [x] **Google Cloud Console** — OAuth 2.0 credentials created
 
 ---
@@ -58,8 +58,8 @@ All saved to `.env.local`.
 
 - [x] **Google Cloud Console** — created OAuth 2.0 credentials, `GOOGLE_CLIENT_ID` + `GOOGLE_CLIENT_SECRET` in `.env.local`
 - [x] **Supabase Auth** — Google provider enabled, credentials set, callback URL configured
-- [ ] **GitHub** — create repo, push workspace
-- [ ] **Vercel** — import GitHub repo, add env vars
+- [x] **GitHub** — repo at `handharr-labs/xpnsio`, pushed
+- [x] **Vercel** — project imported, env vars set, URL: `https://xpnsio.vercel.app`
 - [ ] **Scaffold Next.js app** — `npx create-next-app@latest` + install deps
 - [ ] **`src/lib/db.ts`** — Drizzle client
 - [ ] **`src/lib/auth.ts`** — Supabase Auth client
