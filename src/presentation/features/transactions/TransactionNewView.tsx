@@ -14,7 +14,6 @@ import type { Category } from '@/lib/schema';
 export function TransactionNewView() {
   const router = useRouter();
 
-  const [type, setType] = useState<'expense' | 'income'>('expense');
   const [amount, setAmount] = useState(0);
   const [categoryId, setCategoryId] = useState('');
   const [description, setDescription] = useState('');
@@ -28,7 +27,6 @@ export function TransactionNewView() {
     getCategoriesAction({}).then((result) => {
       if (result?.data) setCategories(result.data);
     });
-    // Get currency from active budget setting
     const now = new Date();
     getDashboardDataAction({ year: now.getFullYear(), month: now.getMonth() + 1 }).then((result) => {
       if (result?.data?.currency) setCurrency(result.data.currency);
@@ -52,8 +50,8 @@ export function TransactionNewView() {
     try {
       await createTransactionAction({
         amount,
-        type,
-        categoryId: type === 'expense' && categoryId ? categoryId : undefined,
+        type: 'expense',
+        categoryId: categoryId || undefined,
         description: description.trim() || undefined,
         date,
       });
@@ -83,30 +81,6 @@ export function TransactionNewView() {
           <Card>
             <CardHeader><CardTitle>Transaction Details</CardTitle></CardHeader>
             <CardContent className="space-y-4">
-              {/* Type toggle */}
-              <div className="space-y-1">
-                <label className="text-sm font-medium">Type</label>
-                <div className="flex gap-2">
-                  {(['expense', 'income'] as const).map((t) => (
-                    <button
-                      key={t}
-                      type="button"
-                      className={`flex-1 rounded-md border px-4 py-2 text-sm font-medium capitalize transition-colors ${
-                        type === t
-                          ? t === 'expense'
-                            ? 'bg-red-500 text-white border-red-500'
-                            : 'bg-green-500 text-white border-green-500'
-                          : 'hover:bg-muted'
-                      }`}
-                      onClick={() => { setType(t); setCategoryId(''); }}
-                    >
-                      {t}
-                    </button>
-                  ))}
-                </div>
-              </div>
-
-              {/* Amount */}
               <div className="space-y-1">
                 <label className="text-sm font-medium">Amount</label>
                 <CurrencyInput
@@ -117,24 +91,20 @@ export function TransactionNewView() {
                 />
               </div>
 
-              {/* Category — expense only */}
-              {type === 'expense' && (
-                <div className="space-y-1">
-                  <label className="text-sm font-medium">Category (optional)</label>
-                  <select
-                    className="w-full rounded-md border px-3 py-2 text-sm"
-                    value={categoryId}
-                    onChange={(e) => setCategoryId(e.target.value)}
-                  >
-                    <option value="">None</option>
-                    {categories.map((cat) => (
-                      <option key={cat.id} value={cat.id}>{cat.name}</option>
-                    ))}
-                  </select>
-                </div>
-              )}
+              <div className="space-y-1">
+                <label className="text-sm font-medium">Category (optional)</label>
+                <select
+                  className="w-full rounded-md border px-3 py-2 text-sm"
+                  value={categoryId}
+                  onChange={(e) => setCategoryId(e.target.value)}
+                >
+                  <option value="">None</option>
+                  {categories.map((cat) => (
+                    <option key={cat.id} value={cat.id}>{cat.name}</option>
+                  ))}
+                </select>
+              </div>
 
-              {/* Date */}
               <div className="space-y-1">
                 <label className="text-sm font-medium">Date</label>
                 <input
@@ -146,7 +116,6 @@ export function TransactionNewView() {
                 />
               </div>
 
-              {/* Description */}
               <div className="space-y-1">
                 <label className="text-sm font-medium">Description (optional)</label>
                 <input

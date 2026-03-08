@@ -10,53 +10,52 @@ import {
   deleteTransactionAction,
 } from '@/app/actions/transactions';
 import { getCategoriesAction } from '@/app/actions/categories';
+import { getDashboardDataAction } from '@/app/actions/dashboard';
+import { CurrencyInput } from '@/presentation/common/CurrencyInput';
+import { formatCurrency } from '@/core/utils/formatCurrency';
 import { ROUTES } from '@/presentation/navigation/routes';
 import type { Transaction, Category } from '@/lib/schema';
-
-const formatIDR = (amount: number | string) =>
-  new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR' }).format(
-    typeof amount === 'string' ? parseFloat(amount) : amount
-  );
 
 export function TransactionDetailView({ id }: { id: string }) {
   const router = useRouter();
 
   const [transaction, setTransaction] = useState<Transaction | null>(null);
   const [categories, setCategories] = useState<Category[]>([]);
+  const [currency, setCurrency] = useState('IDR');
   const [isLoading, setIsLoading] = useState(true);
   const [isEditing, setIsEditing] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   // Edit form state
-  const [amount, setAmount] = useState('');
-  const [type, setType] = useState<'expense' | 'income'>('expense');
+  const [amount, setAmount] = useState(0);
   const [categoryId, setCategoryId] = useState('');
   const [description, setDescription] = useState('');
   const [date, setDate] = useState('');
 
   useEffect(() => {
+    const now = new Date();
     Promise.all([
       getTransactionsAction({}),
       getCategoriesAction({}),
-    ]).then(([txResult, catResult]) => {
+      getDashboardDataAction({ year: now.getFullYear(), month: now.getMonth() + 1 }),
+    ]).then(([txResult, catResult, dashResult]) => {
       if (txResult?.data) {
         const found = txResult.data.find((t) => t.id === id) ?? null;
         setTransaction(found);
         if (found) {
-          setAmount(found.amount);
-          setType(found.type);
+          setAmount(parseFloat(found.amount));
           setCategoryId(found.categoryId ?? '');
           setDescription(found.description ?? '');
           setDate(found.date);
         }
       }
       if (catResult?.data) setCategories(catResult.data);
+      if (dashResult?.data?.currency) setCurrency(dashResult.data.currency);
       setIsLoading(false);
     });
   }, [id]);
 
-  const filteredCategories = type === 'expense' ? categories : [];
   const category = transaction?.categoryId
     ? categories.find((c) => c.id === transaction.categoryId)
     : null;
@@ -64,8 +63,7 @@ export function TransactionDetailView({ id }: { id: string }) {
   const handleUpdate = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
-    const parsedAmount = parseFloat(amount);
-    if (!parsedAmount || parsedAmount <= 0) {
+    if (!amount || amount <= 0) {
       setError('Amount must be positive');
       return;
     }
@@ -74,8 +72,8 @@ export function TransactionDetailView({ id }: { id: string }) {
     try {
       const result = await updateTransactionAction({
         id,
-        amount: parsedAmount,
-        type,
+        amount,
+        type: 'expense',
         categoryId: categoryId || undefined,
         description: description.trim() || undefined,
         date,
@@ -104,20 +102,14 @@ export function TransactionDetailView({ id }: { id: string }) {
   };
 
   if (isLoading) {
-    return (
-      <main className="min-h-screen p-6">
-        <p className="text-muted-foreground">Loading...</p>
-      </main>
-    );
+    return <main className="min-h-screen p-6"><p className="text-muted-foreground">Loading...</p></main>;
   }
 
   if (!transaction) {
     return (
       <main className="min-h-screen p-6">
         <p className="text-muted-foreground">Transaction not found.</p>
-        <Button className="mt-4" onClick={() => router.push(ROUTES.transactions)}>
-          Back to Transactions
-        </Button>
+        <Button className="mt-4" onClick={() => router.push(ROUTES.transactions)}>Back to Transactions</Button>
       </main>
     );
   }
@@ -126,33 +118,19 @@ export function TransactionDetailView({ id }: { id: string }) {
     <main className="min-h-screen p-6">
       <div className="max-w-lg mx-auto space-y-6">
         <div className="flex items-center gap-4">
-          <Button variant="outline" onClick={() => router.back()}>
-            ← Back
-          </Button>
+          <Button variant="outline" onClick={() => router.back()}>← Back</Button>
           <h1 className="text-2xl font-bold">Transaction Detail</h1>
         </div>
 
         {error && (
-          <div className="rounded-md bg-red-50 border border-red-200 p-3 text-sm text-red-700">
-            {error}
-          </div>
+          <div className="rounded-md bg-red-50 border border-red-200 p-3 text-sm text-red-700">{error}</div>
         )}
 
         {!isEditing ? (
           <Card>
             <CardHeader>
-              <CardTitle className="flex items-center justify-between">
-                <span
-                  className={
-                    transaction.type === 'income' ? 'text-green-600' : 'text-red-600'
-                  }
-                >
-                  {transaction.type === 'income' ? '+' : '-'}
-                  {formatIDR(transaction.amount)}
-                </span>
-                <span className="text-sm font-normal text-muted-foreground capitalize">
-                  {transaction.type}
-                </span>
+              <CardTitle className="text-red-600">
+                -{formatCurrency(parseFloat(transaction.amount), currency)}
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-3">
@@ -174,63 +152,19 @@ export function TransactionDetailView({ id }: { id: string }) {
               </div>
 
               <div className="flex gap-2 pt-2">
-                <Button
-                  variant="outline"
-                  className="flex-1"
-                  onClick={() => setIsEditing(true)}
-                >
-                  Edit
-                </Button>
-                <Button
-                  variant="outline"
-                  className="flex-1 text-red-600 hover:text-red-700"
-                  onClick={handleDelete}
-                >
-                  Delete
-                </Button>
+                <Button variant="outline" className="flex-1" onClick={() => setIsEditing(true)}>Edit</Button>
+                <Button variant="outline" className="flex-1 text-red-600 hover:text-red-700" onClick={handleDelete}>Delete</Button>
               </div>
             </CardContent>
           </Card>
         ) : (
           <form onSubmit={handleUpdate} className="space-y-4">
             <Card>
-              <CardHeader>
-                <CardTitle>Edit Transaction</CardTitle>
-              </CardHeader>
+              <CardHeader><CardTitle>Edit Transaction</CardTitle></CardHeader>
               <CardContent className="space-y-4">
                 <div className="space-y-1">
-                  <label className="text-sm font-medium">Type</label>
-                  <div className="flex gap-2">
-                    {(['expense', 'income'] as const).map((t) => (
-                      <button
-                        key={t}
-                        type="button"
-                        className={`flex-1 rounded-md border px-4 py-2 text-sm font-medium capitalize ${
-                          type === t
-                            ? t === 'expense'
-                              ? 'bg-red-500 text-white border-red-500'
-                              : 'bg-green-500 text-white border-green-500'
-                            : 'hover:bg-muted'
-                        }`}
-                        onClick={() => { setType(t); setCategoryId(''); }}
-                      >
-                        {t}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-
-                <div className="space-y-1">
-                  <label className="text-sm font-medium">Amount (IDR)</label>
-                  <input
-                    className="w-full rounded-md border px-3 py-2 text-sm"
-                    type="number"
-                    min="0"
-                    step="1000"
-                    value={amount}
-                    onChange={(e) => setAmount(e.target.value)}
-                    required
-                  />
+                  <label className="text-sm font-medium">Amount</label>
+                  <CurrencyInput value={amount} onChange={setAmount} currency={currency} required />
                 </div>
 
                 <div className="space-y-1">
@@ -241,10 +175,8 @@ export function TransactionDetailView({ id }: { id: string }) {
                     onChange={(e) => setCategoryId(e.target.value)}
                   >
                     <option value="">None</option>
-                    {filteredCategories.map((cat) => (
-                      <option key={cat.id} value={cat.id}>
-                        {cat.name}
-                      </option>
+                    {categories.map((cat) => (
+                      <option key={cat.id} value={cat.id}>{cat.name}</option>
                     ))}
                   </select>
                 </div>
@@ -272,15 +204,7 @@ export function TransactionDetailView({ id }: { id: string }) {
             </Card>
 
             <div className="flex gap-3">
-              <Button
-                type="button"
-                variant="outline"
-                className="flex-1"
-                onClick={() => setIsEditing(false)}
-                disabled={isSubmitting}
-              >
-                Cancel
-              </Button>
+              <Button type="button" variant="outline" className="flex-1" onClick={() => setIsEditing(false)} disabled={isSubmitting}>Cancel</Button>
               <Button type="submit" className="flex-1" disabled={isSubmitting}>
                 {isSubmitting ? 'Saving...' : 'Save Changes'}
               </Button>
