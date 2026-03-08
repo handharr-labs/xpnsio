@@ -69,6 +69,8 @@
 | 013 | Currency formatting on amount inputs | `ready` | [013-currency-input-formatting.md](./013-currency-input-formatting.md) |
 | 014 | Remove income from budget & categories | `ready` | [014-remove-income.md](./014-remove-income.md) |
 | 015 | Bug: amount input rejects valid values (step) | `ready` | [015-amount-input-step-bug.md](./015-amount-input-step-bug.md) |
+| 016 | Categories owned by Budget Setting (inline management) | `ready` | [016-categories-owned-by-budget-setting.md](./016-categories-owned-by-budget-setting.md) |
+| 017 | Remove currency preference from Settings page | `ready` | [017-remove-currency-from-settings.md](./017-remove-currency-from-settings.md) |
 
 ---
 
