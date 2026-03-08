@@ -1,10 +1,8 @@
 'use client';
 
-import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { useDI } from '@/di/DIContext';
 import { useDashboardViewModel } from './useDashboardViewModel';
 import { ROUTES } from '@/presentation/navigation/routes';
 
@@ -23,21 +21,13 @@ const MASTER_LABELS: Record<string, string> = {
 };
 
 export function DashboardView() {
-  const { signOutUseCase } = useDI();
   const router = useRouter();
-  const [isSigningOut, setIsSigningOut] = useState(false);
 
   const now = new Date();
   const { dashboardData, isLoading, error, refresh } = useDashboardViewModel(
     now.getFullYear(),
     now.getMonth() + 1
   );
-
-  const handleSignOut = async () => {
-    setIsSigningOut(true);
-    await signOutUseCase.execute();
-    router.push(ROUTES.login);
-  };
 
   const monthLabel = dashboardData
     ? `${MONTH_NAMES[dashboardData.month - 1]} ${dashboardData.year}`
@@ -51,23 +41,6 @@ export function DashboardView() {
           <div>
             <h1 className="text-2xl font-bold">Dashboard</h1>
             <p className="text-muted-foreground text-sm">{monthLabel}</p>
-          </div>
-          <div className="flex gap-2">
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => router.push(ROUTES.settings)}
-            >
-              Settings
-            </Button>
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={handleSignOut}
-              disabled={isSigningOut}
-            >
-              {isSigningOut ? 'Signing out...' : 'Sign out'}
-            </Button>
           </div>
         </div>
 

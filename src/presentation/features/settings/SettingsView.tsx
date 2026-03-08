@@ -46,34 +46,6 @@ export function SettingsView() {
           </CardContent>
         </Card>
 
-        <Card>
-          <CardHeader>
-            <CardTitle>Navigation</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-2">
-            <Button
-              variant="outline"
-              className="w-full justify-start"
-              onClick={() => router.push(ROUTES.dashboard)}
-            >
-              Dashboard
-            </Button>
-            <Button
-              variant="outline"
-              className="w-full justify-start"
-              onClick={() => router.push(ROUTES.budgetSettings)}
-            >
-              Budget Settings
-            </Button>
-            <Button
-              variant="outline"
-              className="w-full justify-start"
-              onClick={() => router.push(ROUTES.transactions)}
-            >
-              Transactions
-            </Button>
-          </CardContent>
-        </Card>
       </div>
     </main>
   );
