@@ -4,8 +4,7 @@ export interface Category {
   readonly id: string;
   readonly userId: string;
   readonly name: string;
-  readonly type: 'income' | 'expense';
-  readonly masterCategory: MasterCategory | null; // null = income category
+  readonly masterCategory: MasterCategory;
   readonly color: string;
   readonly icon: string;
   readonly createdAt: Date;

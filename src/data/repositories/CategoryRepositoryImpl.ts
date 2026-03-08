@@ -33,7 +33,6 @@ export class CategoryRepositoryImpl implements CategoryRepository {
       const record = await this.dataSource.create({
         userId: data.userId,
         name: data.name,
-        type: data.type,
         masterCategory: data.masterCategory,
         color: data.color,
         icon: data.icon,

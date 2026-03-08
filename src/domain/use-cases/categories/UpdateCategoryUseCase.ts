@@ -5,7 +5,7 @@ export interface UpdateCategoryInput {
   name?: string;
   color?: string;
   icon?: string;
-  masterCategory?: MasterCategory | null;
+  masterCategory?: MasterCategory;
 }
 
 export interface UpdateCategoryUseCase {

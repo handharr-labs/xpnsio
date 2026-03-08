@@ -12,6 +12,7 @@ export interface BudgetSetting {
   readonly userId: string;
   readonly name: string;
   readonly totalMonthlyBudget: number;
+  readonly currency: string;
   readonly items: BudgetSettingItem[];
   readonly createdAt: Date;
 }

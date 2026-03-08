@@ -33,8 +33,7 @@ export const categories = pgTable('categories', {
     .notNull()
     .references(() => profiles.id, { onDelete: 'cascade' }),
   name: text('name').notNull(),
-  type: transactionTypeEnum('type').notNull(),
-  masterCategory: masterCategoryEnum('master_category'), // null = income category
+  masterCategory: masterCategoryEnum('master_category').notNull(),
   color: text('color').notNull().default('#6366f1'),
   icon: text('icon').notNull().default('circle'),
   createdAt: timestamp('created_at').defaultNow().notNull(),
@@ -77,6 +76,7 @@ export const budgetSettings = pgTable('budget_settings', {
     .references(() => profiles.id, { onDelete: 'cascade' }),
   name: text('name').notNull(),
   totalMonthlyBudget: numeric('total_monthly_budget', { precision: 12, scale: 2 }).notNull(),
+  currency: text('currency').notNull().default('IDR'),
   createdAt: timestamp('created_at').defaultNow().notNull(),
 });
 

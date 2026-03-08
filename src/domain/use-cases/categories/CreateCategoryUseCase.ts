@@ -5,8 +5,7 @@ import { DomainError } from '@/domain/errors/DomainError';
 export interface CreateCategoryInput {
   userId: string;
   name: string;
-  type: 'income' | 'expense';
-  masterCategory: MasterCategory | null;
+  masterCategory: MasterCategory;
   color: string;
   icon: string;
 }
@@ -23,17 +22,9 @@ export class CreateCategoryUseCaseImpl implements CreateCategoryUseCase {
       throw DomainError.validationFailed('name', 'Name is required');
     }
 
-    if (data.type === 'expense' && !data.masterCategory) {
-      throw DomainError.validationFailed(
-        'masterCategory',
-        'masterCategory is required for expense categories'
-      );
-    }
-
     return this.repository.create({
       userId: data.userId,
       name: data.name.trim(),
-      type: data.type,
       masterCategory: data.masterCategory,
       color: data.color,
       icon: data.icon,
