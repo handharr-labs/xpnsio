@@ -7,9 +7,9 @@ import { useCategoriesViewModel } from './useCategoriesViewModel';
 import type { Category } from '@/lib/schema';
 
 const MASTER_LABELS: Record<string, string> = {
-  daily: 'Daily',
-  weekly: 'Weekly',
-  monthly: 'Monthly',
+  daily: 'Daily Spend',
+  weekly: 'Weekly Spend',
+  monthly: 'Monthly Spend',
 };
 
 const COLOR_OPTIONS = [
@@ -21,15 +21,13 @@ const ICON_OPTIONS = ['circle', 'home', 'car', 'food', 'shopping', 'health', 'ed
 
 type FormState = {
   name: string;
-  type: 'income' | 'expense';
-  masterCategory: 'daily' | 'weekly' | 'monthly' | '';
+  masterCategory: 'daily' | 'weekly' | 'monthly';
   color: string;
   icon: string;
 };
 
 const DEFAULT_FORM: FormState = {
   name: '',
-  type: 'expense',
   masterCategory: 'monthly',
   color: '#6366f1',
   icon: 'circle',
@@ -56,8 +54,7 @@ export function CategoriesView() {
     setEditingCategory(cat);
     setForm({
       name: cat.name,
-      type: cat.type,
-      masterCategory: (cat.masterCategory as FormState['masterCategory']) ?? '',
+      masterCategory: cat.masterCategory as FormState['masterCategory'],
       color: cat.color,
       icon: cat.icon,
     });
@@ -74,17 +71,14 @@ export function CategoriesView() {
         await updateCategory({
           id: editingCategory.id,
           name: form.name,
+          masterCategory: form.masterCategory,
           color: form.color,
           icon: form.icon,
-          masterCategory: form.masterCategory || undefined,
         });
       } else {
         await createCategory({
           name: form.name,
-          type: form.type,
-          masterCategory: form.masterCategory
-            ? (form.masterCategory as 'daily' | 'weekly' | 'monthly')
-            : undefined,
+          masterCategory: form.masterCategory,
           color: form.color,
           icon: form.icon,
         });
@@ -99,18 +93,13 @@ export function CategoriesView() {
 
   const handleDelete = async (cat: Category) => {
     if (!confirm(`Delete "${cat.name}"? This cannot be undone.`)) return;
-    try {
-      await deleteCategory(cat.id);
-    } catch {
-      // error shown via hook
-    }
+    await deleteCategory(cat.id);
   };
 
   const grouped = {
     daily: categories.filter((c) => c.masterCategory === 'daily'),
     weekly: categories.filter((c) => c.masterCategory === 'weekly'),
     monthly: categories.filter((c) => c.masterCategory === 'monthly'),
-    income: categories.filter((c) => c.type === 'income'),
   };
 
   return (
@@ -131,13 +120,13 @@ export function CategoriesView() {
           <p className="text-muted-foreground">Loading categories...</p>
         ) : (
           <div className="space-y-6">
-            {(['daily', 'weekly', 'monthly', 'income'] as const).map((group) => {
+            {(['daily', 'weekly', 'monthly'] as const).map((group) => {
               const items = grouped[group];
               if (items.length === 0) return null;
               return (
                 <Card key={group}>
                   <CardHeader>
-                    <CardTitle>{MASTER_LABELS[group] ?? 'Income'}</CardTitle>
+                    <CardTitle>{MASTER_LABELS[group]}</CardTitle>
                   </CardHeader>
                   <CardContent className="space-y-2">
                     {items.map((cat) => (
@@ -154,11 +143,7 @@ export function CategoriesView() {
                           <span className="text-xs text-muted-foreground">{cat.icon}</span>
                         </div>
                         <div className="flex gap-2">
-                          <Button
-                            size="sm"
-                            variant="outline"
-                            onClick={() => openEdit(cat)}
-                          >
+                          <Button size="sm" variant="outline" onClick={() => openEdit(cat)}>
                             Edit
                           </Button>
                           <Button
@@ -212,49 +197,25 @@ export function CategoriesView() {
                 />
               </div>
 
-              {!editingCategory && (
-                <div className="space-y-1">
-                  <label className="text-sm font-medium">Type</label>
-                  <div className="flex gap-2">
-                    {(['expense', 'income'] as const).map((t) => (
-                      <button
-                        key={t}
-                        type="button"
-                        className={`flex-1 rounded-md border px-3 py-2 text-sm capitalize transition-colors ${
-                          form.type === t
-                            ? 'bg-primary text-primary-foreground border-primary'
-                            : 'hover:bg-muted'
-                        }`}
-                        onClick={() => setForm((f) => ({ ...f, type: t }))}
-                      >
-                        {t}
-                      </button>
-                    ))}
-                  </div>
+              <div className="space-y-1">
+                <label className="text-sm font-medium">Budget Period</label>
+                <div className="flex gap-2">
+                  {(['daily', 'weekly', 'monthly'] as const).map((m) => (
+                    <button
+                      key={m}
+                      type="button"
+                      className={`flex-1 rounded-md border px-3 py-2 text-sm capitalize transition-colors ${
+                        form.masterCategory === m
+                          ? 'bg-primary text-primary-foreground border-primary'
+                          : 'hover:bg-muted'
+                      }`}
+                      onClick={() => setForm((f) => ({ ...f, masterCategory: m }))}
+                    >
+                      {m}
+                    </button>
+                  ))}
                 </div>
-              )}
-
-              {(editingCategory ? editingCategory.type === 'expense' : form.type === 'expense') && (
-                <div className="space-y-1">
-                  <label className="text-sm font-medium">Budget Period</label>
-                  <div className="flex gap-2">
-                    {(['daily', 'weekly', 'monthly'] as const).map((m) => (
-                      <button
-                        key={m}
-                        type="button"
-                        className={`flex-1 rounded-md border px-3 py-2 text-sm capitalize transition-colors ${
-                          form.masterCategory === m
-                            ? 'bg-primary text-primary-foreground border-primary'
-                            : 'hover:bg-muted'
-                        }`}
-                        onClick={() => setForm((f) => ({ ...f, masterCategory: m }))}
-                      >
-                        {m}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-              )}
+              </div>
 
               <div className="space-y-1">
                 <label className="text-sm font-medium">Color</label>

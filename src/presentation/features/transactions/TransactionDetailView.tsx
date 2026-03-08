@@ -56,7 +56,7 @@ export function TransactionDetailView({ id }: { id: string }) {
     });
   }, [id]);
 
-  const filteredCategories = categories.filter((c) => c.type === type);
+  const filteredCategories = type === 'expense' ? categories : [];
   const category = transaction?.categoryId
     ? categories.find((c) => c.id === transaction.categoryId)
     : null;

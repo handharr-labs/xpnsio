@@ -7,8 +7,7 @@ type CategorySpending = {
   category: {
     id: string;
     name: string;
-    type: 'income' | 'expense';
-    masterCategory: 'daily' | 'weekly' | 'monthly' | null;
+    masterCategory: 'daily' | 'weekly' | 'monthly';
     color: string;
     icon: string;
   };
@@ -20,10 +19,12 @@ type CategorySpending = {
 type DashboardData = {
   year: number;
   month: number;
+  currency: string;
   activeBudgetSetting: {
     id: string;
     name: string;
     totalMonthlyBudget: string;
+    currency: string;
   } | null;
   totalIncome: number;
   totalExpense: number;

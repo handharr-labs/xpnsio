@@ -6,11 +6,18 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { useBudgetSettingsViewModel } from './useBudgetSettingsViewModel';
 import { getCategoriesAction } from '@/app/actions/categories';
+import { CurrencyInput } from '@/presentation/common/CurrencyInput';
+import { formatCurrency } from '@/core/utils/formatCurrency';
 import { ROUTES } from '@/presentation/navigation/routes';
 import type { Category } from '@/lib/schema';
 
-const formatIDR = (amount: number) =>
-  new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR' }).format(amount);
+const CURRENCY_OPTIONS = [
+  { value: 'IDR', label: 'IDR — Indonesian Rupiah' },
+  { value: 'USD', label: 'USD — US Dollar' },
+  { value: 'SGD', label: 'SGD — Singapore Dollar' },
+  { value: 'MYR', label: 'MYR — Malaysian Ringgit' },
+  { value: 'EUR', label: 'EUR — Euro' },
+];
 
 type AllocationItem = {
   categoryId: string;
@@ -22,7 +29,8 @@ export function BudgetSettingNewView() {
   const { createBudgetSetting } = useBudgetSettingsViewModel();
 
   const [name, setName] = useState('');
-  const [totalMonthlyBudget, setTotalMonthlyBudget] = useState('');
+  const [currency, setCurrency] = useState('IDR');
+  const [totalMonthlyBudget, setTotalMonthlyBudget] = useState(0);
   const [allocations, setAllocations] = useState<AllocationItem[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -30,15 +38,12 @@ export function BudgetSettingNewView() {
 
   useEffect(() => {
     getCategoriesAction({}).then((result) => {
-      if (result?.data) {
-        setCategories(result.data.filter((c) => c.type === 'expense'));
-      }
+      if (result?.data) setCategories(result.data);
     });
   }, []);
 
   const totalAllocated = allocations.reduce((sum, a) => sum + (a.monthlyAmount || 0), 0);
-  const total = parseFloat(totalMonthlyBudget) || 0;
-  const remaining = total - totalAllocated;
+  const remaining = totalMonthlyBudget - totalAllocated;
 
   const addAllocation = () => {
     const unusedCategory = categories.find(
@@ -54,9 +59,7 @@ export function BudgetSettingNewView() {
 
   const updateAllocation = (index: number, field: keyof AllocationItem, value: string | number) => {
     setAllocations((prev) =>
-      prev.map((item, i) =>
-        i === index ? { ...item, [field]: value } : item
-      )
+      prev.map((item, i) => (i === index ? { ...item, [field]: value } : item))
     );
   };
 
@@ -68,13 +71,14 @@ export function BudgetSettingNewView() {
     e.preventDefault();
     setError(null);
     if (!name.trim()) { setError('Name is required'); return; }
-    if (!total || total <= 0) { setError('Total monthly budget must be positive'); return; }
+    if (!totalMonthlyBudget || totalMonthlyBudget <= 0) { setError('Total monthly budget must be positive'); return; }
 
     setIsSubmitting(true);
     try {
       await createBudgetSetting({
         name: name.trim(),
-        totalMonthlyBudget: total,
+        totalMonthlyBudget,
+        currency,
         items: allocations.filter((a) => a.monthlyAmount > 0),
       });
       router.push(ROUTES.budgetSettings);
@@ -89,9 +93,7 @@ export function BudgetSettingNewView() {
     <main className="min-h-screen p-6">
       <div className="max-w-2xl mx-auto space-y-6">
         <div className="flex items-center gap-4">
-          <Button variant="outline" onClick={() => router.back()}>
-            ← Back
-          </Button>
+          <Button variant="outline" onClick={() => router.back()}>← Back</Button>
           <h1 className="text-2xl font-bold">New Budget Setting</h1>
         </div>
 
@@ -103,9 +105,7 @@ export function BudgetSettingNewView() {
           )}
 
           <Card>
-            <CardHeader>
-              <CardTitle>Basic Info</CardTitle>
-            </CardHeader>
+            <CardHeader><CardTitle>Basic Info</CardTitle></CardHeader>
             <CardContent className="space-y-4">
               <div className="space-y-1">
                 <label className="text-sm font-medium">Setting Name</label>
@@ -117,16 +117,26 @@ export function BudgetSettingNewView() {
                   required
                 />
               </div>
+
               <div className="space-y-1">
-                <label className="text-sm font-medium">Total Monthly Budget (IDR)</label>
-                <input
+                <label className="text-sm font-medium">Currency</label>
+                <select
                   className="w-full rounded-md border px-3 py-2 text-sm"
-                  type="number"
-                  min="0"
-                  step="1000"
+                  value={currency}
+                  onChange={(e) => setCurrency(e.target.value)}
+                >
+                  {CURRENCY_OPTIONS.map((c) => (
+                    <option key={c.value} value={c.value}>{c.label}</option>
+                  ))}
+                </select>
+              </div>
+
+              <div className="space-y-1">
+                <label className="text-sm font-medium">Total Monthly Budget</label>
+                <CurrencyInput
                   value={totalMonthlyBudget}
-                  onChange={(e) => setTotalMonthlyBudget(e.target.value)}
-                  placeholder="e.g. 5000000"
+                  onChange={setTotalMonthlyBudget}
+                  currency={currency}
                   required
                 />
               </div>
@@ -165,26 +175,17 @@ export function BudgetSettingNewView() {
                       <option
                         key={cat.id}
                         value={cat.id}
-                        disabled={
-                          allocations.some(
-                            (a, i) => i !== index && a.categoryId === cat.id
-                          )
-                        }
+                        disabled={allocations.some((a, i) => i !== index && a.categoryId === cat.id)}
                       >
                         {cat.name}
                       </option>
                     ))}
                   </select>
-                  <input
-                    className="w-36 rounded-md border px-3 py-2 text-sm"
-                    type="number"
-                    min="0"
-                    step="1000"
-                    value={alloc.monthlyAmount || ''}
-                    onChange={(e) =>
-                      updateAllocation(index, 'monthlyAmount', parseFloat(e.target.value) || 0)
-                    }
-                    placeholder="Amount"
+                  <CurrencyInput
+                    value={alloc.monthlyAmount}
+                    onChange={(v) => updateAllocation(index, 'monthlyAmount', v)}
+                    currency={currency}
+                    className="w-44"
                   />
                   <Button
                     type="button"
@@ -198,20 +199,20 @@ export function BudgetSettingNewView() {
                 </div>
               ))}
 
-              {total > 0 && (
+              {totalMonthlyBudget > 0 && (
                 <div className="border-t pt-3 space-y-1">
                   <div className="flex justify-between text-sm">
                     <span className="text-muted-foreground">Total Budget</span>
-                    <span>{formatIDR(total)}</span>
+                    <span>{formatCurrency(totalMonthlyBudget, currency)}</span>
                   </div>
                   <div className="flex justify-between text-sm">
                     <span className="text-muted-foreground">Allocated</span>
-                    <span>{formatIDR(totalAllocated)}</span>
+                    <span>{formatCurrency(totalAllocated, currency)}</span>
                   </div>
                   <div className="flex justify-between text-sm font-medium">
                     <span>Unallocated</span>
                     <span className={remaining < 0 ? 'text-red-600' : 'text-green-600'}>
-                      {formatIDR(remaining)}
+                      {formatCurrency(remaining, currency)}
                     </span>
                   </div>
                 </div>
@@ -220,13 +221,7 @@ export function BudgetSettingNewView() {
           </Card>
 
           <div className="flex gap-3">
-            <Button
-              type="button"
-              variant="outline"
-              className="flex-1"
-              onClick={() => router.back()}
-              disabled={isSubmitting}
-            >
+            <Button type="button" variant="outline" className="flex-1" onClick={() => router.back()} disabled={isSubmitting}>
               Cancel
             </Button>
             <Button type="submit" className="flex-1" disabled={isSubmitting}>

@@ -33,8 +33,7 @@ export function useCategoriesViewModel() {
 
   const createCategory = async (input: {
     name: string;
-    type: 'income' | 'expense';
-    masterCategory?: 'daily' | 'weekly' | 'monthly';
+    masterCategory: 'daily' | 'weekly' | 'monthly';
     color: string;
     icon: string;
   }) => {
@@ -71,9 +70,9 @@ export function useCategoriesViewModel() {
     }
   };
 
-  const deleteCategory = async (id: string, force?: boolean) => {
+  const deleteCategory = async (id: string) => {
     setError(null);
-    const result = await deleteCategoryAction({ id, force });
+    const result = await deleteCategoryAction({ id });
     if (result?.data) {
       setCategories((prev) => prev.filter((c) => c.id !== id));
     } else {

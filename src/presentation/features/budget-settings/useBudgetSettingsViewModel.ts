@@ -36,6 +36,7 @@ export function useBudgetSettingsViewModel() {
   const createBudgetSetting = async (input: {
     name: string;
     totalMonthlyBudget: number;
+    currency?: string;
     items: { categoryId: string; monthlyAmount: number }[];
   }) => {
     setError(null);
@@ -54,6 +55,7 @@ export function useBudgetSettingsViewModel() {
     id: string;
     name?: string;
     totalMonthlyBudget?: number;
+    currency?: string;
     items?: { categoryId: string; monthlyAmount: number }[];
   }) => {
     setError(null);
