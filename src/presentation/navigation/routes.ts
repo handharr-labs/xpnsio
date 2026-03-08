@@ -3,12 +3,24 @@ export const ROUTES = {
   login: '/login',
   authCallback: '/auth/callback',
 
+  // Onboarding
+  setup: '/setup',
+
   // Main
   home: '/',
   dashboard: '/dashboard',
   settings: '/settings',
 
-  // Transactions (add more as features are scaffolded)
+  // Categories
+  categories: '/categories',
+
+  // Budget Settings
+  budgetSettings: '/budget-settings',
+  budgetSettingNew: '/budget-settings/new',
+  budgetSettingEdit: (id: string) => `/budget-settings/${id}/edit`,
+
+  // Transactions
   transactions: '/transactions',
+  transactionNew: '/transactions/new',
   transactionDetail: (id: string) => `/transactions/${id}`,
 } as const;
