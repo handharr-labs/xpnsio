@@ -1,7 +1,7 @@
 # 016 · Categories Owned by Budget Setting
 
 **Phase:** 2
-**Status:** `ready`
+**Status:** `done`
 **Affects:** `/categories` page, Budget Setting create/edit, schema relationship, navigation
 
 ---

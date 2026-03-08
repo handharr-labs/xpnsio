@@ -1,7 +1,7 @@
 # 001 · Schema Migration
 
 **Phase:** 0 — Foundation
-**Status:** `in-progress`
+**Status:** `done`
 **File:** `src/lib/schema.ts`
 
 ---

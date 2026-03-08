@@ -1,7 +1,7 @@
 # 013 · Currency Formatting on Amount Inputs
 
 **Phase:** 2
-**Status:** `ready`
+**Status:** `done`
 **Affects:** All amount input fields across the app
 
 ---

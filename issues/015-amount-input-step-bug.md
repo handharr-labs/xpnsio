@@ -1,7 +1,7 @@
 # 015 · Bug: Transaction Amount Rejects Valid Values (step validation)
 
 **Phase:** 2
-**Status:** `ready`
+**Status:** `done`
 **Severity:** High — blocks users from logging transactions
 **Root Cause:** Known, fix is 1 line
 

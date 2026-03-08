@@ -1,7 +1,7 @@
 # 005 · Add Transaction
 
 **Phase:** 1 — MVP
-**Status:** `in-progress`
+**Status:** `done`
 **Route:** `/transactions/new`
 **Depends on:** 001, 003
 

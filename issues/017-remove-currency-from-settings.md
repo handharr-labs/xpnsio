@@ -1,7 +1,7 @@
 # 017 · Remove Currency Preference from Settings Page
 
 **Phase:** 2
-**Status:** `ready`
+**Status:** `done`
 **Affects:** `SettingsView.tsx`, `profiles` table (optional cleanup)
 
 ---

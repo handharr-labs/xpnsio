@@ -1,7 +1,7 @@
 # 002 · Onboarding: Budget Setting Setup
 
 **Phase:** 1 — MVP
-**Status:** `in-progress`
+**Status:** `done`
 **Route:** `/setup`
 **Depends on:** 001, 003, 004
 

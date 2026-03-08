@@ -1,7 +1,7 @@
 # 006 · Dashboard
 
 **Phase:** 1 — MVP
-**Status:** `in-progress`
+**Status:** `done`
 **Route:** `/dashboard`
 **Depends on:** 001, 003, 004, 005
 

@@ -1,7 +1,7 @@
 # 003 · Category Management
 
 **Phase:** 1 — MVP
-**Status:** `in-progress`
+**Status:** `done`
 **Route:** `/categories`
 **Depends on:** 001
 

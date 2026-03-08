@@ -1,7 +1,7 @@
 # 014 · Remove Income from Budget & Categories
 
 **Phase:** 2
-**Status:** `ready`
+**Status:** `done`
 **Affects:** Categories, Budget Settings, Dashboard, Transactions, Schema
 
 ---

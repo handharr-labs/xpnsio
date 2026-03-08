@@ -1,7 +1,7 @@
 # 012 · Currency per Budget Setting
 
 **Phase:** 2
-**Status:** `ready`
+**Status:** `done`
 **Affects:** `budget_settings` table, Budget Setting form, Dashboard, all amount displays
 
 ---

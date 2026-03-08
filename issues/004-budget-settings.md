@@ -1,7 +1,7 @@
 # 004 · Budget Settings
 
 **Phase:** 1 — MVP
-**Status:** `in-progress`
+**Status:** `done`
 **Routes:** `/budget-settings`, `/budget-settings/new`, `/budget-settings/:id/edit`
 **Depends on:** 001, 003
 
