@@ -1,17 +1,14 @@
 import type { NextConfig } from "next";
+import withPWA from "@ducanh2912/next-pwa";
 
 const nextConfig: NextConfig = {
   turbopack: {},
 };
 
-if (process.env.NODE_ENV === "production") {
-  const withPWA = require("@ducanh2912/next-pwa").default;
-  module.exports = withPWA({
-    dest: "public",
-    cacheOnFrontEndNav: true,
-    aggressiveFrontEndNavCaching: true,
-    reloadOnOnline: true,
-  })(nextConfig);
-} else {
-  module.exports = nextConfig;
-}
+export default withPWA({
+  dest: "public",
+  cacheOnFrontEndNav: true,
+  aggressiveFrontEndNavCaching: true,
+  reloadOnOnline: true,
+  disable: process.env.NODE_ENV !== "production",
+})(nextConfig);
