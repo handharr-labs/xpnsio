@@ -5,11 +5,10 @@ import { useRouter } from 'next/navigation';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { useBudgetSettingsViewModel } from './useBudgetSettingsViewModel';
-import { getCategoriesAction } from '@/app/actions/categories';
+import { getCategoriesAction, createCategoryAction, updateCategoryAction } from '@/app/actions/categories';
 import { CurrencyInput } from '@/presentation/common/CurrencyInput';
 import { formatCurrency } from '@/core/utils/formatCurrency';
 import { ROUTES } from '@/presentation/navigation/routes';
-import type { Category } from '@/lib/schema';
 
 const CURRENCY_OPTIONS = [
   { value: 'IDR', label: 'IDR — Indonesian Rupiah' },
@@ -19,8 +18,17 @@ const CURRENCY_OPTIONS = [
   { value: 'EUR', label: 'EUR — Euro' },
 ];
 
-type AllocationItem = {
-  categoryId: string;
+const COLOR_OPTIONS = [
+  '#6366f1', '#ec4899', '#f59e0b', '#10b981', '#3b82f6',
+  '#8b5cf6', '#ef4444', '#14b8a6', '#f97316', '#84cc16',
+];
+
+type CategoryItem = {
+  id?: string; // undefined = new, not yet in DB
+  name: string;
+  masterCategory: 'daily' | 'weekly' | 'monthly';
+  color: string;
+  icon: string;
   monthlyAmount: number;
 };
 
@@ -31,17 +39,10 @@ export function BudgetSettingEditView({ id }: { id: string }) {
   const [name, setName] = useState('');
   const [currency, setCurrency] = useState('IDR');
   const [totalMonthlyBudget, setTotalMonthlyBudget] = useState(0);
-  const [allocations, setAllocations] = useState<AllocationItem[]>([]);
-  const [categories, setCategories] = useState<Category[]>([]);
+  const [items, setItems] = useState<CategoryItem[]>([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [initialized, setInitialized] = useState(false);
-
-  useEffect(() => {
-    getCategoriesAction({}).then((result) => {
-      if (result?.data) setCategories(result.data);
-    });
-  }, []);
 
   useEffect(() => {
     if (!isLoading && !initialized) {
@@ -50,37 +51,45 @@ export function BudgetSettingEditView({ id }: { id: string }) {
         setName(setting.name);
         setCurrency(setting.currency ?? 'IDR');
         setTotalMonthlyBudget(parseFloat(setting.totalMonthlyBudget));
-        setAllocations(
-          setting.items.map((item) => ({
-            categoryId: item.categoryId,
-            monthlyAmount: parseFloat(item.monthlyAmount),
-          }))
-        );
-        setInitialized(true);
+
+        getCategoriesAction({}).then((catResult) => {
+          const allCategories = catResult?.data ?? [];
+          setItems(
+            setting.items.map((item) => {
+              const cat = allCategories.find((c) => c.id === item.categoryId);
+              return {
+                id: item.categoryId,
+                name: cat?.name ?? '',
+                masterCategory: cat?.masterCategory ?? 'monthly',
+                color: cat?.color ?? '#6366f1',
+                icon: cat?.icon ?? 'circle',
+                monthlyAmount: parseFloat(item.monthlyAmount),
+              };
+            })
+          );
+          setInitialized(true);
+        });
       }
     }
   }, [budgetSettings, isLoading, id, initialized]);
 
-  const totalAllocated = allocations.reduce((sum, a) => sum + (a.monthlyAmount || 0), 0);
+  const totalAllocated = items.reduce((sum, item) => sum + (item.monthlyAmount || 0), 0);
   const remaining = totalMonthlyBudget - totalAllocated;
 
-  const addAllocation = () => {
-    const unusedCategory = categories.find(
-      (c) => !allocations.some((a) => a.categoryId === c.id)
-    );
-    if (unusedCategory) {
-      setAllocations((prev) => [...prev, { categoryId: unusedCategory.id, monthlyAmount: 0 }]);
-    }
+  const addItem = () => {
+    setItems((prev) => [
+      ...prev,
+      { name: '', masterCategory: 'monthly', color: '#6366f1', icon: 'circle', monthlyAmount: 0 },
+    ]);
   };
 
-  const updateAllocation = (index: number, field: keyof AllocationItem, value: string | number) => {
-    setAllocations((prev) =>
-      prev.map((item, i) => (i === index ? { ...item, [field]: value } : item))
-    );
+  const updateItem = (index: number, field: keyof CategoryItem, value: string | number) => {
+    setItems((prev) => prev.map((item, i) => (i === index ? { ...item, [field]: value } : item)));
   };
 
-  const removeAllocation = (index: number) => {
-    setAllocations((prev) => prev.filter((_, i) => i !== index));
+  const removeItem = (index: number) => {
+    if (!confirm('Remove this category from the budget setting?')) return;
+    setItems((prev) => prev.filter((_, i) => i !== index));
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -91,12 +100,37 @@ export function BudgetSettingEditView({ id }: { id: string }) {
 
     setIsSubmitting(true);
     try {
+      const savedCategories: { categoryId: string; monthlyAmount: number }[] = [];
+      for (const item of items) {
+        if (!item.name.trim()) continue;
+        if (item.id) {
+          await updateCategoryAction({
+            id: item.id,
+            name: item.name.trim(),
+            masterCategory: item.masterCategory,
+            color: item.color,
+            icon: item.icon,
+          });
+          savedCategories.push({ categoryId: item.id, monthlyAmount: item.monthlyAmount });
+        } else {
+          const result = await createCategoryAction({
+            name: item.name.trim(),
+            masterCategory: item.masterCategory,
+            color: item.color,
+            icon: item.icon,
+          });
+          if (result?.data) {
+            savedCategories.push({ categoryId: result.data.id, monthlyAmount: item.monthlyAmount });
+          }
+        }
+      }
+
       await updateBudgetSetting({
         id,
         name: name.trim(),
         totalMonthlyBudget,
         currency,
-        items: allocations.filter((a) => a.monthlyAmount > 0),
+        items: savedCategories.filter((c) => c.monthlyAmount > 0),
       });
       router.push(ROUTES.budgetSettings);
     } catch (err) {
@@ -167,58 +201,70 @@ export function BudgetSettingEditView({ id }: { id: string }) {
           <Card>
             <CardHeader>
               <CardTitle className="flex items-center justify-between">
-                <span>Category Allocations</span>
-                <Button
-                  type="button"
-                  size="sm"
-                  variant="outline"
-                  onClick={addAllocation}
-                  disabled={allocations.length >= categories.length}
-                >
+                <span>Categories</span>
+                <Button type="button" size="sm" variant="outline" onClick={addItem}>
                   + Add Category
                 </Button>
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-3">
-              {allocations.length === 0 && (
-                <p className="text-sm text-muted-foreground text-center py-4">No allocations yet.</p>
+              {items.length === 0 && (
+                <p className="text-sm text-muted-foreground text-center py-4">
+                  No categories yet. Add categories to allocate budget.
+                </p>
               )}
-              {allocations.map((alloc, index) => (
-                <div key={index} className="flex items-center gap-3">
-                  <select
-                    className="flex-1 rounded-md border px-3 py-2 text-sm"
-                    value={alloc.categoryId}
-                    onChange={(e) => updateAllocation(index, 'categoryId', e.target.value)}
-                  >
-                    {categories.map((cat) => (
-                      <option
-                        key={cat.id}
-                        value={cat.id}
-                        disabled={allocations.some((a, i) => i !== index && a.categoryId === cat.id)}
-                      >
-                        {cat.name}
-                      </option>
-                    ))}
-                  </select>
-                  <CurrencyInput
-                    value={alloc.monthlyAmount}
-                    onChange={(v) => updateAllocation(index, 'monthlyAmount', v)}
-                    currency={currency}
-                    className="w-44"
-                  />
-                  <Button
-                    type="button"
-                    size="sm"
-                    variant="outline"
-                    onClick={() => removeAllocation(index)}
-                    className="text-red-600"
-                  >
-                    ×
-                  </Button>
+
+              {items.map((item, index) => (
+                <div key={index} className="space-y-2 rounded-lg border p-3">
+                  <div className="flex items-center gap-2">
+                    <input
+                      className="flex-1 rounded-md border px-3 py-2 text-sm"
+                      value={item.name}
+                      onChange={(e) => updateItem(index, 'name', e.target.value)}
+                      placeholder="Category name"
+                    />
+                    <button
+                      type="button"
+                      className="text-red-500 hover:text-red-700 text-lg font-bold px-2"
+                      onClick={() => removeItem(index)}
+                    >
+                      ×
+                    </button>
+                  </div>
+                  <div className="flex gap-2 items-center">
+                    <select
+                      className="flex-1 rounded-md border px-2 py-1 text-xs"
+                      value={item.masterCategory}
+                      onChange={(e) => updateItem(index, 'masterCategory', e.target.value)}
+                    >
+                      <option value="daily">Daily</option>
+                      <option value="weekly">Weekly</option>
+                      <option value="monthly">Monthly</option>
+                    </select>
+                    <div className="flex gap-1">
+                      {COLOR_OPTIONS.slice(0, 5).map((c) => (
+                        <button
+                          key={c}
+                          type="button"
+                          className={`w-5 h-5 rounded-full border-2 ${item.color === c ? 'border-foreground' : 'border-transparent'}`}
+                          style={{ backgroundColor: c }}
+                          onClick={() => updateItem(index, 'color', c)}
+                        />
+                      ))}
+                    </div>
+                  </div>
+                  <div className="space-y-1">
+                    <label className="text-xs text-muted-foreground">Monthly budget</label>
+                    <CurrencyInput
+                      value={item.monthlyAmount}
+                      onChange={(v) => updateItem(index, 'monthlyAmount', v)}
+                      currency={currency}
+                    />
+                  </div>
                 </div>
               ))}
 
-              {totalMonthlyBudget > 0 && (
+              {totalMonthlyBudget > 0 && items.length > 0 && (
                 <div className="border-t pt-3 space-y-1">
                   <div className="flex justify-between text-sm">
                     <span className="text-muted-foreground">Total Budget</span>

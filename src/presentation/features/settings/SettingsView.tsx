@@ -48,23 +48,6 @@ export function SettingsView() {
 
         <Card>
           <CardHeader>
-            <CardTitle>Preferences</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-3">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium">Currency</p>
-                <p className="text-xs text-muted-foreground">
-                  All amounts are shown in this currency
-                </p>
-              </div>
-              <span className="text-sm font-semibold bg-muted px-3 py-1 rounded-md">IDR</span>
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader>
             <CardTitle>Navigation</CardTitle>
           </CardHeader>
           <CardContent className="space-y-2">
@@ -74,13 +57,6 @@ export function SettingsView() {
               onClick={() => router.push(ROUTES.dashboard)}
             >
               Dashboard
-            </Button>
-            <Button
-              variant="outline"
-              className="w-full justify-start"
-              onClick={() => router.push(ROUTES.categories)}
-            >
-              Manage Categories
             </Button>
             <Button
               variant="outline"

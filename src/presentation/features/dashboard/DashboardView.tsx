@@ -301,10 +301,10 @@ export function DashboardView() {
           </button>
           <button
             className="flex flex-col items-center gap-1 text-xs text-muted-foreground hover:text-foreground"
-            onClick={() => router.push(ROUTES.categories)}
+            onClick={() => router.push(ROUTES.budgetSettings)}
           >
-            <span className="text-lg">🏷️</span>
-            <span>Categories</span>
+            <span className="text-lg">💰</span>
+            <span>Budget</span>
           </button>
           <button
             className="flex flex-col items-center gap-1 text-xs text-muted-foreground hover:text-foreground"
