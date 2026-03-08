@@ -115,7 +115,7 @@ export function TransactionNewView() {
                   className="w-full rounded-md border px-3 py-2 text-sm"
                   type="number"
                   min="0"
-                  step="1000"
+                  step="any"
                   value={amount}
                   onChange={(e) => setAmount(e.target.value)}
                   placeholder="e.g. 50000"
