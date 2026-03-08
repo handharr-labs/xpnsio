@@ -38,6 +38,7 @@ export const createBudgetSettingAction = authActionClient
     z.object({
       name: z.string().min(1),
       totalMonthlyBudget: z.number().positive(),
+      currency: z.string().min(1).default('IDR'),
       items: z.array(
         z.object({
           categoryId: z.string().uuid(),
@@ -53,6 +54,7 @@ export const createBudgetSettingAction = authActionClient
         userId: user.id,
         name: parsedInput.name,
         totalMonthlyBudget: parsedInput.totalMonthlyBudget.toString(),
+        currency: parsedInput.currency,
       })
       .returning();
 
@@ -75,6 +77,7 @@ export const updateBudgetSettingAction = authActionClient
       id: z.string().uuid(),
       name: z.string().min(1).optional(),
       totalMonthlyBudget: z.number().positive().optional(),
+      currency: z.string().min(1).optional(),
       items: z
         .array(
           z.object({
@@ -86,11 +89,14 @@ export const updateBudgetSettingAction = authActionClient
     })
   )
   .action(async ({ parsedInput, ctx: { user } }) => {
-    const { id, items, totalMonthlyBudget, ...fields } = parsedInput;
+    const { id, items, totalMonthlyBudget, currency, ...fields } = parsedInput;
 
     const updateFields: Record<string, unknown> = { ...fields };
     if (totalMonthlyBudget !== undefined) {
       updateFields.totalMonthlyBudget = totalMonthlyBudget.toString();
+    }
+    if (currency !== undefined) {
+      updateFields.currency = currency;
     }
 
     const [updated] = await db

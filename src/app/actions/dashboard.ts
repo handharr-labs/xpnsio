@@ -135,6 +135,7 @@ export const getDashboardDataAction = authActionClient
     return {
       year,
       month,
+      currency: activeBudgetSetting?.currency ?? 'IDR',
       activeBudgetSetting,
       budgetSettingItems: budgetSettingItemsList,
       totalIncome,

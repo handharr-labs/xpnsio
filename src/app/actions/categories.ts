@@ -21,8 +21,7 @@ export const createCategoryAction = authActionClient
   .schema(
     z.object({
       name: z.string().min(1),
-      type: z.enum(['income', 'expense']),
-      masterCategory: z.enum(['daily', 'weekly', 'monthly']).optional(),
+      masterCategory: z.enum(['daily', 'weekly', 'monthly']),
       color: z.string().min(1),
       icon: z.string().min(1),
     })
@@ -33,8 +32,7 @@ export const createCategoryAction = authActionClient
       .values({
         userId: user.id,
         name: parsedInput.name,
-        type: parsedInput.type,
-        masterCategory: parsedInput.masterCategory ?? null,
+        masterCategory: parsedInput.masterCategory,
         color: parsedInput.color,
         icon: parsedInput.icon,
       })
@@ -47,17 +45,16 @@ export const updateCategoryAction = authActionClient
     z.object({
       id: z.string().uuid(),
       name: z.string().min(1).optional(),
+      masterCategory: z.enum(['daily', 'weekly', 'monthly']).optional(),
       color: z.string().optional(),
       icon: z.string().optional(),
-      masterCategory: z.enum(['daily', 'weekly', 'monthly']).optional(),
     })
   )
   .action(async ({ parsedInput, ctx: { user } }) => {
     const { id, ...fields } = parsedInput;
-    const setData: Partial<typeof fields> & { masterCategory?: 'daily' | 'weekly' | 'monthly' | null } = { ...fields };
     const [updated] = await db
       .update(categories)
-      .set(setData)
+      .set(fields)
       .where(and(eq(categories.id, id), eq(categories.userId, user.id)))
       .returning();
     return updated;
@@ -67,7 +64,6 @@ export const deleteCategoryAction = authActionClient
   .schema(
     z.object({
       id: z.string().uuid(),
-      force: z.boolean().optional(),
     })
   )
   .action(async ({ parsedInput, ctx: { user } }) => {
