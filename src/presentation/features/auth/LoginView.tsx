@@ -1,32 +1,47 @@
 'use client';
 
+import Image from 'next/image';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
 import { useLoginViewModel } from './useLoginViewModel';
 
 export function LoginView() {
   const { isLoading, error, handleGoogleSignIn } = useLoginViewModel();
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50">
-      <div className="w-full max-w-sm px-8 py-10 bg-white rounded-2xl shadow-sm border border-gray-100">
-        <div className="text-center mb-8">
-          <h1 className="text-3xl font-bold text-gray-900 tracking-tight">Xpnsio</h1>
-          <p className="mt-2 text-sm text-gray-500">
+    <div className="min-h-screen flex items-center justify-center bg-zinc-950 px-4">
+      <div className="w-full max-w-lg space-y-6 dark">
+        <div className="flex flex-col items-center space-y-3">
+          <Image src="/logo.png" alt="Xpnsio" width={220} height={220} priority />
+          <p className="text-muted-foreground text-xl">
             Know how much budget you have left.
           </p>
         </div>
 
-        {error && (
-          <p className="mb-4 text-sm text-red-500 text-center">{error}</p>
-        )}
+        <Card>
+          <CardHeader className="text-center pb-4">
+            <CardTitle className="text-3xl">Welcome back</CardTitle>
+            <CardDescription className="text-lg">Sign in to your account to continue</CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            {error && (
+              <p className="text-base text-destructive text-center">{error}</p>
+            )}
+            <Button
+              variant="outline"
+              className="w-full gap-3 text-lg py-7"
+              onClick={handleGoogleSignIn}
+              disabled={isLoading}
+            >
+              <GoogleIcon />
+              {isLoading ? 'Signing in...' : 'Continue with Google'}
+            </Button>
+          </CardContent>
+        </Card>
 
-        <button
-          onClick={handleGoogleSignIn}
-          disabled={isLoading}
-          className="w-full flex items-center justify-center gap-3 px-4 py-3 border border-gray-200 rounded-xl text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-        >
-          <GoogleIcon />
-          {isLoading ? 'Signing in...' : 'Continue with Google'}
-        </button>
+        <p className="text-center text-sm text-muted-foreground">
+          By signing in, you agree to our terms of service.
+        </p>
       </div>
     </div>
   );
