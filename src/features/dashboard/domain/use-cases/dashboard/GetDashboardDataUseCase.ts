@@ -4,6 +4,7 @@ import type { BudgetSettingRepository } from '@/features/budget-settings/domain/
 import type { TransactionRepository } from '@/features/transactions/domain/repositories/TransactionRepository';
 import type { CategoryRepository } from '@/features/categories/domain/repositories/CategoryRepository';
 import type { BudgetComputationService } from '@/features/budget-settings/domain/services/BudgetComputationService';
+import type { BudgetProgressService, BudgetProgressData } from '@/features/budget-settings/domain/services/BudgetProgressService';
 
 export interface CategoryBudgetInfo {
   categoryId: string;
@@ -19,6 +20,9 @@ export interface CategoryBudgetInfo {
   weeklyBudget?: number;            // monthlyBudget / weeksInPeriod (weekly only)
   accumulatedWeeklyBudget?: number; // weeklyBudget × weeksElapsed (weekly only)
   periodWeeksElapsed?: number;      // weeks elapsed since period start (weekly only)
+  dailyProgress?: BudgetProgressData;
+  weeklyProgress?: BudgetProgressData;
+  monthlyProgress?: BudgetProgressData;
 }
 
 export interface DashboardData {
@@ -47,7 +51,8 @@ export class GetDashboardDataUseCaseImpl implements GetDashboardDataUseCase {
     private readonly transactionRepository: TransactionRepository,
     private readonly computationService: BudgetComputationService,
     private readonly categoryRepository: CategoryRepository,
-    private readonly budgetSettingRepository: BudgetSettingRepository
+    private readonly budgetSettingRepository: BudgetSettingRepository,
+    private readonly progressService: BudgetProgressService
   ) {}
 
   async execute(params: GetDashboardDataParams): Promise<DashboardData> {
@@ -134,6 +139,21 @@ export class GetDashboardDataUseCaseImpl implements GetDashboardDataUseCase {
           (new Date(today).getTime() - new Date(periodStart).getTime()) / 86400000
         ) + 1;
         accumulatedBudgetToDate = dailyBudget * daysElapsed;
+
+        const dailyProgress = this.progressService.calculateProgress({
+          spent: totalSpent,
+          budget: accumulatedBudgetToDate,
+        });
+        const weekNumber = Math.ceil(daysElapsed / 7);
+        const weeklyProgress = this.progressService.calculateProgress({
+          spent: totalSpent,
+          budget: dailyBudget * (weekNumber * 7),
+        });
+        const monthlyProgress = this.progressService.calculateProgress({
+          spent: totalSpent,
+          budget: budget.amount,
+        });
+
         categoryInfoList.push({
           categoryId: budget.categoryId,
           categoryName: category?.name ?? budget.categoryId,
@@ -145,6 +165,9 @@ export class GetDashboardDataUseCaseImpl implements GetDashboardDataUseCase {
           dailyBudget,
           accumulatedBudgetToDate,
           periodDaysElapsed: daysElapsed,
+          dailyProgress,
+          weeklyProgress,
+          monthlyProgress,
         });
         continue;
       } else if (masterCategory === 'weekly') {
@@ -161,6 +184,16 @@ export class GetDashboardDataUseCaseImpl implements GetDashboardDataUseCase {
           today,
           monthStart: periodStart,
         });
+
+        const weeklyProgress = this.progressService.calculateProgress({
+          spent: totalSpent,
+          budget: accumulatedWeeklyBudget,
+        });
+        const monthlyProgress = this.progressService.calculateProgress({
+          spent: totalSpent,
+          budget: budget.amount,
+        });
+
         categoryInfoList.push({
           categoryId: budget.categoryId,
           categoryName: category?.name ?? budget.categoryId,
@@ -172,6 +205,8 @@ export class GetDashboardDataUseCaseImpl implements GetDashboardDataUseCase {
           weeklyBudget,
           accumulatedWeeklyBudget,
           periodWeeksElapsed: weeksElapsed,
+          weeklyProgress,
+          monthlyProgress,
         });
         continue;
       } else {
@@ -179,21 +214,27 @@ export class GetDashboardDataUseCaseImpl implements GetDashboardDataUseCase {
           monthlyBudget: budget.amount,
           transactions: categoryTransactions.map((tx) => ({ amount: tx.amount })),
         });
-      }
 
-      categoryInfoList.push({
-        categoryId: budget.categoryId,
-        categoryName: category?.name ?? budget.categoryId,
-        masterCategory,
-        monthlyBudget: budget.amount,
-        totalSpent,
-        remaining,
-        rolloverAmount,
-        dailyBudget,
-        accumulatedBudgetToDate,
-        weeklyBudget,
-        accumulatedWeeklyBudget,
-      });
+        const monthlyProgress = this.progressService.calculateProgress({
+          spent: totalSpent,
+          budget: budget.amount,
+        });
+
+        categoryInfoList.push({
+          categoryId: budget.categoryId,
+          categoryName: category?.name ?? budget.categoryId,
+          masterCategory,
+          monthlyBudget: budget.amount,
+          totalSpent,
+          remaining,
+          rolloverAmount,
+          dailyBudget,
+          accumulatedBudgetToDate,
+          weeklyBudget,
+          accumulatedWeeklyBudget,
+          monthlyProgress,
+        });
+      }
     }
 
     const totalMonthlyBudget = budgets.reduce((sum, b) => sum + b.amount, 0);
