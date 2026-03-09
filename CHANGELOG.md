@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.3.0](https://github.com/handharr-labs/xpnsio/compare/v0.2.0...v0.3.0) (2026-03-09)
+
+### Features
+
+* **auth:** add account deletion feature with confirmation dialog ([57a6423](https://github.com/handharr-labs/xpnsio/commit/57a64233a6c7d6e5a037cfaaa5e6c18c7d077c0d))
+* **budget-settings:** add BudgetProgressService for centralized progress calculations ([93961e8](https://github.com/handharr-labs/xpnsio/commit/93961e8fe28c45e1f5838d24f01432577003c81a))
+
 ## [0.2.0](https://github.com/handharr-labs/xpnsio/compare/v0.1.0...v0.2.0) (2026-03-09)
 
 ### Features
