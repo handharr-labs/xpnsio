@@ -16,6 +16,7 @@ import { BudgetRepositoryImpl } from '@/features/budget-settings/data/repositori
 
 // --- Services ---
 import { BudgetComputationServiceImpl } from '@/features/budget-settings/domain/services/BudgetComputationService';
+import { BudgetProgressServiceImpl } from '@/features/budget-settings/domain/services/BudgetProgressService';
 
 // --- Use Cases: Categories ---
 import { GetCategoriesUseCaseImpl } from '@/features/categories/domain/use-cases/categories/GetCategoriesUseCase';
@@ -69,6 +70,7 @@ const budgetRepository = new BudgetRepositoryImpl(budgetDataSource);
 
 // Services
 const budgetComputationService = new BudgetComputationServiceImpl();
+const budgetProgressService = new BudgetProgressServiceImpl();
 
 // Use cases: Categories
 const getCategoriesUseCase = new GetCategoriesUseCaseImpl(categoryRepository);
@@ -98,7 +100,8 @@ const getDashboardDataUseCase = new GetDashboardDataUseCaseImpl(
   transactionRepository,
   budgetComputationService,
   categoryRepository,
-  budgetSettingRepository
+  budgetSettingRepository,
+  budgetProgressService
 );
 
 // --- Container ---
