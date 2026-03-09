@@ -1,4 +1,4 @@
-import { BudgetSettingNewView } from '@/presentation/features/budget-settings/BudgetSettingNewView';
+import { BudgetSettingNewView } from '@/features/budget-settings/presentation/BudgetSettingNewView';
 
 export default function BudgetSettingNewPage() {
   return <BudgetSettingNewView />;

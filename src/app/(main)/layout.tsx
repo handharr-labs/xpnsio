@@ -1,7 +1,7 @@
 'use client';
 
-import { DIProvider } from '@/di/DIContext';
-import { BottomNav } from '@/presentation/common/BottomNav';
+import { DIProvider } from '@/shared/di/DIContext';
+import { BottomNav } from '@/shared/presentation/common/BottomNav';
 import type { ReactNode } from 'react';
 
 export default function MainLayout({ children }: { children: ReactNode }) {

@@ -1,4 +1,4 @@
-import { CategoriesView } from '@/presentation/features/categories/CategoriesView';
+import { CategoriesView } from '@/features/categories/presentation/CategoriesView';
 
 export default function CategoriesPage() {
   return <CategoriesView />;

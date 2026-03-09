@@ -1,6 +1,6 @@
 import { createSafeActionClient } from 'next-safe-action';
 import { createSupabaseServerClient } from '@/lib/auth';
-import { DomainError } from '@/domain/errors/DomainError';
+import { DomainError } from '@/shared/domain/errors/DomainError';
 
 // Public action client — no auth required
 export const actionClient = createSafeActionClient({

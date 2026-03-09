@@ -1,4 +1,4 @@
-import { BudgetSettingEditView } from '@/presentation/features/budget-settings/BudgetSettingEditView';
+import { BudgetSettingEditView } from '@/features/budget-settings/presentation/BudgetSettingEditView';
 
 export default async function BudgetSettingEditPage({
   params,
