@@ -74,6 +74,11 @@
 
 ---
 
+| 023 | Daily Budget Display for Daily-Type Categories | `pending` | [023-daily-budget-display.md](./023-daily-budget-display.md) |
+| 024 | Remove Total Monthly Budget Input from Budget Settings | `pending` | [024-remove-total-monthly-budget-input.md](./024-remove-total-monthly-budget-input.md) |
+
+---
+
 ## Ideas / Future
 - Recurring transactions
 - Multi-currency support
