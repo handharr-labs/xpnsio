@@ -1,6 +1,6 @@
 'use client';
 
-import { useMemo, useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect } from 'react';
 
 const LOCALES: Record<string, string> = {
   IDR: 'id-ID',
@@ -45,6 +45,7 @@ export function CurrencyInput({
   // Update display when value changes from outside (not during user typing)
   useEffect(() => {
     if (!isFocusedRef.current) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setDisplay(value > 0 ? formatAmount(value, currency) : '');
       lastValueRef.current = value;
     } else if (value !== lastValueRef.current) {
@@ -72,14 +73,16 @@ export function CurrencyInput({
   };
 
   return (
-    <div className={`flex items-center border rounded-md overflow-hidden ${className}`}>
-      <span className="px-3 py-2 bg-muted text-sm border-r text-muted-foreground font-medium min-w-[3.5rem] text-center flex-shrink-0">
+    <div className={`flex items-center border rounded-md ${className}`}>
+      <span
+        className="px-3 py-2 bg-muted text-sm border-r text-muted-foreground font-medium min-w-[3.5rem] text-center flex-shrink-0"
+      >
         {currency}
       </span>
       <input
         type="text"
         inputMode="numeric"
-        className="flex-1 px-3 py-2 text-sm outline-none bg-background"
+        className="flex-1 min-w-0 px-3 py-2 text-sm outline-none bg-background"
         value={display}
         placeholder={placeholder}
         required={required}

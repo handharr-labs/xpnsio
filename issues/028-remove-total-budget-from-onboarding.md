@@ -67,6 +67,7 @@ The ViewModel already had fallback logic to use `totalAllocated` when `totalBudg
 
 ### Currency Input Tab Bug Fix (#030)
 - Fixed CurrencyInput component losing currency symbol when tabbing between fields
+- Root cause: `overflow-hidden` on wrapper combined with fixed `w-44` width caused currency span to crop when input expanded
+- Solution: Removed `overflow-hidden`, added `min-w-0` to input for proper flex shrinking
 - Added focus tracking to prevent external value updates from overwriting user input
 - Changed category list keys from `index` to stable keys (`cat.name + cat.color`)
-- Added `flex-shrink-0` to currency span to prevent collapse
