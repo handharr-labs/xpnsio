@@ -156,7 +156,9 @@ export function DashboardView() {
                                         Daily: {formatIDR(c.totalSpent)} / {formatIDR(accumulated)} ({c.periodDaysElapsed} days)
                                       </p>
                                       <p className={`text-xs font-medium ${dailyProgress.textClass}`}>
-                                        {formatIDR(dailyProgress.remaining)} left
+                                        {dailyProgress.isOverrun
+                                          ? `Over by ${formatIDR(Math.abs(dailyProgress.remaining))}`
+                                          : `${formatIDR(dailyProgress.remaining)} left`}
                                       </p>
                                       <div className="flex justify-between text-xs text-muted-foreground">
                                         <span>Progress</span>
@@ -175,7 +177,9 @@ export function DashboardView() {
                                         Weekly: {formatIDR(c.totalSpent)} / {formatIDR(c.dailyBudget! * (weekNumber * 7))} (week {weekNumber})
                                       </p>
                                       <p className={`text-xs font-medium ${weeklyProgress.textClass}`}>
-                                        {formatIDR(weeklyProgress.remaining)} left
+                                        {weeklyProgress.isOverrun
+                                          ? `Over by ${formatIDR(Math.abs(weeklyProgress.remaining))}`
+                                          : `${formatIDR(weeklyProgress.remaining)} left`}
                                       </p>
                                       <div className="flex justify-between text-xs text-muted-foreground">
                                         <span>Progress</span>
@@ -194,7 +198,9 @@ export function DashboardView() {
                                         Monthly: {formatIDR(c.totalSpent)} / {formatIDR(c.monthlyBudget)}
                                       </p>
                                       <p className={`text-xs font-medium ${monthlyProgress.textClass}`}>
-                                        {formatIDR(monthlyProgress.remaining)} left
+                                        {monthlyProgress.isOverrun
+                                          ? `Over by ${formatIDR(Math.abs(monthlyProgress.remaining))}`
+                                          : `${formatIDR(monthlyProgress.remaining)} left`}
                                       </p>
                                       <div className="flex justify-between text-xs text-muted-foreground">
                                         <span>Progress</span>
@@ -234,7 +240,9 @@ export function DashboardView() {
                                         Weekly: {formatIDR(c.totalSpent)} / {formatIDR(accumulated)} ({c.periodWeeksElapsed} weeks)
                                       </p>
                                       <p className={`text-xs font-medium ${weeklyProgress.textClass}`}>
-                                        {formatIDR(weeklyProgress.remaining)} left
+                                        {weeklyProgress.isOverrun
+                                          ? `Over by ${formatIDR(Math.abs(weeklyProgress.remaining))}`
+                                          : `${formatIDR(weeklyProgress.remaining)} left`}
                                       </p>
                                       <div className="flex justify-between text-xs text-muted-foreground">
                                         <span>Progress</span>
@@ -253,7 +261,9 @@ export function DashboardView() {
                                         Monthly: {formatIDR(c.totalSpent)} / {formatIDR(c.monthlyBudget)}
                                       </p>
                                       <p className={`text-xs font-medium ${monthlyProgress.textClass}`}>
-                                        {formatIDR(monthlyProgress.remaining)} left
+                                        {monthlyProgress.isOverrun
+                                          ? `Over by ${formatIDR(Math.abs(monthlyProgress.remaining))}`
+                                          : `${formatIDR(monthlyProgress.remaining)} left`}
                                       </p>
                                       <div className="flex justify-between text-xs text-muted-foreground">
                                         <span>Progress</span>
@@ -283,7 +293,9 @@ export function DashboardView() {
                                   <p
                                     className={`text-xs font-medium ${c.monthlyProgress?.textClass ?? 'text-green-600'}`}
                                   >
-                                    {formatIDR(c.monthlyProgress?.remaining ?? c.remaining)} left
+                                    {(c.monthlyProgress?.isOverrun ?? false)
+                                      ? `Over by ${formatIDR(Math.abs(c.monthlyProgress?.remaining ?? c.remaining))}`
+                                      : `${formatIDR(c.monthlyProgress?.remaining ?? c.remaining)} left`}
                                   </p>
                                 </div>
                               </div>
