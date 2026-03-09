@@ -12,7 +12,7 @@ export function useBudgetSettingNewViewModel() {
   const createBudgetSettingWithCategories = async (input: {
     name: string;
     currency: string;
-    totalMonthlyBudget: number;
+    starterDay: number;
     items: Array<{
       name: string;
       masterCategory: 'daily' | 'weekly' | 'monthly';
@@ -38,11 +38,15 @@ export function useBudgetSettingNewViewModel() {
         }
       }
 
+      const filteredItems = savedCategories.filter((c) => c.monthlyAmount > 0);
+      const totalMonthlyBudget = filteredItems.reduce((s, i) => s + i.monthlyAmount, 0);
+
       const result = await createBudgetSettingAction({
         name: input.name,
-        totalMonthlyBudget: input.totalMonthlyBudget,
+        totalMonthlyBudget,
         currency: input.currency,
-        items: savedCategories.filter((c) => c.monthlyAmount > 0),
+        starterDay: input.starterDay,
+        items: filteredItems,
       });
 
       if (!result?.data) {

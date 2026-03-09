@@ -45,7 +45,7 @@ export class BudgetSettingDataSourceImpl implements BudgetSettingDataSource {
 
   async update(
     id: string,
-    data: Partial<Pick<NewBudgetSetting, 'name' | 'totalMonthlyBudget'>>,
+    data: Partial<Pick<NewBudgetSetting, 'name' | 'totalMonthlyBudget' | 'starterDay'>>,
     items?: Array<Omit<NewBudgetSettingItem, 'id' | 'budgetSettingId'>>
   ): Promise<BudgetSettingRecord> {
     if (Object.keys(data).length > 0) {

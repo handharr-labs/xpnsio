@@ -6,6 +6,7 @@ export interface CreateBudgetSettingInput {
   name: string;
   totalMonthlyBudget: number;
   currency: string;
+  starterDay?: number;
   items: Array<{ categoryId: string; monthlyAmount: number }>;
 }
 

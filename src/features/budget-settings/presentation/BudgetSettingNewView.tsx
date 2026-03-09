@@ -6,7 +6,6 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { useBudgetSettingNewViewModel } from './useBudgetSettingNewViewModel';
 import { CurrencyInput } from '@/shared/presentation/common/CurrencyInput';
-import { formatCurrency } from '@/shared/core/utils/formatCurrency';
 import { ROUTES } from '@/shared/presentation/navigation/routes';
 
 const CURRENCY_OPTIONS = [
@@ -36,12 +35,11 @@ export function BudgetSettingNewView() {
 
   const [name, setName] = useState('');
   const [currency, setCurrency] = useState('IDR');
-  const [totalMonthlyBudget, setTotalMonthlyBudget] = useState(0);
+  const [starterDay, setStarterDay] = useState(1);
   const [items, setItems] = useState<CategoryItem[]>([]);
   const [localError, setLocalError] = useState<string | null>(null);
 
   const totalAllocated = items.reduce((sum, item) => sum + (item.monthlyAmount || 0), 0);
-  const remaining = totalMonthlyBudget - totalAllocated;
 
   const addItem = () => {
     setItems((prev) => [
@@ -62,13 +60,12 @@ export function BudgetSettingNewView() {
     e.preventDefault();
     setLocalError(null);
     if (!name.trim()) { setLocalError('Name is required'); return; }
-    if (!totalMonthlyBudget || totalMonthlyBudget <= 0) { setLocalError('Total monthly budget must be positive'); return; }
 
     try {
       await createBudgetSettingWithCategories({
         name: name.trim(),
         currency,
-        totalMonthlyBudget,
+        starterDay,
         items,
       });
       router.push(ROUTES.budgetSettings);
@@ -122,13 +119,18 @@ export function BudgetSettingNewView() {
               </div>
 
               <div className="space-y-1">
-                <label className="text-sm font-medium">Total Monthly Budget</label>
-                <CurrencyInput
-                  value={totalMonthlyBudget}
-                  onChange={setTotalMonthlyBudget}
-                  currency={currency}
-                  required
+                <label className="text-sm font-medium">Budget Starts On Day</label>
+                <input
+                  type="number"
+                  className="w-full rounded-md border px-3 py-2 text-sm"
+                  min={1}
+                  max={28}
+                  value={starterDay}
+                  onChange={(e) => setStarterDay(Math.min(28, Math.max(1, parseInt(e.target.value, 10) || 1)))}
                 />
+                <p className="text-xs text-muted-foreground">
+                  Day of month when your budget cycle begins (e.g., 27 for salary-based cycles)
+                </p>
               </div>
             </CardContent>
           </Card>
@@ -199,24 +201,6 @@ export function BudgetSettingNewView() {
                 </div>
               ))}
 
-              {totalMonthlyBudget > 0 && items.length > 0 && (
-                <div className="border-t pt-3 space-y-1">
-                  <div className="flex justify-between text-sm">
-                    <span className="text-muted-foreground">Total Budget</span>
-                    <span>{formatCurrency(totalMonthlyBudget, currency)}</span>
-                  </div>
-                  <div className="flex justify-between text-sm">
-                    <span className="text-muted-foreground">Allocated</span>
-                    <span>{formatCurrency(totalAllocated, currency)}</span>
-                  </div>
-                  <div className="flex justify-between text-sm font-medium">
-                    <span>Unallocated</span>
-                    <span className={remaining < 0 ? 'text-red-600' : 'text-green-600'}>
-                      {formatCurrency(remaining, currency)}
-                    </span>
-                  </div>
-                </div>
-              )}
             </CardContent>
           </Card>
 

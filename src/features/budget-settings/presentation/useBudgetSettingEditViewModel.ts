@@ -23,7 +23,7 @@ export function useBudgetSettingEditViewModel(budgetSettingId: string) {
 
   const [name, setName] = useState('');
   const [currency, setCurrency] = useState('IDR');
-  const [totalMonthlyBudget, setTotalMonthlyBudget] = useState(0);
+  const [starterDay, setStarterDay] = useState(1);
   const [items, setItems] = useState<EditableCategoryItem[]>([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -35,7 +35,7 @@ export function useBudgetSettingEditViewModel(budgetSettingId: string) {
       if (setting) {
         setName(setting.name);
         setCurrency(setting.currency ?? 'IDR');
-        setTotalMonthlyBudget(setting.totalMonthlyBudget);
+        setStarterDay(setting.starterDay ?? 1);
 
         getCategoriesAction({}).then((catResult) => {
           const allCategories: Category[] = catResult?.data ?? [];
@@ -87,12 +87,16 @@ export function useBudgetSettingEditViewModel(budgetSettingId: string) {
         }
       }
 
+      const filteredItems = savedCategories.filter((c) => c.monthlyAmount > 0);
+      const totalMonthlyBudget = filteredItems.reduce((s, c) => s + c.monthlyAmount, 0);
+
       await updateBudgetSetting({
         id: budgetSettingId,
         name,
         totalMonthlyBudget,
         currency,
-        items: savedCategories.filter((c) => c.monthlyAmount > 0),
+        starterDay,
+        items: filteredItems,
       });
     } catch (err) {
       const msg = err instanceof Error ? err.message : 'Failed to update budget setting';
@@ -108,8 +112,8 @@ export function useBudgetSettingEditViewModel(budgetSettingId: string) {
     updateName: (v: string) => setName(v),
     currency,
     updateCurrency: (v: string) => setCurrency(v),
-    totalMonthlyBudget,
-    updateTotalMonthlyBudget: (v: number) => setTotalMonthlyBudget(v),
+    starterDay,
+    updateStarterDay: (v: number) => setStarterDay(v),
     items,
     updateItems: (v: EditableCategoryItem[]) => setItems(v),
     isLoading: isLoading && !initialized,

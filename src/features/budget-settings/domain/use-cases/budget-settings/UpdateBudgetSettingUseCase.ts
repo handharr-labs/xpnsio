@@ -4,6 +4,7 @@ import type { BudgetSettingRepository } from '@/features/budget-settings/domain/
 export interface UpdateBudgetSettingInput {
   name?: string;
   totalMonthlyBudget?: number;
+  starterDay?: number;
   items?: Array<{ categoryId: string; monthlyAmount: number }>;
 }
 

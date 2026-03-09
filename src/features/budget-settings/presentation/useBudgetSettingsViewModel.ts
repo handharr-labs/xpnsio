@@ -55,6 +55,7 @@ export function useBudgetSettingsViewModel() {
     name?: string;
     totalMonthlyBudget?: number;
     currency?: string;
+    starterDay?: number;
     items?: { categoryId: string; monthlyAmount: number }[];
   }) => {
     setError(null);

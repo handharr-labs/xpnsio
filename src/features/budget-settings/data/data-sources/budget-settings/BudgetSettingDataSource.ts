@@ -13,6 +13,7 @@ export interface BudgetSettingRecord {
   name: string;
   totalMonthlyBudget: string;
   currency: string;
+  starterDay: number;
   createdAt: Date;
   items: BudgetSettingItemRecord[];
 }
@@ -26,12 +27,13 @@ export interface BudgetSettingDataSource {
       name: string;
       totalMonthlyBudget: string;
       currency?: string;
+      starterDay?: number;
     },
     items: Array<{ categoryId: string; monthlyAmount: string }>
   ): Promise<BudgetSettingRecord>;
   update(
     id: string,
-    data: { name?: string; totalMonthlyBudget?: string },
+    data: { name?: string; totalMonthlyBudget?: string; starterDay?: number },
     items?: Array<{ categoryId: string; monthlyAmount: string }>
   ): Promise<BudgetSettingRecord>;
   delete(id: string): Promise<void>;

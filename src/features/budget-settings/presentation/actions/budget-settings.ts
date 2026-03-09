@@ -15,8 +15,9 @@ export const createBudgetSettingAction = authActionClient
   .schema(
     z.object({
       name: z.string().min(1),
-      totalMonthlyBudget: z.number().positive(),
+      totalMonthlyBudget: z.number().nonnegative().default(0),
       currency: z.string().min(1).default('IDR'),
+      starterDay: z.number().int().min(1).max(28).optional().default(1),
       items: z.array(
         z.object({
           categoryId: z.string().uuid(),
@@ -32,6 +33,7 @@ export const createBudgetSettingAction = authActionClient
       name: parsedInput.name,
       totalMonthlyBudget: parsedInput.totalMonthlyBudget,
       currency: parsedInput.currency,
+      starterDay: parsedInput.starterDay,
       items: parsedInput.items,
     });
   });
@@ -43,6 +45,7 @@ export const updateBudgetSettingAction = authActionClient
       name: z.string().min(1).optional(),
       totalMonthlyBudget: z.number().positive().optional(),
       currency: z.string().min(1).optional(),
+      starterDay: z.number().int().min(1).max(28).optional(),
       items: z
         .array(
           z.object({

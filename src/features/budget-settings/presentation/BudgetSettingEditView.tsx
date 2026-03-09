@@ -6,7 +6,6 @@ import { Button } from '@/components/ui/button';
 import { useBudgetSettingEditViewModel } from './useBudgetSettingEditViewModel';
 import type { EditableCategoryItem } from './useBudgetSettingEditViewModel';
 import { CurrencyInput } from '@/shared/presentation/common/CurrencyInput';
-import { formatCurrency } from '@/shared/core/utils/formatCurrency';
 import { ROUTES } from '@/shared/presentation/navigation/routes';
 
 const CURRENCY_OPTIONS = [
@@ -29,8 +28,8 @@ export function BudgetSettingEditView({ id }: { id: string }) {
     updateName,
     currency,
     updateCurrency,
-    totalMonthlyBudget,
-    updateTotalMonthlyBudget,
+    starterDay,
+    updateStarterDay,
     items,
     updateItems,
     isLoading,
@@ -38,9 +37,6 @@ export function BudgetSettingEditView({ id }: { id: string }) {
     error,
     saveWithCategories,
   } = useBudgetSettingEditViewModel(id);
-
-  const totalAllocated = items.reduce((sum, item) => sum + (item.monthlyAmount || 0), 0);
-  const remaining = totalMonthlyBudget - totalAllocated;
 
   const addItem = () => {
     updateItems([
@@ -60,7 +56,7 @@ export function BudgetSettingEditView({ id }: { id: string }) {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!name.trim() || !totalMonthlyBudget || totalMonthlyBudget <= 0) return;
+    if (!name.trim()) return;
 
     try {
       await saveWithCategories(items);
@@ -117,13 +113,18 @@ export function BudgetSettingEditView({ id }: { id: string }) {
               </div>
 
               <div className="space-y-1">
-                <label className="text-sm font-medium">Total Monthly Budget</label>
-                <CurrencyInput
-                  value={totalMonthlyBudget}
-                  onChange={updateTotalMonthlyBudget}
-                  currency={currency}
-                  required
+                <label className="text-sm font-medium">Budget Starts On Day</label>
+                <input
+                  type="number"
+                  className="w-full rounded-md border px-3 py-2 text-sm"
+                  min={1}
+                  max={28}
+                  value={starterDay}
+                  onChange={(e) => updateStarterDay(Math.min(28, Math.max(1, parseInt(e.target.value, 10) || 1)))}
                 />
+                <p className="text-xs text-muted-foreground">
+                  Day of month when your budget cycle begins (e.g., 27 for salary-based cycles)
+                </p>
               </div>
             </CardContent>
           </Card>
@@ -194,24 +195,6 @@ export function BudgetSettingEditView({ id }: { id: string }) {
                 </div>
               ))}
 
-              {totalMonthlyBudget > 0 && items.length > 0 && (
-                <div className="border-t pt-3 space-y-1">
-                  <div className="flex justify-between text-sm">
-                    <span className="text-muted-foreground">Total Budget</span>
-                    <span>{formatCurrency(totalMonthlyBudget, currency)}</span>
-                  </div>
-                  <div className="flex justify-between text-sm">
-                    <span className="text-muted-foreground">Allocated</span>
-                    <span>{formatCurrency(totalAllocated, currency)}</span>
-                  </div>
-                  <div className="flex justify-between text-sm font-medium">
-                    <span>Unallocated</span>
-                    <span className={remaining < 0 ? 'text-red-600' : 'text-green-600'}>
-                      {formatCurrency(remaining, currency)}
-                    </span>
-                  </div>
-                </div>
-              )}
             </CardContent>
           </Card>
 
