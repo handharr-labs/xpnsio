@@ -25,6 +25,11 @@ export interface BudgetComputationService {
   computeMonthlyRemaining(input: MonthlyBudgetInput): number;
   computeRolloverAmount(input: DailyBudgetInput): number;
   getDaysInMonth(year: number, month: number): number;
+  getPeriodBounds(year: number, month: number, starterDay: number): {
+    periodStart: string;   // YYYY-MM-DD
+    periodEnd: string;     // YYYY-MM-DD
+    daysInPeriod: number;
+  };
 }
 
 export class BudgetComputationServiceImpl implements BudgetComputationService {
@@ -134,6 +139,32 @@ export class BudgetComputationServiceImpl implements BudgetComputationService {
     const { monthlyBudget, transactions } = input;
     const totalSpent = transactions.reduce((sum, tx) => sum + tx.amount, 0);
     return monthlyBudget - totalSpent;
+  }
+
+  getPeriodBounds(year: number, month: number, starterDay: number): {
+    periodStart: string;
+    periodEnd: string;
+    daysInPeriod: number;
+  } {
+    if (starterDay === 1) {
+      const days = this.getDaysInMonth(year, month);
+      const m = String(month).padStart(2, '0');
+      return {
+        periodStart: `${year}-${m}-01`,
+        periodEnd: `${year}-${m}-${String(days).padStart(2, '0')}`,
+        daysInPeriod: days,
+      };
+    }
+    const prevMonth = month === 1 ? 12 : month - 1;
+    const prevYear = month === 1 ? year - 1 : year;
+    const daysInPrevMonth = this.getDaysInMonth(prevYear, prevMonth);
+    const actualStartDay = Math.min(starterDay, daysInPrevMonth);
+    const pm = String(prevMonth).padStart(2, '0');
+    const cm = String(month).padStart(2, '0');
+    const periodStart = `${prevYear}-${pm}-${String(actualStartDay).padStart(2, '0')}`;
+    const periodEnd = `${year}-${cm}-${String(starterDay).padStart(2, '0')}`;
+    const diff = (new Date(periodEnd).getTime() - new Date(periodStart).getTime()) / 86400000;
+    return { periodStart, periodEnd, daysInPeriod: Math.round(diff) + 1 };
   }
 
   private formatDate(date: Date): string {

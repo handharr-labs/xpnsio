@@ -33,6 +33,7 @@ export class BudgetSettingRepositoryImpl implements BudgetSettingRepository {
     name: string;
     totalMonthlyBudget: number;
     currency: string;
+    starterDay?: number;
     items: Array<{ categoryId: string; monthlyAmount: number }>;
   }): Promise<BudgetSetting> {
     try {
@@ -42,6 +43,7 @@ export class BudgetSettingRepositoryImpl implements BudgetSettingRepository {
           name: data.name,
           totalMonthlyBudget: String(data.totalMonthlyBudget),
           currency: data.currency,
+          starterDay: data.starterDay ?? 1,
         },
         data.items.map((item) => ({
           categoryId: item.categoryId,
@@ -59,6 +61,7 @@ export class BudgetSettingRepositoryImpl implements BudgetSettingRepository {
     data: {
       name?: string;
       totalMonthlyBudget?: number;
+      starterDay?: number;
       items?: Array<{ categoryId: string; monthlyAmount: number }>;
     }
   ): Promise<BudgetSetting> {
@@ -68,6 +71,7 @@ export class BudgetSettingRepositoryImpl implements BudgetSettingRepository {
       if (data.totalMonthlyBudget !== undefined) {
         settingData.totalMonthlyBudget = String(data.totalMonthlyBudget);
       }
+      if (data.starterDay !== undefined) settingData.starterDay = data.starterDay;
 
       const items = data.items?.map((item) => ({
         categoryId: item.categoryId,

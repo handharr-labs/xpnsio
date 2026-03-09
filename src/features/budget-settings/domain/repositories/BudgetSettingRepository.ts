@@ -8,6 +8,7 @@ export interface BudgetSettingRepository {
     name: string;
     totalMonthlyBudget: number;
     currency: string;
+    starterDay?: number;
     items: Array<{ categoryId: string; monthlyAmount: number }>;
   }): Promise<BudgetSetting>;
   update(
@@ -15,6 +16,7 @@ export interface BudgetSettingRepository {
     data: {
       name?: string;
       totalMonthlyBudget?: number;
+      starterDay?: number;
       items?: Array<{ categoryId: string; monthlyAmount: number }>;
     }
   ): Promise<BudgetSetting>;

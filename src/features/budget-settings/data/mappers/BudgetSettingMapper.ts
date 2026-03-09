@@ -20,6 +20,7 @@ export class BudgetSettingMapperImpl implements BudgetSettingMapper {
       name: record.name,
       totalMonthlyBudget: parseFloat(record.totalMonthlyBudget),
       currency: record.currency,
+      starterDay: record.starterDay,
       items: record.items.map((item) => this.itemToDomain(item)),
       createdAt: record.createdAt,
     };
