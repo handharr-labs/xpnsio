@@ -67,4 +67,6 @@ The ViewModel already had fallback logic to use `totalAllocated` when `totalBudg
 
 ### Currency Input Tab Bug Fix (#030)
 - Fixed CurrencyInput component losing currency symbol when tabbing between fields
-- Added `value` to useEffect dependency array to sync display state with external value changes
+- Added focus tracking to prevent external value updates from overwriting user input
+- Changed category list keys from `index` to stable keys (`cat.name + cat.color`)
+- Added `flex-shrink-0` to currency span to prevent collapse

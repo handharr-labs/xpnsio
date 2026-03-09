@@ -32,5 +32,9 @@ Before any work: `/create-issue [title]` → wait for instruction → invoke age
 | Refactor | `/simplify` |
 | Use case / entity / hook / repo | `.claude/commands/` |
 
+**Issue Creation Rule:**
+- When on a `fix/` or `feature/` branch: Add feedback to current issue, don't create new issues
+- From `main` branch: Create new issues
+
 ## Code Principles
 CLEAN · DRY · SOLID (SRP, OCP, LSP, ISP, DIP). Wire deps via `src/shared/di/`.
