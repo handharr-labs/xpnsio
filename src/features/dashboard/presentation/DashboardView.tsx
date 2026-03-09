@@ -155,47 +155,19 @@ export function DashboardView() {
                                       </span>
                                     </div>
                                   </div>
-                                  {/* Daily summary */}
-                                  <p className="text-xs text-muted-foreground mb-1">
-                                    Daily: {formatIDR(c.totalSpent)} / {formatIDR(accumulated)} ({c.periodDaysElapsed} days)
-                                  </p>
-                                  <p className={`text-xs font-medium mb-1 ${isOverrun ? 'text-red-600' : 'text-green-600'}`}>
-                                    Daily: {isOverrun
-                                      ? `Over by ${formatIDR(Math.abs(dailyLeft))}`
-                                      : `${formatIDR(dailyLeft)} left`}
-                                  </p>
-                                  {/* Weekly summary */}
-                                  {(() => {
-                                    const weekNumber = Math.ceil((c.periodDaysElapsed ?? 0) / 7);
-                                    const cumulativeWeekBudget = c.dailyBudget! * (weekNumber * 7);
-                                    const weeklyLeft = cumulativeWeekBudget - c.totalSpent;
-                                    const isWeeklyOverrun = weeklyLeft <= 0;
-                                    return (
-                                      <>
-                                        <p className="text-xs text-muted-foreground mb-1">
-                                          Weekly: {formatIDR(c.totalSpent)} / {formatIDR(cumulativeWeekBudget)} (week {weekNumber})
-                                        </p>
-                                        <p className={`text-xs font-medium mb-1 ${isWeeklyOverrun ? 'text-red-600' : 'text-green-600'}`}>
-                                          Weekly: {isWeeklyOverrun
-                                            ? `Over by ${formatIDR(Math.abs(weeklyLeft))}`
-                                            : `${formatIDR(weeklyLeft)} left`}
-                                        </p>
-                                      </>
-                                    );
-                                  })()}
-                                  {/* Monthly summary */}
-                                  <p className="text-xs text-muted-foreground mb-2">
-                                    Monthly: {formatIDR(c.totalSpent)} / {formatIDR(c.monthlyBudget)}
-                                  </p>
-                                  <p className={`text-xs font-medium mb-2 ${c.totalSpent > c.monthlyBudget ? 'text-red-600' : 'text-green-600'}`}>
-                                    Monthly: {c.totalSpent > c.monthlyBudget
-                                      ? `Over by ${formatIDR(c.totalSpent - c.monthlyBudget)}`
-                                      : `${formatIDR(c.monthlyBudget - c.totalSpent)} left`}
-                                  </p>
-                                  <div className="space-y-2">
+                                  <div className="space-y-3">
+                                    {/* Daily */}
                                     <div className="space-y-1">
+                                      <p className="text-xs text-muted-foreground">
+                                        Daily: {formatIDR(c.totalSpent)} / {formatIDR(accumulated)} ({c.periodDaysElapsed} days)
+                                      </p>
+                                      <p className={`text-xs font-medium ${isOverrun ? 'text-red-600' : 'text-green-600'}`}>
+                                        {isOverrun
+                                          ? `Over by ${formatIDR(Math.abs(dailyLeft))}`
+                                          : `${formatIDR(dailyLeft)} left`}
+                                      </p>
                                       <div className="flex justify-between text-xs text-muted-foreground">
-                                        <span>Daily</span>
+                                        <span>Progress</span>
                                         <span>{accumulated > 0 ? Math.round((c.totalSpent / accumulated) * 100) : 0}%</span>
                                       </div>
                                       <div className="w-full bg-muted rounded-full h-1.5">
@@ -205,51 +177,64 @@ export function DashboardView() {
                                         />
                                       </div>
                                     </div>
-                                    <div className="space-y-1">
-                                      <div className="flex justify-between text-xs text-muted-foreground">
-                                        <span>Weekly</span>
-                                        <span>{
-                                          (() => {
-                                            const weekNumber = Math.ceil((c.periodDaysElapsed ?? 0) / 7);
-                                            const cumulativeWeekBudget = c.dailyBudget! * (weekNumber * 7);
-                                            return cumulativeWeekBudget > 0 ? Math.round((c.totalSpent / cumulativeWeekBudget) * 100) : 0;
-                                          })()}%
-                                        </span>
-                                      </div>
-                                      <div className="w-full bg-muted rounded-full h-1.5">
-                                        <div
-                                          className={`h-1.5 rounded-full ${
-                                            (() => {
-                                              const weekNumber = Math.ceil((c.periodDaysElapsed ?? 0) / 7);
-                                              const cumulativeWeekBudget = c.dailyBudget! * (weekNumber * 7);
-                                              const weeklyLeft = cumulativeWeekBudget - c.totalSpent;
-                                              return weeklyLeft <= 0 ? 'bg-red-500' : 'bg-primary';
-                                            })()
-                                          }`}
-                                          style={{
-                                            width: `${
-                                              (() => {
-                                                const weekNumber = Math.ceil((c.periodDaysElapsed ?? 0) / 7);
-                                                const cumulativeWeekBudget = c.dailyBudget! * (weekNumber * 7);
-                                                return cumulativeWeekBudget > 0 ? Math.min((c.totalSpent / cumulativeWeekBudget) * 100, 100) : 0;
-                                              })()
-                                            }%`
-                                          }}
-                                        />
-                                      </div>
-                                    </div>
-                                    <div className="space-y-1">
-                                      <div className="flex justify-between text-xs text-muted-foreground">
-                                        <span>Monthly</span>
-                                        <span>{c.monthlyBudget > 0 ? Math.round((c.totalSpent / c.monthlyBudget) * 100) : 0}%</span>
-                                      </div>
-                                      <div className="w-full bg-muted rounded-full h-1.5">
-                                        <div
-                                          className={`h-1.5 rounded-full ${c.totalSpent > c.monthlyBudget ? 'bg-red-500' : 'bg-primary'}`}
-                                          style={{ width: `${c.monthlyBudget > 0 ? Math.min((c.totalSpent / c.monthlyBudget) * 100, 100) : 0}%` }}
-                                        />
-                                      </div>
-                                    </div>
+                                    {/* Weekly */}
+                                    {(() => {
+                                      const weekNumber = Math.ceil((c.periodDaysElapsed ?? 0) / 7);
+                                      const cumulativeWeekBudget = c.dailyBudget! * (weekNumber * 7);
+                                      const weeklyLeft = cumulativeWeekBudget - c.totalSpent;
+                                      const isWeeklyOverrun = weeklyLeft <= 0;
+                                      const weeklyPercent = cumulativeWeekBudget > 0 ? Math.round((c.totalSpent / cumulativeWeekBudget) * 100) : 0;
+                                      return (
+                                        <div className="space-y-1">
+                                          <p className="text-xs text-muted-foreground">
+                                            Weekly: {formatIDR(c.totalSpent)} / {formatIDR(cumulativeWeekBudget)} (week {weekNumber})
+                                          </p>
+                                          <p className={`text-xs font-medium ${isWeeklyOverrun ? 'text-red-600' : 'text-green-600'}`}>
+                                            {isWeeklyOverrun
+                                              ? `Over by ${formatIDR(Math.abs(weeklyLeft))}`
+                                              : `${formatIDR(weeklyLeft)} left`}
+                                          </p>
+                                          <div className="flex justify-between text-xs text-muted-foreground">
+                                            <span>Progress</span>
+                                            <span>{weeklyPercent}%</span>
+                                          </div>
+                                          <div className="w-full bg-muted rounded-full h-1.5">
+                                            <div
+                                              className={`h-1.5 rounded-full ${isWeeklyOverrun ? 'bg-red-500' : 'bg-primary'}`}
+                                              style={{ width: `${cumulativeWeekBudget > 0 ? Math.min((c.totalSpent / cumulativeWeekBudget) * 100, 100) : 0}%` }}
+                                            />
+                                          </div>
+                                        </div>
+                                      );
+                                    })()}
+                                    {/* Monthly */}
+                                    {(() => {
+                                      const monthlyLeft = c.monthlyBudget - c.totalSpent;
+                                      const isMonthlyOverrun = c.totalSpent > c.monthlyBudget;
+                                      const monthlyPercent = c.monthlyBudget > 0 ? Math.round((c.totalSpent / c.monthlyBudget) * 100) : 0;
+                                      return (
+                                        <div className="space-y-1">
+                                          <p className="text-xs text-muted-foreground">
+                                            Monthly: {formatIDR(c.totalSpent)} / {formatIDR(c.monthlyBudget)}
+                                          </p>
+                                          <p className={`text-xs font-medium ${isMonthlyOverrun ? 'text-red-600' : 'text-green-600'}`}>
+                                            {isMonthlyOverrun
+                                              ? `Over by ${formatIDR(c.totalSpent - c.monthlyBudget)}`
+                                              : `${formatIDR(monthlyLeft)} left`}
+                                          </p>
+                                          <div className="flex justify-between text-xs text-muted-foreground">
+                                            <span>Progress</span>
+                                            <span>{monthlyPercent}%</span>
+                                          </div>
+                                          <div className="w-full bg-muted rounded-full h-1.5">
+                                            <div
+                                              className={`h-1.5 rounded-full ${isMonthlyOverrun ? 'bg-red-500' : 'bg-primary'}`}
+                                              style={{ width: `${c.monthlyBudget > 0 ? Math.min((c.totalSpent / c.monthlyBudget) * 100, 100) : 0}%` }}
+                                            />
+                                          </div>
+                                        </div>
+                                      );
+                                    })()}
                                   </div>
                                 </CardContent>
                               </Card>
