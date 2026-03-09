@@ -16,6 +16,9 @@ export interface CategoryBudgetInfo {
   dailyBudget?: number;             // monthlyBudget / daysInPeriod (daily only)
   accumulatedBudgetToDate?: number; // dailyBudget × daysElapsed (daily only)
   periodDaysElapsed?: number;       // days elapsed since period start (daily only)
+  weeklyBudget?: number;            // monthlyBudget / weeksInPeriod (weekly only)
+  accumulatedWeeklyBudget?: number; // weeklyBudget × weeksElapsed (weekly only)
+  periodWeeksElapsed?: number;      // weeks elapsed since period start (weekly only)
 }
 
 export interface DashboardData {
@@ -113,6 +116,8 @@ export class GetDashboardDataUseCaseImpl implements GetDashboardDataUseCase {
 
       let dailyBudget: number | undefined;
       let accumulatedBudgetToDate: number | undefined;
+      let weeklyBudget: number | undefined;
+      let accumulatedWeeklyBudget: number | undefined;
 
       if (masterCategory === 'daily') {
         const input = {
@@ -143,13 +148,32 @@ export class GetDashboardDataUseCaseImpl implements GetDashboardDataUseCase {
         });
         continue;
       } else if (masterCategory === 'weekly') {
+        const weeksInPeriod = daysInPeriod / 7;
+        const weeksElapsed = Math.round(
+          (new Date(today).getTime() - new Date(periodStart).getTime()) / (86400000 * 7)
+        ) + 1;
+        weeklyBudget = budget.amount / weeksInPeriod;
+        accumulatedWeeklyBudget = weeklyBudget * weeksElapsed;
         remaining = this.computationService.computeWeeklyRemaining({
           monthlyBudget: budget.amount,
-          weeksInMonth: daysInPeriod / 7,
+          weeksInMonth: weeksInPeriod,
           transactions: categoryTransactions.map((tx) => ({ date: tx.date, amount: tx.amount })),
           today,
           monthStart: periodStart,
         });
+        categoryInfoList.push({
+          categoryId: budget.categoryId,
+          categoryName: category?.name ?? budget.categoryId,
+          masterCategory,
+          monthlyBudget: budget.amount,
+          totalSpent,
+          remaining,
+          rolloverAmount,
+          weeklyBudget,
+          accumulatedWeeklyBudget,
+          periodWeeksElapsed: weeksElapsed,
+        });
+        continue;
       } else {
         remaining = this.computationService.computeMonthlyRemaining({
           monthlyBudget: budget.amount,
@@ -167,6 +191,8 @@ export class GetDashboardDataUseCaseImpl implements GetDashboardDataUseCase {
         rolloverAmount,
         dailyBudget,
         accumulatedBudgetToDate,
+        weeklyBudget,
+        accumulatedWeeklyBudget,
       });
     }
 

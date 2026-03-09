@@ -152,6 +152,7 @@ export function DashboardView() {
                       <div className="space-y-2">
                         {items.map((c) => {
                           const isDaily = c.masterCategory === 'daily' && c.dailyBudget != null && c.accumulatedBudgetToDate != null;
+                          const isWeekly = c.masterCategory === 'weekly' && c.weeklyBudget != null && c.accumulatedWeeklyBudget != null;
                           if (isDaily) {
                             const accumulated = c.accumulatedBudgetToDate!;
                             const dailyLeft = accumulated - c.totalSpent;
@@ -210,6 +211,80 @@ export function DashboardView() {
                                           </p>
                                           <p className={`text-xs font-medium ${getProgressTextColor(weeklyPercent)}`}>
                                             {weeklyLeft <= 0
+                                              ? `Over by ${formatIDR(Math.abs(weeklyLeft))}`
+                                              : `${formatIDR(weeklyLeft)} left`}
+                                          </p>
+                                          <div className="flex justify-between text-xs text-muted-foreground">
+                                            <span>Progress</span>
+                                            <span>{weeklyPercent}%</span>
+                                          </div>
+                                          <div className="w-full bg-muted rounded-full h-1.5">
+                                            <div
+                                              className={`h-1.5 rounded-full ${getProgressColor(weeklyPercent)}`}
+                                              style={{ width: `${Math.min(weeklyPercent, 100)}%` }}
+                                            />
+                                          </div>
+                                        </div>
+                                      );
+                                    })()}
+                                    {/* Monthly */}
+                                    {(() => {
+                                      const monthlyLeft = c.monthlyBudget - c.totalSpent;
+                                      const monthlyPercent = calcPercent(c.totalSpent, c.monthlyBudget);
+                                      return (
+                                        <div className="space-y-1">
+                                          <p className="text-xs text-muted-foreground">
+                                            Monthly: {formatIDR(c.totalSpent)} / {formatIDR(c.monthlyBudget)}
+                                          </p>
+                                          <p className={`text-xs font-medium ${getProgressTextColor(monthlyPercent)}`}>
+                                            {c.totalSpent > c.monthlyBudget
+                                              ? `Over by ${formatIDR(c.totalSpent - c.monthlyBudget)}`
+                                              : `${formatIDR(monthlyLeft)} left`}
+                                          </p>
+                                          <div className="flex justify-between text-xs text-muted-foreground">
+                                            <span>Progress</span>
+                                            <span>{monthlyPercent}%</span>
+                                          </div>
+                                          <div className="w-full bg-muted rounded-full h-1.5">
+                                            <div
+                                              className={`h-1.5 rounded-full ${getProgressColor(monthlyPercent)}`}
+                                              style={{ width: `${Math.min(monthlyPercent, 100)}%` }}
+                                            />
+                                          </div>
+                                        </div>
+                                      );
+                                    })()}
+                                  </div>
+                                </CardContent>
+                              </Card>
+                            );
+                          }
+                          if (isWeekly) {
+                            const accumulated = c.accumulatedWeeklyBudget!;
+                            const weeklyLeft = accumulated - c.totalSpent;
+                            const isOverrun = weeklyLeft <= 0;
+                            return (
+                              <Card key={c.categoryId} size="sm">
+                                <CardContent className="pt-3">
+                                  <div className="flex items-center justify-between mb-1 gap-2">
+                                    <span className="text-sm font-medium">{c.categoryName}</span>
+                                    <div className="flex gap-1.5">
+                                      <span className="text-xs bg-muted px-2 py-0.5 rounded-full text-muted-foreground whitespace-nowrap">
+                                        {formatIDR(c.weeklyBudget!)}/week
+                                      </span>
+                                    </div>
+                                  </div>
+                                  <div className="space-y-3">
+                                    {/* Weekly */}
+                                    {(() => {
+                                      const weeklyPercent = calcPercent(c.totalSpent, accumulated);
+                                      return (
+                                        <div className="space-y-1">
+                                          <p className="text-xs text-muted-foreground">
+                                            Weekly: {formatIDR(c.totalSpent)} / {formatIDR(accumulated)} ({c.periodWeeksElapsed} weeks)
+                                          </p>
+                                          <p className={`text-xs font-medium ${getProgressTextColor(weeklyPercent)}`}>
+                                            {isOverrun
                                               ? `Over by ${formatIDR(Math.abs(weeklyLeft))}`
                                               : `${formatIDR(weeklyLeft)} left`}
                                           </p>
