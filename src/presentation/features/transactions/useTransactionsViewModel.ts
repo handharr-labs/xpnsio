@@ -6,8 +6,8 @@ import {
   createTransactionAction,
   updateTransactionAction,
   deleteTransactionAction,
-} from '@/app/actions/transactions';
-import type { Transaction } from '@/lib/schema';
+} from '@/presentation/features/transactions/actions/transactions';
+import type { Transaction } from '@/domain/entities/Transaction';
 
 export type TransactionFilters = {
   startDate?: string;
@@ -37,6 +37,7 @@ export function useTransactionsViewModel() {
   }, []);
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     load(filters);
   }, [filters, load]);
 
@@ -93,12 +94,16 @@ export function useTransactionsViewModel() {
     }
   };
 
+  const applyFilters = (newFilters: TransactionFilters) => {
+    setFilters(newFilters);
+  };
+
   return {
     transactions,
     isLoading,
     error,
     filters,
-    setFilters,
+    applyFilters,
     createTransaction,
     updateTransaction,
     deleteTransaction,

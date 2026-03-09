@@ -1,53 +1,13 @@
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
-import { getDashboardDataAction } from '@/app/actions/dashboard';
+import { getDashboardDataAction } from '@/presentation/features/dashboard/actions/dashboard';
+import type { DashboardData } from '@/domain/use-cases/dashboard/GetDashboardDataUseCase';
 
-type CategorySpending = {
-  category: {
-    id: string;
-    name: string;
-    masterCategory: 'daily' | 'weekly' | 'monthly';
-    color: string;
-    icon: string;
-  };
-  budgetAmount: number;
-  spent: number;
-  remaining: number;
-};
-
-type DashboardData = {
-  year: number;
-  month: number;
-  currency: string;
-  activeBudgetSetting: {
-    id: string;
-    name: string;
-    totalMonthlyBudget: string;
-    currency: string;
-  } | null;
-  totalIncome: number;
-  totalExpense: number;
-  totalBudget: number;
-  remaining: number;
-  categorySpending: CategorySpending[];
-  recentTransactions: Array<{
-    id: string;
-    amount: string;
-    type: 'income' | 'expense';
-    description: string | null;
-    date: string;
-    category: {
-      id: string;
-      name: string;
-      color: string;
-      icon: string;
-    } | null;
-  }>;
-};
+export type DashboardViewData = DashboardData & { year: number; month: number };
 
 export function useDashboardViewModel(year?: number, month?: number) {
-  const [dashboardData, setDashboardData] = useState<DashboardData | null>(null);
+  const [dashboardData, setDashboardData] = useState<DashboardViewData | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -56,7 +16,7 @@ export function useDashboardViewModel(year?: number, month?: number) {
     setError(null);
     const result = await getDashboardDataAction({ year, month });
     if (result?.data) {
-      setDashboardData(result.data as DashboardData);
+      setDashboardData(result.data as DashboardViewData);
     } else if (result?.serverError) {
       setError(result.serverError);
     }
@@ -64,6 +24,7 @@ export function useDashboardViewModel(year?: number, month?: number) {
   }, [year, month]);
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     load();
   }, [load]);
 

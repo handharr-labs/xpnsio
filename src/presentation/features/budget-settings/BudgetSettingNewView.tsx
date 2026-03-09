@@ -4,8 +4,7 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { useBudgetSettingsViewModel } from './useBudgetSettingsViewModel';
-import { createCategoryAction } from '@/app/actions/categories';
+import { useBudgetSettingNewViewModel } from './useBudgetSettingNewViewModel';
 import { CurrencyInput } from '@/presentation/common/CurrencyInput';
 import { formatCurrency } from '@/core/utils/formatCurrency';
 import { ROUTES } from '@/presentation/navigation/routes';
@@ -33,14 +32,13 @@ type CategoryItem = {
 
 export function BudgetSettingNewView() {
   const router = useRouter();
-  const { createBudgetSetting } = useBudgetSettingsViewModel();
+  const { isSubmitting, error, createBudgetSettingWithCategories } = useBudgetSettingNewViewModel();
 
   const [name, setName] = useState('');
   const [currency, setCurrency] = useState('IDR');
   const [totalMonthlyBudget, setTotalMonthlyBudget] = useState(0);
   const [items, setItems] = useState<CategoryItem[]>([]);
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const [localError, setLocalError] = useState<string | null>(null);
 
   const totalAllocated = items.reduce((sum, item) => sum + (item.monthlyAmount || 0), 0);
   const remaining = totalMonthlyBudget - totalAllocated;
@@ -62,39 +60,24 @@ export function BudgetSettingNewView() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setError(null);
-    if (!name.trim()) { setError('Name is required'); return; }
-    if (!totalMonthlyBudget || totalMonthlyBudget <= 0) { setError('Total monthly budget must be positive'); return; }
+    setLocalError(null);
+    if (!name.trim()) { setLocalError('Name is required'); return; }
+    if (!totalMonthlyBudget || totalMonthlyBudget <= 0) { setLocalError('Total monthly budget must be positive'); return; }
 
-    setIsSubmitting(true);
     try {
-      const savedCategories: { categoryId: string; monthlyAmount: number }[] = [];
-      for (const item of items) {
-        if (!item.name.trim()) continue;
-        const result = await createCategoryAction({
-          name: item.name.trim(),
-          masterCategory: item.masterCategory,
-          color: item.color,
-          icon: item.icon,
-        });
-        if (result?.data) {
-          savedCategories.push({ categoryId: result.data.id, monthlyAmount: item.monthlyAmount });
-        }
-      }
-
-      await createBudgetSetting({
+      await createBudgetSettingWithCategories({
         name: name.trim(),
-        totalMonthlyBudget,
         currency,
-        items: savedCategories.filter((c) => c.monthlyAmount > 0),
+        totalMonthlyBudget,
+        items,
       });
       router.push(ROUTES.budgetSettings);
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to create budget setting');
-    } finally {
-      setIsSubmitting(false);
+    } catch {
+      // error set by ViewModel
     }
   };
+
+  const displayError = localError ?? error;
 
   return (
     <main className="min-h-screen p-6">
@@ -105,9 +88,9 @@ export function BudgetSettingNewView() {
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-6">
-          {error && (
+          {displayError && (
             <div className="rounded-md bg-red-50 border border-red-200 p-3 text-sm text-red-700">
-              {error}
+              {displayError}
             </div>
           )}
 

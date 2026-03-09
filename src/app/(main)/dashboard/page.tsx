@@ -1,8 +1,6 @@
 import { redirect } from 'next/navigation';
 import { createSupabaseServerClient } from '@/lib/auth';
-import { db } from '@/lib/db';
-import { budgetSettings } from '@/lib/schema';
-import { eq } from 'drizzle-orm';
+import { createServerContainer } from '@/di/container.server';
 import { DashboardView } from '@/presentation/features/dashboard/DashboardView';
 
 export default async function DashboardPage() {
@@ -13,11 +11,8 @@ export default async function DashboardPage() {
 
   if (!user) redirect('/login');
 
-  const settings = await db
-    .select()
-    .from(budgetSettings)
-    .where(eq(budgetSettings.userId, user.id))
-    .limit(1);
+  const container = createServerContainer();
+  const settings = await container.getBudgetSettingsUseCase.execute(user.id);
 
   if (settings.length === 0) redirect('/setup');
 

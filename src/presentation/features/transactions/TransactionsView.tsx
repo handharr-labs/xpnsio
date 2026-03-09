@@ -5,9 +5,9 @@ import { useRouter } from 'next/navigation';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { useTransactionsViewModel } from './useTransactionsViewModel';
-import { getCategoriesAction } from '@/app/actions/categories';
+import { getCategoriesAction } from '@/presentation/features/categories/actions/categories';
 import { ROUTES } from '@/presentation/navigation/routes';
-import type { Category } from '@/lib/schema';
+import type { Category } from '@/domain/entities/Category';
 
 const formatIDR = (amount: number | string) =>
   new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR' }).format(
@@ -23,7 +23,7 @@ const formatDate = (dateStr: string) =>
 
 export function TransactionsView() {
   const router = useRouter();
-  const { transactions, isLoading, error, filters, setFilters } =
+  const { transactions, isLoading, error, applyFilters } =
     useTransactionsViewModel();
 
   const [categories, setCategories] = useState<Category[]>([]);
@@ -40,8 +40,8 @@ export function TransactionsView() {
     });
   }, []);
 
-  const applyFilters = () => {
-    setFilters({
+  const handleApplyFilters = () => {
+    applyFilters({
       startDate: localFilters.startDate || undefined,
       endDate: localFilters.endDate || undefined,
       categoryId: localFilters.categoryId || undefined,
@@ -51,7 +51,7 @@ export function TransactionsView() {
 
   const clearFilters = () => {
     setLocalFilters({ startDate: '', endDate: '', categoryId: '', type: '' });
-    setFilters({});
+    applyFilters({});
   };
 
   const categoryMap = new Map(categories.map((c) => [c.id, c]));
@@ -128,7 +128,7 @@ export function TransactionsView() {
               </div>
             </div>
             <div className="flex gap-2">
-              <Button size="sm" onClick={applyFilters} className="flex-1">
+              <Button size="sm" onClick={handleApplyFilters} className="flex-1">
                 Apply Filters
               </Button>
               <Button size="sm" variant="outline" onClick={clearFilters}>

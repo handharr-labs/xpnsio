@@ -1,54 +1,38 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { createTransactionAction } from '@/app/actions/transactions';
-import { getCategoriesAction } from '@/app/actions/categories';
-import { getDashboardDataAction } from '@/app/actions/dashboard';
+import { useTransactionNewViewModel } from './useTransactionNewViewModel';
 import { CurrencyInput } from '@/presentation/common/CurrencyInput';
 import { ROUTES } from '@/presentation/navigation/routes';
-import type { Category } from '@/lib/schema';
 
 export function TransactionNewView() {
   const router = useRouter();
+  const { categories, isSubmitting, error, createTransaction } = useTransactionNewViewModel();
 
   const [amount, setAmount] = useState(0);
   const [categoryId, setCategoryId] = useState('');
   const [description, setDescription] = useState('');
   const [date, setDate] = useState(new Date().toISOString().split('T')[0]);
-  const [categories, setCategories] = useState<Category[]>([]);
-  const [currency, setCurrency] = useState('IDR');
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-
-  useEffect(() => {
-    getCategoriesAction({}).then((result) => {
-      if (result?.data) setCategories(result.data);
-    });
-    const now = new Date();
-    getDashboardDataAction({ year: now.getFullYear(), month: now.getMonth() + 1 }).then((result) => {
-      if (result?.data?.currency) setCurrency(result.data.currency);
-    });
-  }, []);
+  const [localError, setLocalError] = useState<string | null>(null);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setError(null);
+    setLocalError(null);
 
     if (!amount || amount <= 0) {
-      setError('Amount must be a positive number');
+      setLocalError('Amount must be a positive number');
       return;
     }
     if (!date) {
-      setError('Date is required');
+      setLocalError('Date is required');
       return;
     }
 
-    setIsSubmitting(true);
     try {
-      await createTransactionAction({
+      await createTransaction({
         amount,
         type: 'expense',
         categoryId: categoryId || undefined,
@@ -56,12 +40,12 @@ export function TransactionNewView() {
         date,
       });
       router.push(ROUTES.dashboard);
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to create transaction');
-    } finally {
-      setIsSubmitting(false);
+    } catch {
+      // error set by ViewModel
     }
   };
+
+  const displayError = localError ?? error;
 
   return (
     <main className="min-h-screen p-6">
@@ -72,9 +56,9 @@ export function TransactionNewView() {
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-6">
-          {error && (
+          {displayError && (
             <div className="rounded-md bg-red-50 border border-red-200 p-3 text-sm text-red-700">
-              {error}
+              {displayError}
             </div>
           )}
 
@@ -86,7 +70,7 @@ export function TransactionNewView() {
                 <CurrencyInput
                   value={amount}
                   onChange={setAmount}
-                  currency={currency}
+                  currency="IDR"
                   required
                 />
               </div>

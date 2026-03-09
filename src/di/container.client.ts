@@ -8,7 +8,9 @@ import { GetCurrentUserUseCaseImpl } from '@/domain/use-cases/auth/GetCurrentUse
 
 export function createClientContainer() {
   // Auth
-  const authDataSource = new AuthDataSourceImpl();
+  const authDataSource = new AuthDataSourceImpl(
+    typeof window !== 'undefined' ? window.location.origin : ''
+  );
   const authRepository = new AuthRepositoryImpl(authDataSource);
 
   return {

@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { useCategoriesViewModel } from './useCategoriesViewModel';
-import type { Category } from '@/lib/schema';
+import type { Category } from '@/domain/entities/Category';
 
 const MASTER_LABELS: Record<string, string> = {
   daily: 'Daily Spend',

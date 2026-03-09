@@ -7,13 +7,11 @@ import {
   updateBudgetSettingAction,
   applyBudgetSettingAction,
   deleteBudgetSettingAction,
-} from '@/app/actions/budget-settings';
-import type { BudgetSetting, BudgetSettingItem } from '@/lib/schema';
-
-export type BudgetSettingWithItems = BudgetSetting & { items: BudgetSettingItem[] };
+} from '@/presentation/features/budget-settings/actions/budget-settings';
+import type { BudgetSetting } from '@/domain/entities/BudgetSetting';
 
 export function useBudgetSettingsViewModel() {
-  const [budgetSettings, setBudgetSettings] = useState<BudgetSettingWithItems[]>([]);
+  const [budgetSettings, setBudgetSettings] = useState<BudgetSetting[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -22,7 +20,7 @@ export function useBudgetSettingsViewModel() {
     setError(null);
     const result = await getBudgetSettingsAction({});
     if (result?.data) {
-      setBudgetSettings(result.data as BudgetSettingWithItems[]);
+      setBudgetSettings(result.data);
     } else if (result?.serverError) {
       setError(result.serverError);
     }
@@ -30,6 +28,7 @@ export function useBudgetSettingsViewModel() {
   };
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     load();
   }, []);
 

@@ -1,103 +1,73 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import {
-  getTransactionsAction,
-  updateTransactionAction,
-  deleteTransactionAction,
-} from '@/app/actions/transactions';
-import { getCategoriesAction } from '@/app/actions/categories';
-import { getDashboardDataAction } from '@/app/actions/dashboard';
+import { useTransactionDetailViewModel } from './useTransactionDetailViewModel';
 import { CurrencyInput } from '@/presentation/common/CurrencyInput';
 import { formatCurrency } from '@/core/utils/formatCurrency';
 import { ROUTES } from '@/presentation/navigation/routes';
-import type { Transaction, Category } from '@/lib/schema';
 
 export function TransactionDetailView({ id }: { id: string }) {
   const router = useRouter();
 
-  const [transaction, setTransaction] = useState<Transaction | null>(null);
-  const [categories, setCategories] = useState<Category[]>([]);
-  const [currency, setCurrency] = useState('IDR');
-  const [isLoading, setIsLoading] = useState(true);
-  const [isEditing, setIsEditing] = useState(false);
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const {
+    transaction,
+    categories,
+    currency,
+    isLoading,
+    isSubmitting,
+    error,
+    updateTransaction,
+    deleteTransaction,
+  } = useTransactionDetailViewModel(id);
 
-  // Edit form state
+  const [isEditing, setIsEditing] = useState(false);
   const [amount, setAmount] = useState(0);
   const [categoryId, setCategoryId] = useState('');
   const [description, setDescription] = useState('');
   const [date, setDate] = useState('');
 
-  useEffect(() => {
-    const now = new Date();
-    Promise.all([
-      getTransactionsAction({}),
-      getCategoriesAction({}),
-      getDashboardDataAction({ year: now.getFullYear(), month: now.getMonth() + 1 }),
-    ]).then(([txResult, catResult, dashResult]) => {
-      if (txResult?.data) {
-        const found = txResult.data.find((t) => t.id === id) ?? null;
-        setTransaction(found);
-        if (found) {
-          setAmount(parseFloat(found.amount));
-          setCategoryId(found.categoryId ?? '');
-          setDescription(found.description ?? '');
-          setDate(found.date);
-        }
-      }
-      if (catResult?.data) setCategories(catResult.data);
-      if (dashResult?.data?.currency) setCurrency(dashResult.data.currency);
-      setIsLoading(false);
-    });
-  }, [id]);
-
   const category = transaction?.categoryId
     ? categories.find((c) => c.id === transaction.categoryId)
     : null;
 
+  const handleEdit = () => {
+    if (transaction) {
+      setAmount(transaction.amount);
+      setCategoryId(transaction.categoryId ?? '');
+      setDescription(transaction.description ?? '');
+      setDate(transaction.date);
+    }
+    setIsEditing(true);
+  };
+
   const handleUpdate = async (e: React.FormEvent) => {
     e.preventDefault();
-    setError(null);
-    if (!amount || amount <= 0) {
-      setError('Amount must be positive');
-      return;
-    }
+    if (!amount || amount <= 0) return;
 
-    setIsSubmitting(true);
     try {
-      const result = await updateTransactionAction({
-        id,
+      await updateTransaction({
         amount,
         type: 'expense',
         categoryId: categoryId || undefined,
         description: description.trim() || undefined,
         date,
       });
-      if (result?.data) {
-        setTransaction(result.data);
-        setIsEditing(false);
-      } else {
-        setError(result?.serverError ?? 'Failed to update');
-      }
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to update');
-    } finally {
-      setIsSubmitting(false);
+      setIsEditing(false);
+    } catch {
+      // error set by ViewModel
     }
   };
 
   const handleDelete = async () => {
     if (!confirm('Delete this transaction? This cannot be undone.')) return;
     try {
-      await deleteTransactionAction({ id });
+      await deleteTransaction();
       router.push(ROUTES.transactions);
     } catch {
-      setError('Failed to delete transaction');
+      // error set by ViewModel
     }
   };
 
@@ -130,7 +100,7 @@ export function TransactionDetailView({ id }: { id: string }) {
           <Card>
             <CardHeader>
               <CardTitle className="text-red-600">
-                -{formatCurrency(parseFloat(transaction.amount), currency)}
+                -{formatCurrency(transaction.amount, currency)}
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-3">
@@ -141,7 +111,7 @@ export function TransactionDetailView({ id }: { id: string }) {
                 </div>
                 <div>
                   <p className="text-muted-foreground">Category</p>
-                  <p className="font-medium">{category?.name ?? '—'}</p>
+                  <p className="font-medium">{category?.name ?? transaction.categoryName ?? '—'}</p>
                 </div>
                 {transaction.description && (
                   <div className="col-span-2">
@@ -152,7 +122,7 @@ export function TransactionDetailView({ id }: { id: string }) {
               </div>
 
               <div className="flex gap-2 pt-2">
-                <Button variant="outline" className="flex-1" onClick={() => setIsEditing(true)}>Edit</Button>
+                <Button variant="outline" className="flex-1" onClick={handleEdit}>Edit</Button>
                 <Button variant="outline" className="flex-1 text-red-600 hover:text-red-700" onClick={handleDelete}>Delete</Button>
               </div>
             </CardContent>

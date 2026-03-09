@@ -99,3 +99,13 @@ These are intentionally left open — decide them per project:
 | Deployment target | `next.config.ts` output setting |
 
 Full details: `nextjs-arch/project-setup.md`
+
+
+
+for prevention, let's adjust the workflow. The goals is:
+1. Make agent correctly invoked when working on related topic
+2. No bloated context in CLAUDE.md
+
+Let's achieve this by:
+1. Adjust workflow. Never automatically fix. If I want to add new feature or bug fixing or any working do these workflow: Create issue under issues folder -> then wait for instructions to working that issue -> Correctly invoke agent related to the work related
+2. let's update CLAUDE.md to do these. Low context. but prevent working with violations 

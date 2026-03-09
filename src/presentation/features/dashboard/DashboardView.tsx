@@ -1,7 +1,7 @@
 'use client';
 
 import { useRouter } from 'next/navigation';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { useDashboardViewModel } from './useDashboardViewModel';
 import { ROUTES } from '@/presentation/navigation/routes';
@@ -24,7 +24,7 @@ export function DashboardView() {
   const router = useRouter();
 
   const now = new Date();
-  const { dashboardData, isLoading, error, refresh } = useDashboardViewModel(
+  const { dashboardData, isLoading, error } = useDashboardViewModel(
     now.getFullYear(),
     now.getMonth() + 1
   );
@@ -56,7 +56,7 @@ export function DashboardView() {
               <div key={i} className="h-24 rounded-xl bg-muted animate-pulse" />
             ))}
           </div>
-        ) : !dashboardData?.activeBudgetSetting ? (
+        ) : !dashboardData?.hasActiveBudget ? (
           /* No budget CTA */
           <Card>
             <CardContent className="py-12 text-center space-y-4">
@@ -75,66 +75,58 @@ export function DashboardView() {
             <Card>
               <CardHeader>
                 <CardTitle>Overview</CardTitle>
-                <CardDescription>{dashboardData.activeBudgetSetting.name}</CardDescription>
               </CardHeader>
               <CardContent className="space-y-3">
                 <div className="grid grid-cols-3 gap-3 text-center">
                   <div>
                     <p className="text-xs text-muted-foreground">Budget</p>
-                    <p className="text-sm font-semibold">{formatIDR(dashboardData.totalBudget)}</p>
+                    <p className="text-sm font-semibold">{formatIDR(dashboardData.totalMonthlyBudget)}</p>
                   </div>
                   <div>
                     <p className="text-xs text-muted-foreground">Spent</p>
                     <p className="text-sm font-semibold text-red-600">
-                      {formatIDR(dashboardData.totalExpense)}
+                      {formatIDR(dashboardData.totalSpent)}
                     </p>
                   </div>
                   <div>
                     <p className="text-xs text-muted-foreground">Remaining</p>
                     <p
                       className={`text-sm font-semibold ${
-                        dashboardData.remaining < 0 ? 'text-red-600' : 'text-green-600'
+                        dashboardData.totalRemaining < 0 ? 'text-red-600' : 'text-green-600'
                       }`}
                     >
-                      {formatIDR(dashboardData.remaining)}
+                      {formatIDR(dashboardData.totalRemaining)}
                     </p>
                   </div>
                 </div>
 
-                {dashboardData.totalBudget > 0 && (
+                {dashboardData.totalMonthlyBudget > 0 && (
                   <div className="w-full bg-muted rounded-full h-2">
                     <div
                       className={`h-2 rounded-full transition-all ${
-                        dashboardData.totalExpense / dashboardData.totalBudget > 0.9
+                        dashboardData.totalSpent / dashboardData.totalMonthlyBudget > 0.9
                           ? 'bg-red-500'
                           : 'bg-primary'
                       }`}
                       style={{
                         width: `${Math.min(
-                          (dashboardData.totalExpense / dashboardData.totalBudget) * 100,
+                          (dashboardData.totalSpent / dashboardData.totalMonthlyBudget) * 100,
                           100
                         )}%`,
                       }}
                     />
                   </div>
                 )}
-
-                {dashboardData.totalIncome > 0 && (
-                  <p className="text-xs text-muted-foreground text-right">
-                    Income this month: {formatIDR(dashboardData.totalIncome)}
-                  </p>
-                )}
               </CardContent>
             </Card>
 
             {/* Category breakdown */}
-            {dashboardData.categorySpending.filter((cs) => cs.budgetAmount > 0).length > 0 && (
+            {dashboardData.categories.filter((c) => c.monthlyBudget > 0).length > 0 && (
               <div className="space-y-3">
                 <h2 className="text-base font-semibold">By Category</h2>
                 {(['daily', 'weekly', 'monthly'] as const).map((period) => {
-                  const items = dashboardData.categorySpending.filter(
-                    (cs) =>
-                      cs.category.masterCategory === period && cs.budgetAmount > 0
+                  const items = dashboardData.categories.filter(
+                    (c) => c.masterCategory === period && c.monthlyBudget > 0
                   );
                   if (items.length === 0) return null;
                   return (
@@ -143,43 +135,37 @@ export function DashboardView() {
                         {MASTER_LABELS[period]}
                       </p>
                       <div className="space-y-2">
-                        {items.map((cs) => (
-                          <Card key={cs.category.id} size="sm">
+                        {items.map((c) => (
+                          <Card key={c.categoryId} size="sm">
                             <CardContent className="pt-3">
                               <div className="flex items-center justify-between mb-2">
-                                <div className="flex items-center gap-2">
-                                  <span
-                                    className="w-3 h-3 rounded-full flex-shrink-0"
-                                    style={{ backgroundColor: cs.category.color }}
-                                  />
-                                  <span className="text-sm font-medium">{cs.category.name}</span>
-                                </div>
+                                <span className="text-sm font-medium">{c.categoryName}</span>
                                 <div className="text-right">
                                   <p className="text-xs text-muted-foreground">
-                                    {formatIDR(cs.spent)} / {formatIDR(cs.budgetAmount)}
+                                    {formatIDR(c.totalSpent)} / {formatIDR(c.monthlyBudget)}
                                   </p>
                                   <p
                                     className={`text-xs font-medium ${
-                                      cs.remaining < 0 ? 'text-red-600' : 'text-green-600'
+                                      c.remaining < 0 ? 'text-red-600' : 'text-green-600'
                                     }`}
                                   >
-                                    {cs.remaining < 0 ? 'Over by ' : ''}
-                                    {formatIDR(Math.abs(cs.remaining))} left
+                                    {c.remaining < 0 ? 'Over by ' : ''}
+                                    {formatIDR(Math.abs(c.remaining))} left
                                   </p>
                                 </div>
                               </div>
                               <div className="w-full bg-muted rounded-full h-1.5">
                                 <div
                                   className={`h-1.5 rounded-full ${
-                                    cs.budgetAmount > 0 &&
-                                    cs.spent / cs.budgetAmount > 0.9
+                                    c.monthlyBudget > 0 &&
+                                    c.totalSpent / c.monthlyBudget > 0.9
                                       ? 'bg-red-500'
                                       : 'bg-primary'
                                   }`}
                                   style={{
                                     width: `${
-                                      cs.budgetAmount > 0
-                                        ? Math.min((cs.spent / cs.budgetAmount) * 100, 100)
+                                      c.monthlyBudget > 0
+                                        ? Math.min((c.totalSpent / c.monthlyBudget) * 100, 100)
                                         : 0
                                     }%`,
                                   }}
@@ -214,21 +200,13 @@ export function DashboardView() {
                       className="flex items-center justify-between rounded-lg border p-3 hover:bg-muted/50 cursor-pointer"
                       onClick={() => router.push(ROUTES.transactionDetail(tx.id))}
                     >
-                      <div className="flex items-center gap-3">
-                        {tx.category && (
-                          <span
-                            className="w-2.5 h-2.5 rounded-full flex-shrink-0"
-                            style={{ backgroundColor: tx.category.color }}
-                          />
+                      <div>
+                        <p className="text-sm font-medium">
+                          {tx.categoryName ?? (tx.type === 'income' ? 'Income' : 'Expense')}
+                        </p>
+                        {tx.description && (
+                          <p className="text-xs text-muted-foreground">{tx.description}</p>
                         )}
-                        <div>
-                          <p className="text-sm font-medium">
-                            {tx.category?.name ?? (tx.type === 'income' ? 'Income' : 'Expense')}
-                          </p>
-                          {tx.description && (
-                            <p className="text-xs text-muted-foreground">{tx.description}</p>
-                          )}
-                        </div>
                       </div>
                       <div className="text-right">
                         <p
@@ -236,7 +214,7 @@ export function DashboardView() {
                             tx.type === 'income' ? 'text-green-600' : 'text-red-600'
                           }`}
                         >
-                          {tx.type === 'income' ? '+' : '-'}{formatIDR(parseFloat(tx.amount))}
+                          {tx.type === 'income' ? '+' : '-'}{formatIDR(tx.amount)}
                         </p>
                         <p className="text-xs text-muted-foreground">{tx.date}</p>
                       </div>

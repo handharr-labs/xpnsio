@@ -4,8 +4,8 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { createCategoryAction } from '@/app/actions/categories';
-import { createBudgetSettingAction, applyBudgetSettingAction } from '@/app/actions/budget-settings';
+import { useSetupViewModel } from './useSetupViewModel';
+import type { SetupCategory } from './useSetupViewModel';
 import { CurrencyInput } from '@/presentation/common/CurrencyInput';
 import { formatCurrency } from '@/core/utils/formatCurrency';
 import { ROUTES } from '@/presentation/navigation/routes';
@@ -23,14 +23,6 @@ const COLOR_OPTIONS = [
   '#8b5cf6', '#ef4444', '#14b8a6', '#f97316', '#84cc16',
 ];
 
-type SetupCategory = {
-  name: string;
-  masterCategory: 'daily' | 'weekly' | 'monthly';
-  color: string;
-  icon: string;
-  amount: number;
-};
-
 const DEFAULT_CATEGORIES: SetupCategory[] = [
   { name: 'Food & Dining', masterCategory: 'daily', color: '#f59e0b', icon: 'food', amount: 0 },
   { name: 'Transport', masterCategory: 'daily', color: '#3b82f6', icon: 'car', amount: 0 },
@@ -40,13 +32,13 @@ const DEFAULT_CATEGORIES: SetupCategory[] = [
 
 export function SetupView() {
   const router = useRouter();
+  const { isSubmitting, error, completeSetup } = useSetupViewModel();
+
   const [step, setStep] = useState(1);
   const [categories, setCategories] = useState<SetupCategory[]>(DEFAULT_CATEGORIES);
   const [budgetName, setBudgetName] = useState('My Budget');
   const [currency, setCurrency] = useState('IDR');
   const [totalBudget, setTotalBudget] = useState(0);
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [error, setError] = useState<string | null>(null);
 
   const totalAllocated = categories.reduce((sum, c) => sum + (c.amount || 0), 0);
 
@@ -66,50 +58,11 @@ export function SetupView() {
   };
 
   const handleComplete = async () => {
-    setError(null);
-    setIsSubmitting(true);
     try {
-      // Create categories
-      const createdIds: Array<{ id: string; amount: number }> = [];
-      for (const cat of categories) {
-        if (!cat.name.trim()) continue;
-        const result = await createCategoryAction({
-          name: cat.name.trim(),
-          masterCategory: cat.masterCategory,
-          color: cat.color,
-          icon: cat.icon,
-        });
-        if (result?.data) {
-          createdIds.push({ id: result.data.id, amount: cat.amount });
-        }
-      }
-
-      // Create budget setting
-      const settingResult = await createBudgetSettingAction({
-        name: budgetName.trim() || 'My Budget',
-        totalMonthlyBudget: totalBudget || totalAllocated,
-        currency,
-        items: createdIds
-          .filter((c) => c.amount > 0)
-          .map((c) => ({ categoryId: c.id, monthlyAmount: c.amount })),
-      });
-
-      if (!settingResult?.data) {
-        throw new Error(settingResult?.serverError ?? 'Failed to create budget setting');
-      }
-
-      // Apply to current month
-      const now = new Date();
-      await applyBudgetSettingAction({
-        budgetSettingId: settingResult.data.id,
-        year: now.getFullYear(),
-        month: now.getMonth() + 1,
-      });
-
+      await completeSetup({ categories, budgetName, currency, totalBudget });
       router.push(ROUTES.dashboard);
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Setup failed. Please try again.');
-      setIsSubmitting(false);
+    } catch {
+      // error set by ViewModel
     }
   };
 
@@ -118,7 +71,7 @@ export function SetupView() {
       <div className="max-w-2xl mx-auto space-y-6">
         <div className="space-y-2">
           <h1 className="text-2xl font-bold">Welcome to Xpnsio</h1>
-          <p className="text-muted-foreground">Let's set up your budget in a few quick steps.</p>
+          <p className="text-muted-foreground">Let&apos;s set up your budget in a few quick steps.</p>
           <div className="flex gap-2 mt-4">
             {[1, 2, 3, 4].map((s) => (
               <div
@@ -139,7 +92,7 @@ export function SetupView() {
           <Card>
             <CardHeader><CardTitle>Step 1: Your Categories</CardTitle></CardHeader>
             <CardContent className="space-y-3">
-              <p className="text-sm text-muted-foreground">We've added some defaults. Customize or add your own.</p>
+              <p className="text-sm text-muted-foreground">We&apos;ve added some defaults. Customize or add your own.</p>
               {categories.map((cat, index) => (
                 <div key={index} className="space-y-2 rounded-lg border p-3">
                   <div className="flex items-center gap-2">

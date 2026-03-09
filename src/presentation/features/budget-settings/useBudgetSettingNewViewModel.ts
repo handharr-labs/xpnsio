@@ -1,0 +1,66 @@
+'use client';
+
+import { useState } from 'react';
+import { createCategoryAction } from '@/presentation/features/categories/actions/categories';
+import { createBudgetSettingAction } from '@/presentation/features/budget-settings/actions/budget-settings';
+import type { BudgetSetting } from '@/domain/entities/BudgetSetting';
+
+export function useBudgetSettingNewViewModel() {
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const createBudgetSettingWithCategories = async (input: {
+    name: string;
+    currency: string;
+    totalMonthlyBudget: number;
+    items: Array<{
+      name: string;
+      masterCategory: 'daily' | 'weekly' | 'monthly';
+      color: string;
+      icon: string;
+      monthlyAmount: number;
+    }>;
+  }): Promise<BudgetSetting> => {
+    setError(null);
+    setIsSubmitting(true);
+    try {
+      const savedCategories: { categoryId: string; monthlyAmount: number }[] = [];
+      for (const item of input.items) {
+        if (!item.name.trim()) continue;
+        const result = await createCategoryAction({
+          name: item.name.trim(),
+          masterCategory: item.masterCategory,
+          color: item.color,
+          icon: item.icon,
+        });
+        if (result?.data) {
+          savedCategories.push({ categoryId: result.data.id, monthlyAmount: item.monthlyAmount });
+        }
+      }
+
+      const result = await createBudgetSettingAction({
+        name: input.name,
+        totalMonthlyBudget: input.totalMonthlyBudget,
+        currency: input.currency,
+        items: savedCategories.filter((c) => c.monthlyAmount > 0),
+      });
+
+      if (!result?.data) {
+        throw new Error(result?.serverError ?? 'Failed to create budget setting');
+      }
+      return result.data;
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : 'Failed to create budget setting';
+      setError(msg);
+      throw err;
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  return {
+    isSubmitting,
+    error,
+    createBudgetSettingWithCategories,
+  };
+}

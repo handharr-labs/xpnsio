@@ -1,11 +1,10 @@
 'use client';
 
-import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { useBudgetSettingsViewModel } from './useBudgetSettingsViewModel';
-import { getCategoriesAction, createCategoryAction, updateCategoryAction } from '@/app/actions/categories';
+import { useBudgetSettingEditViewModel } from './useBudgetSettingEditViewModel';
+import type { EditableCategoryItem } from './useBudgetSettingEditViewModel';
 import { CurrencyInput } from '@/presentation/common/CurrencyInput';
 import { formatCurrency } from '@/core/utils/formatCurrency';
 import { ROUTES } from '@/presentation/navigation/routes';
@@ -23,55 +22,22 @@ const COLOR_OPTIONS = [
   '#8b5cf6', '#ef4444', '#14b8a6', '#f97316', '#84cc16',
 ];
 
-type CategoryItem = {
-  id?: string; // undefined = new, not yet in DB
-  name: string;
-  masterCategory: 'daily' | 'weekly' | 'monthly';
-  color: string;
-  icon: string;
-  monthlyAmount: number;
-};
-
 export function BudgetSettingEditView({ id }: { id: string }) {
   const router = useRouter();
-  const { budgetSettings, isLoading, updateBudgetSetting } = useBudgetSettingsViewModel();
-
-  const [name, setName] = useState('');
-  const [currency, setCurrency] = useState('IDR');
-  const [totalMonthlyBudget, setTotalMonthlyBudget] = useState(0);
-  const [items, setItems] = useState<CategoryItem[]>([]);
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const [initialized, setInitialized] = useState(false);
-
-  useEffect(() => {
-    if (!isLoading && !initialized) {
-      const setting = budgetSettings.find((s) => s.id === id);
-      if (setting) {
-        setName(setting.name);
-        setCurrency(setting.currency ?? 'IDR');
-        setTotalMonthlyBudget(parseFloat(setting.totalMonthlyBudget));
-
-        getCategoriesAction({}).then((catResult) => {
-          const allCategories = catResult?.data ?? [];
-          setItems(
-            setting.items.map((item) => {
-              const cat = allCategories.find((c) => c.id === item.categoryId);
-              return {
-                id: item.categoryId,
-                name: cat?.name ?? '',
-                masterCategory: cat?.masterCategory ?? 'monthly',
-                color: cat?.color ?? '#6366f1',
-                icon: cat?.icon ?? 'circle',
-                monthlyAmount: parseFloat(item.monthlyAmount),
-              };
-            })
-          );
-          setInitialized(true);
-        });
-      }
-    }
-  }, [budgetSettings, isLoading, id, initialized]);
+  const {
+    name,
+    setName,
+    currency,
+    setCurrency,
+    totalMonthlyBudget,
+    setTotalMonthlyBudget,
+    items,
+    setItems,
+    isLoading,
+    isSubmitting,
+    error,
+    saveWithCategories,
+  } = useBudgetSettingEditViewModel(id);
 
   const totalAllocated = items.reduce((sum, item) => sum + (item.monthlyAmount || 0), 0);
   const remaining = totalMonthlyBudget - totalAllocated;
@@ -83,7 +49,7 @@ export function BudgetSettingEditView({ id }: { id: string }) {
     ]);
   };
 
-  const updateItem = (index: number, field: keyof CategoryItem, value: string | number) => {
+  const updateItem = (index: number, field: keyof EditableCategoryItem, value: string | number) => {
     setItems((prev) => prev.map((item, i) => (i === index ? { ...item, [field]: value } : item)));
   };
 
@@ -94,53 +60,17 @@ export function BudgetSettingEditView({ id }: { id: string }) {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setError(null);
-    if (!name.trim()) { setError('Name is required'); return; }
-    if (!totalMonthlyBudget || totalMonthlyBudget <= 0) { setError('Total monthly budget must be positive'); return; }
+    if (!name.trim() || !totalMonthlyBudget || totalMonthlyBudget <= 0) return;
 
-    setIsSubmitting(true);
     try {
-      const savedCategories: { categoryId: string; monthlyAmount: number }[] = [];
-      for (const item of items) {
-        if (!item.name.trim()) continue;
-        if (item.id) {
-          await updateCategoryAction({
-            id: item.id,
-            name: item.name.trim(),
-            masterCategory: item.masterCategory,
-            color: item.color,
-            icon: item.icon,
-          });
-          savedCategories.push({ categoryId: item.id, monthlyAmount: item.monthlyAmount });
-        } else {
-          const result = await createCategoryAction({
-            name: item.name.trim(),
-            masterCategory: item.masterCategory,
-            color: item.color,
-            icon: item.icon,
-          });
-          if (result?.data) {
-            savedCategories.push({ categoryId: result.data.id, monthlyAmount: item.monthlyAmount });
-          }
-        }
-      }
-
-      await updateBudgetSetting({
-        id,
-        name: name.trim(),
-        totalMonthlyBudget,
-        currency,
-        items: savedCategories.filter((c) => c.monthlyAmount > 0),
-      });
+      await saveWithCategories(items);
       router.push(ROUTES.budgetSettings);
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to update budget setting');
-    } finally {
-      setIsSubmitting(false);
+    } catch {
+      // error set by ViewModel
     }
   };
 
-  if (isLoading && !initialized) {
+  if (isLoading) {
     return <main className="min-h-screen p-6"><p className="text-muted-foreground">Loading...</p></main>;
   }
 

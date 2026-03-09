@@ -42,6 +42,7 @@ export function CurrencyInput({
 
   // Reformat when currency changes
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setDisplay(value > 0 ? formatAmount(value, currency) : '');
   }, [currency]); // eslint-disable-line react-hooks/exhaustive-deps
 

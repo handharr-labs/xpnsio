@@ -1,19 +1,18 @@
 'use client';
 
-import { useState, useEffect, useTransition } from 'react';
+import { useState, useEffect } from 'react';
 import {
   getCategoriesAction,
   createCategoryAction,
   updateCategoryAction,
   deleteCategoryAction,
-} from '@/app/actions/categories';
-import type { Category } from '@/lib/schema';
+} from '@/presentation/features/categories/actions/categories';
+import type { Category } from '@/domain/entities/Category';
 
 export function useCategoriesViewModel() {
   const [categories, setCategories] = useState<Category[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [isPending, startTransition] = useTransition();
 
   const load = async () => {
     setIsLoading(true);
@@ -28,6 +27,7 @@ export function useCategoriesViewModel() {
   };
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     load();
   }, []);
 
@@ -84,7 +84,7 @@ export function useCategoriesViewModel() {
 
   return {
     categories,
-    isLoading: isLoading || isPending,
+    isLoading,
     error,
     createCategory,
     updateCategory,

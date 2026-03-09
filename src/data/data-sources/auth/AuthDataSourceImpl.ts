@@ -7,11 +7,13 @@ export class AuthDataSourceImpl implements AuthDataSource {
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
   );
 
+  constructor(private readonly redirectOrigin: string) {}
+
   async signInWithGoogle(): Promise<void> {
     const { error } = await this.supabase.auth.signInWithOAuth({
       provider: 'google',
       options: {
-        redirectTo: `${window.location.origin}/auth/callback`,
+        redirectTo: `${this.redirectOrigin}/auth/callback`,
       },
     });
     if (error) throw new Error(error.message);
