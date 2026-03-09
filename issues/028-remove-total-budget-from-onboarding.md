@@ -55,3 +55,16 @@ Updated `SetupView.tsx`:
 6. **Updated** `handleComplete` to pass `totalAllocated` as `totalBudget` to backend
 
 The ViewModel already had fallback logic to use `totalAllocated` when `totalBudget` is 0, so backend changes were not required.
+
+---
+
+## Additional Fixes (Same Branch)
+
+### Budget Start Day Selector (#029)
+- Added "Budget Start Day" dropdown to step 3 (days 1-28)
+- Default to day 1, allows users to select their budget period start date
+- Shows selected start day in review step
+
+### Currency Input Tab Bug Fix (#030)
+- Fixed CurrencyInput component losing currency symbol when tabbing between fields
+- Added `value` to useEffect dependency array to sync display state with external value changes

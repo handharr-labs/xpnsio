@@ -40,11 +40,10 @@ export function CurrencyInput({
 }: CurrencyInputProps) {
   const [display, setDisplay] = useState(formatAmount(value, currency));
 
-  // Reformat when currency changes
+  // Reformat when currency or value changes
   useEffect(() => {
-    // eslint-disable-next-line react-hooks/set-state-in-effect
     setDisplay(value > 0 ? formatAmount(value, currency) : '');
-  }, [currency]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [currency, value]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const numeric = parseAmount(e.target.value);
