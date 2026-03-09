@@ -121,12 +121,12 @@ export function DashboardView() {
             </Card>
 
             {/* Category breakdown */}
-            {dashboardData.categories.filter((c) => c.monthlyBudget > 0).length > 0 && (
+            {dashboardData.categories.length > 0 && (
               <div className="space-y-3">
                 <h2 className="text-base font-semibold">By Category</h2>
                 {(['daily', 'weekly', 'monthly'] as const).map((period) => {
                   const items = dashboardData.categories.filter(
-                    (c) => c.masterCategory === period && c.monthlyBudget > 0
+                    (c) => c.masterCategory === period
                   );
                   if (items.length === 0) return null;
                   return (
@@ -135,7 +135,60 @@ export function DashboardView() {
                         {MASTER_LABELS[period]}
                       </p>
                       <div className="space-y-2">
-                        {items.map((c) => (
+                        {items.map((c) => {
+                          const isDaily = c.masterCategory === 'daily' && c.dailyBudget != null && c.accumulatedBudgetToDate != null;
+                          if (isDaily) {
+                            const accumulated = c.accumulatedBudgetToDate!;
+                            const dailyLeft = accumulated - c.totalSpent;
+                            const isOverrun = dailyLeft <= 0;
+                            return (
+                              <Card key={c.categoryId} size="sm">
+                                <CardContent className="pt-3">
+                                  <div className="flex items-center justify-between mb-1">
+                                    <span className="text-sm font-medium">{c.categoryName}</span>
+                                    <span className="text-xs bg-muted px-2 py-0.5 rounded-full text-muted-foreground">
+                                      {formatIDR(c.dailyBudget!)}/day
+                                    </span>
+                                  </div>
+                                  <p className="text-xs text-muted-foreground mb-1">
+                                    {formatIDR(c.totalSpent)} / {formatIDR(accumulated)} ({c.periodDaysElapsed} days)
+                                  </p>
+                                  <p className={`text-xs font-medium mb-2 ${isOverrun ? 'text-red-600' : 'text-green-600'}`}>
+                                    {isOverrun
+                                      ? `Over by ${formatIDR(Math.abs(dailyLeft))}`
+                                      : `${formatIDR(dailyLeft)} left`}
+                                  </p>
+                                  <div className="space-y-2">
+                                    <div className="space-y-1">
+                                      <div className="flex justify-between text-xs text-muted-foreground">
+                                        <span>Daily</span>
+                                        <span>{accumulated > 0 ? Math.round((c.totalSpent / accumulated) * 100) : 0}%</span>
+                                      </div>
+                                      <div className="w-full bg-muted rounded-full h-1.5">
+                                        <div
+                                          className={`h-1.5 rounded-full ${isOverrun ? 'bg-red-500' : 'bg-primary'}`}
+                                          style={{ width: `${accumulated > 0 ? Math.min((c.totalSpent / accumulated) * 100, 100) : 0}%` }}
+                                        />
+                                      </div>
+                                    </div>
+                                    <div className="space-y-1">
+                                      <div className="flex justify-between text-xs text-muted-foreground">
+                                        <span>Overall</span>
+                                        <span>{c.monthlyBudget > 0 ? Math.round((c.totalSpent / c.monthlyBudget) * 100) : 0}%</span>
+                                      </div>
+                                      <div className="w-full bg-muted rounded-full h-1.5">
+                                        <div
+                                          className={`h-1.5 rounded-full ${c.totalSpent > c.monthlyBudget ? 'bg-red-500' : 'bg-primary'}`}
+                                          style={{ width: `${c.monthlyBudget > 0 ? Math.min((c.totalSpent / c.monthlyBudget) * 100, 100) : 0}%` }}
+                                        />
+                                      </div>
+                                    </div>
+                                  </div>
+                                </CardContent>
+                              </Card>
+                            );
+                          }
+                          return (
                           <Card key={c.categoryId} size="sm">
                             <CardContent className="pt-3">
                               <div className="flex items-center justify-between mb-2">
@@ -173,7 +226,8 @@ export function DashboardView() {
                               </div>
                             </CardContent>
                           </Card>
-                        ))}
+                          );
+                        })}
                       </div>
                     </div>
                   );

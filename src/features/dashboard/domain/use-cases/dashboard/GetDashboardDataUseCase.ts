@@ -13,6 +13,9 @@ export interface CategoryBudgetInfo {
   totalSpent: number;
   remaining: number;
   rolloverAmount: number; // only meaningful for daily/weekly
+  dailyBudget?: number;             // monthlyBudget / daysInPeriod (daily only)
+  accumulatedBudgetToDate?: number; // dailyBudget × daysElapsed (daily only)
+  periodDaysElapsed?: number;       // days elapsed since period start (daily only)
 }
 
 export interface DashboardData {
@@ -47,41 +50,45 @@ export class GetDashboardDataUseCaseImpl implements GetDashboardDataUseCase {
   async execute(params: GetDashboardDataParams): Promise<DashboardData> {
     const { userId, year, month, today } = params;
 
-    // Auto-carry logic: if no budget for this month, copy from last applied setting
+    // Auto-carry + sync logic: apply (or re-apply) setting when budgets are missing or stale
     let budgets = await this.budgetRepository.getByMonth(userId, year, month);
-    if (budgets.length === 0) {
-      const lastApp = await this.budgetRepository.getLastApplication(userId);
-      if (lastApp) {
-        const setting = await this.budgetSettingRepository.getById(lastApp.budgetSettingId);
-        if (setting) {
-          const items = setting.items.map((item) => ({
-            categoryId: item.categoryId,
-            monthlyAmount: String(item.monthlyAmount),
-          }));
-          await this.budgetRepository.applyBudgetSetting(
-            userId,
-            lastApp.budgetSettingId,
-            items,
-            year,
-            month
-          );
-          budgets = await this.budgetRepository.getByMonth(userId, year, month);
-        }
+    const lastApp = await this.budgetRepository.getLastApplication(userId);
+    if (lastApp) {
+      const setting = await this.budgetSettingRepository.getById(lastApp.budgetSettingId);
+      if (setting && budgets.length !== setting.items.length) {
+        const items = setting.items.map((item) => ({
+          categoryId: item.categoryId,
+          monthlyAmount: String(item.monthlyAmount),
+        }));
+        await this.budgetRepository.applyBudgetSetting(
+          userId,
+          lastApp.budgetSettingId,
+          items,
+          year,
+          month
+        );
+        budgets = await this.budgetRepository.getByMonth(userId, year, month);
       }
     }
 
     const hasActiveBudget = budgets.length > 0;
 
-    const daysInMonth = this.computationService.getDaysInMonth(year, month);
-    const monthStr = String(month).padStart(2, '0');
-    const monthStart = `${year}-${monthStr}-01`;
-    const monthEnd = `${year}-${monthStr}-${String(daysInMonth).padStart(2, '0')}`;
+    // Resolve starterDay from the applied budget setting for this month
+    const application = await this.budgetRepository.getApplication(userId, year, month);
+    let starterDay = 1;
+    if (application) {
+      const setting = await this.budgetSettingRepository.getById(application.budgetSettingId);
+      starterDay = setting?.starterDay ?? 1;
+    }
+
+    const { periodStart, periodEnd, daysInPeriod } = this.computationService.getPeriodBounds(year, month, starterDay);
+
     // Fetch all expense transactions and category metadata
     const [allExpenseTransactions, allCategories] = await Promise.all([
       this.transactionRepository.getFiltered({
         userId,
-        startDate: monthStart,
-        endDate: monthEnd,
+        startDate: periodStart,
+        endDate: periodEnd,
         type: 'expense',
       }),
       this.categoryRepository.getByUser(userId),
@@ -104,23 +111,44 @@ export class GetDashboardDataUseCaseImpl implements GetDashboardDataUseCase {
       let remaining: number;
       let rolloverAmount = 0;
 
+      let dailyBudget: number | undefined;
+      let accumulatedBudgetToDate: number | undefined;
+
       if (masterCategory === 'daily') {
         const input = {
           monthlyBudget: budget.amount,
-          daysInMonth,
+          daysInMonth: daysInPeriod,
           transactions: categoryTransactions.map((tx) => ({ date: tx.date, amount: tx.amount })),
           today,
-          monthStart,
+          monthStart: periodStart,
         };
         remaining = this.computationService.computeDailyRemaining(input);
         rolloverAmount = this.computationService.computeRolloverAmount(input);
+        dailyBudget = budget.amount / daysInPeriod;
+        const daysElapsed = Math.round(
+          (new Date(today).getTime() - new Date(periodStart).getTime()) / 86400000
+        ) + 1;
+        accumulatedBudgetToDate = dailyBudget * daysElapsed;
+        categoryInfoList.push({
+          categoryId: budget.categoryId,
+          categoryName: category?.name ?? budget.categoryId,
+          masterCategory,
+          monthlyBudget: budget.amount,
+          totalSpent,
+          remaining,
+          rolloverAmount,
+          dailyBudget,
+          accumulatedBudgetToDate,
+          periodDaysElapsed: daysElapsed,
+        });
+        continue;
       } else if (masterCategory === 'weekly') {
         remaining = this.computationService.computeWeeklyRemaining({
           monthlyBudget: budget.amount,
-          weeksInMonth: daysInMonth / 7,
+          weeksInMonth: daysInPeriod / 7,
           transactions: categoryTransactions.map((tx) => ({ date: tx.date, amount: tx.amount })),
           today,
-          monthStart,
+          monthStart: periodStart,
         });
       } else {
         remaining = this.computationService.computeMonthlyRemaining({
@@ -137,6 +165,8 @@ export class GetDashboardDataUseCaseImpl implements GetDashboardDataUseCase {
         totalSpent,
         remaining,
         rolloverAmount,
+        dailyBudget,
+        accumulatedBudgetToDate,
       });
     }
 
@@ -146,8 +176,8 @@ export class GetDashboardDataUseCaseImpl implements GetDashboardDataUseCase {
 
     const recentTransactions = await this.transactionRepository.getFiltered({
       userId,
-      startDate: monthStart,
-      endDate: monthEnd,
+      startDate: periodStart,
+      endDate: periodEnd,
       limit: 10,
     });
 
