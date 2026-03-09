@@ -165,14 +165,24 @@ export function DashboardView() {
                                       : `${formatIDR(dailyLeft)} left`}
                                   </p>
                                   {/* Weekly summary */}
-                                  <p className="text-xs text-muted-foreground mb-1">
-                                    Weekly: {formatIDR(c.totalSpent)} / {formatIDR(accumulated)} ({c.periodDaysElapsed ?? 0} days, ~{Math.ceil((c.periodDaysElapsed ?? 0) / 7)} week{Math.ceil((c.periodDaysElapsed ?? 0) / 7) > 1 ? 's' : ''})
-                                  </p>
-                                  <p className={`text-xs font-medium mb-1 ${isOverrun ? 'text-red-600' : 'text-green-600'}`}>
-                                    Weekly: {isOverrun
-                                      ? `Over by ${formatIDR(Math.abs(dailyLeft))}`
-                                      : `${formatIDR(dailyLeft)} left`}
-                                  </p>
+                                  {(() => {
+                                    const weekNumber = Math.ceil((c.periodDaysElapsed ?? 0) / 7);
+                                    const cumulativeWeekBudget = c.dailyBudget! * (weekNumber * 7);
+                                    const weeklyLeft = cumulativeWeekBudget - c.totalSpent;
+                                    const isWeeklyOverrun = weeklyLeft <= 0;
+                                    return (
+                                      <>
+                                        <p className="text-xs text-muted-foreground mb-1">
+                                          Weekly: {formatIDR(c.totalSpent)} / {formatIDR(cumulativeWeekBudget)} (week {weekNumber})
+                                        </p>
+                                        <p className={`text-xs font-medium mb-1 ${isWeeklyOverrun ? 'text-red-600' : 'text-green-600'}`}>
+                                          Weekly: {isWeeklyOverrun
+                                            ? `Over by ${formatIDR(Math.abs(weeklyLeft))}`
+                                            : `${formatIDR(weeklyLeft)} left`}
+                                        </p>
+                                      </>
+                                    );
+                                  })()}
                                   {/* Monthly summary */}
                                   <p className="text-xs text-muted-foreground mb-2">
                                     Monthly: {formatIDR(c.totalSpent)} / {formatIDR(c.monthlyBudget)}
