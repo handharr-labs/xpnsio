@@ -166,7 +166,7 @@ export function DashboardView() {
                                   </p>
                                   {/* Weekly summary */}
                                   <p className="text-xs text-muted-foreground mb-1">
-                                    Weekly: {formatIDR(c.totalSpent)} / {formatIDR(accumulated)} ({Math.ceil((c.periodDaysElapsed ?? 0) / 7)} week{Math.ceil((c.periodDaysElapsed ?? 0) / 7) > 1 ? 's' : ''})
+                                    Weekly: {formatIDR(c.totalSpent)} / {formatIDR(accumulated)} ({c.periodDaysElapsed ?? 0} days, ~{Math.ceil((c.periodDaysElapsed ?? 0) / 7)} week{Math.ceil((c.periodDaysElapsed ?? 0) / 7) > 1 ? 's' : ''})
                                   </p>
                                   <p className={`text-xs font-medium mb-1 ${isOverrun ? 'text-red-600' : 'text-green-600'}`}>
                                     Weekly: {isOverrun
