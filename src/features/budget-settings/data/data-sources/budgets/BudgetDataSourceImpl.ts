@@ -1,4 +1,4 @@
-import { and, desc, eq } from 'drizzle-orm';
+import { and, desc, eq, sql } from 'drizzle-orm';
 import { db } from '@/lib/db';
 import { budgets, monthlyBudgetApplications } from '@/lib/schema';
 import type {
@@ -25,27 +25,13 @@ export class BudgetDataSourceImpl implements BudgetDataSource {
   async upsertMany(items: Omit<NewBudget, 'id' | 'createdAt'>[]): Promise<void> {
     if (items.length === 0) return;
 
-    // Since budgets table has no unique constraint on (userId, categoryId, year, month),
-    // we delete existing rows for the affected (userId, year, month) combos then insert fresh.
-    // Group by userId/year/month to avoid repeated deletes.
-    const seen = new Set<string>();
-    for (const item of items) {
-      const key = `${item.userId}:${item.year}:${item.month}`;
-      if (!seen.has(key)) {
-        seen.add(key);
-        await db
-          .delete(budgets)
-          .where(
-            and(
-              eq(budgets.userId, item.userId),
-              eq(budgets.year, item.year),
-              eq(budgets.month, item.month)
-            )
-          );
-      }
-    }
-
-    await db.insert(budgets).values(items);
+    await db
+      .insert(budgets)
+      .values(items)
+      .onConflictDoUpdate({
+        target: [budgets.userId, budgets.categoryId, budgets.year, budgets.month],
+        set: { amount: sql`excluded.amount` },
+      });
   }
 
   async getApplication(

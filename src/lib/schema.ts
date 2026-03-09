@@ -56,19 +56,23 @@ export const transactions = pgTable('transactions', {
   updatedAt: timestamp('updated_at').defaultNow().notNull(),
 });
 
-export const budgets = pgTable('budgets', {
-  id: uuid('id').defaultRandom().primaryKey(),
-  userId: uuid('user_id')
-    .notNull()
-    .references(() => profiles.id, { onDelete: 'cascade' }),
-  categoryId: uuid('category_id')
-    .notNull()
-    .references(() => categories.id, { onDelete: 'cascade' }),
-  amount: numeric('amount', { precision: 12, scale: 2 }).notNull(),
-  month: integer('month').notNull(), // 1–12
-  year: integer('year').notNull(),
-  createdAt: timestamp('created_at').defaultNow().notNull(),
-});
+export const budgets = pgTable(
+  'budgets',
+  {
+    id: uuid('id').defaultRandom().primaryKey(),
+    userId: uuid('user_id')
+      .notNull()
+      .references(() => profiles.id, { onDelete: 'cascade' }),
+    categoryId: uuid('category_id')
+      .notNull()
+      .references(() => categories.id, { onDelete: 'cascade' }),
+    amount: numeric('amount', { precision: 12, scale: 2 }).notNull(),
+    month: integer('month').notNull(), // 1–12
+    year: integer('year').notNull(),
+    createdAt: timestamp('created_at').defaultNow().notNull(),
+  },
+  (t) => [unique('uniq_budget_user_category_month_year').on(t.userId, t.categoryId, t.year, t.month)]
+);
 
 export const budgetSettings = pgTable('budget_settings', {
   id: uuid('id').defaultRandom().primaryKey(),
@@ -78,6 +82,7 @@ export const budgetSettings = pgTable('budget_settings', {
   name: text('name').notNull(),
   totalMonthlyBudget: numeric('total_monthly_budget', { precision: 12, scale: 2 }).notNull(),
   currency: text('currency').notNull().default('IDR'),
+  starterDay: integer('starter_day').notNull().default(1),
   createdAt: timestamp('created_at').defaultNow().notNull(),
 });
 
