@@ -41,6 +41,8 @@ npm run release:major    # force major bump
 npm run release -- --dry-run  # preview without changes
 ```
 
+See [CHANGELOG.md](CHANGELOG.md) for release notes and version history.
+
 ## Project Structure
 
 ```
