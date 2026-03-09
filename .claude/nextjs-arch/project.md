@@ -1,6 +1,6 @@
 ## 12. Project Structure
 
-### 12.1 Single-App Layout (Starting Point)
+### 12.1 Feature-Based Layout
 
 ```
 src/
@@ -11,145 +11,222 @@ src/
 │   ├── (auth)/
 │   │   ├── login/
 │   │   │   └── page.tsx
-│   │   └── forgot-password/
-│   │       └── page.tsx
+│   │   └── callback/
+│   │       └── route.ts
 │   └── (main)/
 │       ├── layout.tsx                      # Main layout with bottom nav
-│       ├── employees/
-│       │   ├── page.tsx                    # Employee list
+│       ├── dashboard/
+│       │   └── page.tsx
+│       ├── transactions/
+│       │   ├── page.tsx
+│       │   ├── [id]/
+│       │   │   └── page.tsx
+│       │   └── new/
+│       │       └── page.tsx
+│       ├── categories/
+│       │   └── page.tsx
+│       ├── budget-settings/
+│       │   ├── page.tsx
+│       │   ├── new/
+│       │   │   └── page.tsx
 │       │   └── [id]/
-│       │       ├── page.tsx                # Employee detail
 │       │       └── edit/
-│       │           └── page.tsx            # Employee edit
-│       ├── leave/
-│       │   ├── request/page.tsx
-│       │   ├── history/page.tsx
-│       │   └── [id]/page.tsx
-│       └── profile/
+│       │           └── page.tsx
+│       ├── settings/
+│       │   └── page.tsx
+│       └── setup/
 │           └── page.tsx
 │
-├── di/
-│   ├── container.server.ts                 # Server-side singletons (module cache)
-│   ├── container.client.ts                 # Client-side factory (browser only)
-│   └── DIContext.tsx                       # React Context provider + useDI hook
+├── features/                               # Feature-based organization
+│   ├── auth/
+│   │   ├── domain/
+│   │   │   ├── entities/
+│   │   │   │   └── User.ts
+│   │   │   ├── repositories/
+│   │   │   │   └── AuthRepository.ts
+│   │   │   └── use-cases/
+│   │   │       ├── SignInWithGoogleUseCase.ts
+│   │   │       ├── SignOutUseCase.ts
+│   │   │       └── GetCurrentUserUseCase.ts
+│   │   ├── data/
+│   │   │   ├── data-sources/
+│   │   │   │   └── AuthDataSource.ts
+│   │   │   └── repositories/
+│   │   │       └── AuthRepositoryImpl.ts
+│   │   └── presentation/
+│   │       ├── LoginView.tsx
+│   │       └── useLoginViewModel.ts
+│   │
+│   ├── transactions/
+│   │   ├── domain/
+│   │   │   ├── entities/
+│   │   │   │   └── Transaction.ts
+│   │   │   ├── repositories/
+│   │   │   │   └── TransactionRepository.ts
+│   │   │   └── use-cases/
+│   │   │       ├── GetTransactionsUseCase.ts
+│   │   │       ├── CreateTransactionUseCase.ts
+│   │   │       ├── UpdateTransactionUseCase.ts
+│   │   │       └── DeleteTransactionUseCase.ts
+│   │   ├── data/
+│   │   │   ├── data-sources/
+│   │   │   │   └── TransactionDataSource.ts
+│   │   │   └── repositories/
+│   │   │       └── TransactionRepositoryImpl.ts
+│   │   └── presentation/
+│   │       ├── actions/
+│   │       │   └── transactions.ts       # Server actions
+│   │       ├── TransactionsView.tsx
+│   │       ├── TransactionDetailView.tsx
+│   │       ├── TransactionNewView.tsx
+│   │       ├── useTransactionsViewModel.ts
+│   │       ├── useTransactionDetailViewModel.ts
+│   │       └── useTransactionNewViewModel.ts
+│   │
+│   ├── categories/
+│   │   ├── domain/
+│   │   │   ├── entities/
+│   │   │   │   └── Category.ts
+│   │   │   ├── repositories/
+│   │   │   │   └── CategoryRepository.ts
+│   │   │   └── use-cases/
+│   │   │       ├── GetCategoriesUseCase.ts
+│   │   │       ├── CreateCategoryUseCase.ts
+│   │   │       ├── UpdateCategoryUseCase.ts
+│   │   │       └── DeleteCategoryUseCase.ts
+│   │   ├── data/
+│   │   │   ├── data-sources/
+│   │   │   │   └── CategoryDataSource.ts
+│   │   │   └── repositories/
+│   │   │       └── CategoryRepositoryImpl.ts
+│   │   └── presentation/
+│   │       ├── actions/
+│   │       │   └── categories.ts
+│   │       ├── CategoriesView.tsx
+│   │       └── useCategoriesViewModel.ts
+│   │
+│   ├── budget-settings/
+│   │   ├── domain/
+│   │   │   ├── entities/
+│   │   │   │   ├── Budget.ts
+│   │   │   │   └── BudgetSetting.ts
+│   │   │   ├── repositories/
+│   │   │   │   ├── BudgetRepository.ts
+│   │   │   │   └── BudgetSettingRepository.ts
+│   │   │   ├── services/
+│   │   │   │   └── BudgetComputationService.ts
+│   │   │   └── use-cases/
+│   │   │       ├── GetBudgetSettingsUseCase.ts
+│   │   │       ├── CreateBudgetSettingUseCase.ts
+│   │   │       ├── UpdateBudgetSettingUseCase.ts
+│   │   │       ├── ApplyBudgetSettingUseCase.ts
+│   │   │       └── DeleteBudgetSettingUseCase.ts
+│   │   ├── data/
+│   │   │   ├── data-sources/
+│   │   │   │   ├── BudgetDataSource.ts
+│   │   │   │   └── BudgetSettingDataSource.ts
+│   │   │   └── repositories/
+│   │   │       ├── BudgetRepositoryImpl.ts
+│   │   │       └── BudgetSettingRepositoryImpl.ts
+│   │   └── presentation/
+│   │       ├── actions/
+│   │       │   └── budget-settings.ts
+│   │       ├── BudgetSettingsView.tsx
+│   │       ├── BudgetSettingNewView.tsx
+│   │       ├── BudgetSettingEditView.tsx
+│   │       ├── useBudgetSettingsViewModel.ts
+│   │       ├── useBudgetSettingNewViewModel.ts
+│   │       └── useBudgetSettingEditViewModel.ts
+│   │
+│   └── dashboard/
+│       ├── domain/
+│       │   └── use-cases/
+│       │       └── GetDashboardDataUseCase.ts
+│       └── presentation/
+│           ├── actions/
+│           │   └── dashboard.ts
+│           ├── DashboardView.tsx
+│           └── useDashboardViewModel.ts
 │
-├── domain/
-│   ├── entities/
-│   │   ├── Employee.ts
-│   │   ├── Department.ts
-│   │   ├── PaginatedResult.ts
-│   │   └── ...
-│   ├── repositories/
-│   │   ├── EmployeeRepository.ts           # interface
-│   │   ├── LeaveRepository.ts              # interface
-│   │   └── ...
-│   ├── use-cases/                          # Each file: interface + impl
-│   │   ├── employee/
-│   │   │   ├── GetEmployeeUseCase.ts
-│   │   │   ├── GetEmployeesUseCase.ts
-│   │   │   ├── UpdateEmployeeUseCase.ts
-│   │   │   └── DeleteEmployeeUseCase.ts
-│   │   └── leave/
-│   │       ├── GetLeaveEntitlementUseCase.ts
-│   │       └── SubmitLeaveRequestUseCase.ts
-│   ├── services/                           # Pure business logic
-│   │   ├── LeaveBalanceCalculator.ts
-│   │   └── LeaveRequestValidator.ts
-│   └── errors/
-│       ├── DomainError.ts
-│       └── errorMessages.ts
+├── shared/                                # Cross-cutting concerns
+│   ├── domain/
+│   │   ├── entities/
+│   │   │   └── PaginatedResult.ts         # Shared across features
+│   │   └── errors/
+│   │       ├── DomainError.ts
+│   │       └── errorMessages.ts
+│   ├── presentation/
+│   │   ├── navigation/
+│   │   │   ├── routes.ts                   # Route constants
+│   │   │   └── useAppRouter.ts
+│   │   └── common/
+│   │       ├── QueryState.ts
+│   │       ├── LoadingView.tsx
+│   │       ├── ErrorView.tsx
+│   │       ├── EmptyStateView.tsx
+│   │       └── CurrencyInput.tsx
+│   └── core/                              # Infrastructure (no framework deps)
+│       ├── logger/
+│       │   └── Logger.ts
+│       └── utils/
+│           └── nullSafety.ts
 │
-├── data/
-│   ├── networking/
-│   │   ├── HTTPClient.ts                   # interface
-│   │   ├── AxiosHTTPClient.ts              # implementation (createHTTPClient factory)
-│   │   ├── TokenProvider.ts               # TokenProvider, TokenRefresher, TokenStorage interfaces
-│   │   ├── TokenRefreshService.ts
-│   │   └── NetworkError.ts
-│   ├── dtos/
-│   │   ├── DepartmentDTO.ts
-│   │   ├── EmployeeDTO.ts
-│   │   ├── PaginatedDTO.ts
-│   │   └── APIResponse.ts
-│   ├── mappers/
-│   │   ├── DepartmentMapper.ts
-│   │   ├── EmployeeMapper.ts
-│   │   └── ErrorMapper.ts
-│   ├── data-sources/
-│   │   ├── remote/
-│   │   │   ├── EmployeeRemoteDataSource.ts          # interface
-│   │   │   └── EmployeeRemoteDataSourceImpl.ts      # implementation
-│   │   └── local/
-│   │       └── EmployeeLocalDataSource.ts
-│   └── repositories/
-│       └── EmployeeRepositoryImpl.ts
+├── di/                                   # Dependency Injection
+│   ├── container.server.ts                # Server-side singletons
+│   ├── container.client.ts                # Client-side factory
+│   └── DIContext.tsx                      # React Context provider
 │
-├── presentation/
-│   ├── navigation/
-│   │   ├── routes.ts                       # Route constants (replaces Route enum)
-│   │   └── useAppRouter.ts                 # Navigation convenience hook
-│   ├── common/
-│   │   ├── QueryState.ts                   # QueryState<T> type
-│   │   ├── LoadingView.tsx
-│   │   ├── ErrorView.tsx
-│   │   └── EmptyStateView.tsx
-│   ├── providers/
-│   │   └── QueryClientProvider.tsx         # TanStack Query setup
-│   └── features/
-│       ├── auth/
-│       │   ├── LoginView.tsx
-│       │   └── useLoginViewModel.ts
-│       ├── employee-list/
-│       │   ├── EmployeeListView.tsx
-│       │   ├── useEmployeeListViewModel.ts
-│       │   └── components/
-│       │       └── EmployeeRow.tsx
-│       ├── employee-detail/
-│       │   ├── EmployeeDetailView.tsx
-│       │   └── useEmployeeDetailViewModel.ts
-│       └── leave/
-│           ├── LeaveRequestView.tsx
-│           ├── useLeaveRequestViewModel.ts
-│           ├── LeaveHistoryView.tsx
-│           └── useLeaveHistoryViewModel.ts
+├── lib/                                  # Framework-specific (Next.js, Supabase)
+│   ├── db.ts                              # Drizzle instance
+│   ├── auth.ts                            # Supabase server client
+│   ├── schema.ts                          # Drizzle schema
+│   └── safe-action.ts                     # Action client
 │
-├── core/                                   # Shared infrastructure
-│   ├── storage/
-│   │   ├── StorageService.ts
-│   │   └── LocalStorageTokenProvider.ts
-│   ├── date/
-│   │   └── DateService.ts
-│   ├── network/
-│   │   └── NetworkMonitor.ts
-│   ├── validation/
-│   │   └── Validator.ts
-│   ├── logger/
-│   │   └── Logger.ts
-│   └── utils/
-│       └── nullSafety.ts
-│
-└── __tests__/
-    ├── domain/
-    │   ├── services/
-    │   │   └── LeaveBalanceCalculator.test.ts
-    │   └── use-cases/
-    │       └── GetEmployeeUseCase.test.ts
-    ├── data/
-    │   ├── mappers/
-    │   │   └── EmployeeMapper.test.ts
-    │   └── repositories/
-    │       └── EmployeeRepositoryImpl.test.ts
-    ├── presentation/
-    │   └── hooks/
-    │       └── useEmployeeListViewModel.test.ts
-    ├── mocks/
-    │   ├── MockEmployeeRepository.ts
-    │   ├── MockEmployeeMapper.ts
-    │   ├── MockHTTPClient.ts
-    │   └── MockEntities.ts
-    └── utils/
-        └── queryClientWrapper.tsx
+└── __tests__/                             # Tests (mirrors feature structure)
+    └── features/
+        ├── auth/
+        │   ├── domain/
+        │   └── data/
+        └── transactions/
+            └── ...
 ```
+
+### 12.2 Feature Module Structure
+
+Every feature module is self-contained with its own layers:
+
+```
+features/[feature-name]/
+├── domain/                              # Business logic (no framework deps)
+│   ├── entities/                         # Domain models
+│   │   └── [Entity].ts
+│   ├── repositories/                     # Repository interfaces
+│   │   └── [Feature]Repository.ts
+│   ├── services/                          # (optional) Pure business logic
+│   │   └── [Feature][Service].ts
+│   └── use-cases/                         # Application logic
+│       └── [Verb][Feature]UseCase.ts
+├── data/                                # Data access (impl + external APIs)
+│   ├── data-sources/
+│   │   └── [Feature]DataSource.ts        # Interface + Impl
+│   └── repositories/
+│       └── [Feature]RepositoryImpl.ts   # Implements interface
+└── presentation/                         # UI layer (React/Next.js)
+    ├── actions/
+    │   └── [feature].ts                # Server actions
+    ├── [Feature]View.tsx                # Main view component
+    ├── use[Feature]ViewModel.ts         # Orchestration hook
+    └── components/                       # (optional) Feature-specific UI
+        └── [Component].tsx
+```
+
+**Key principles:**
+- Features are independent and co-located
+- Each feature contains its complete vertical slice
+- Shared domain logic goes in `shared/domain/`
+- Shared UI components go in `shared/presentation/`
+- No circular dependencies between features
+- Import rule: `feature/domain` → `feature/data` → `feature/presentation`
 
 ---
 

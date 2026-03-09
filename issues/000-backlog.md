@@ -80,3 +80,4 @@
 - Spending insights / trends
 - Notifications (push via PWA)
 - Public user support
+| 022 | Refactor to Feature-Based Structure | `pending` | [022-feature-based-structure.md](./022-feature-based-structure.md) |

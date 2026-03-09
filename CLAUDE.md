@@ -12,13 +12,37 @@ npx drizzle-kit studio  # DB browser
 ```
 
 ## Structure
-`src/domain/` · `src/data/` · `src/presentation/` · `src/di/` · `src/core/`
-Features in `src/presentation/features/[kebab-case]/`. Full arch: `.claude/nextjs-arch/`.
+Feature-based modules with vertical slicing. Each feature is self-contained with domain, data, and presentation layers.
+
+```
+src/
+├── features/                    # Feature modules (vertical slices)
+│   ├── auth/                    # Authentication feature
+│   │   ├── domain/              # Entities, repositories, use-cases
+│   │   ├── data/                # Data-sources, repositories impl, mappers
+│   │   └── presentation/        # Views, viewmodels, actions
+│   ├── transactions/            # Transactions feature
+│   ├── categories/              # Categories feature
+│   ├── budget-settings/         # Budget settings feature
+│   └── dashboard/               # Dashboard feature
+├── shared/                      # Cross-cutting shared code
+│   ├── domain/                  # Shared domain entities/errors
+│   ├── presentation/            # Navigation, common components, providers
+│   ├── core/                    # Logger, utilities
+│   └── di/                      # Dependency injection containers
+├── lib/                         # Framework-specific (db, auth, schema)
+└── app/                         # Next.js pages
+```
+
+Full architecture docs: `.claude/nextjs-arch/`
 
 ## Import Rules
-Domain → nothing. Data → Domain. Presentation → React/Next.js/Domain. Core → nothing.
-`container.server.ts` never imports React. `container.client.ts` never imports `server-only`.
-Services: pure (no I/O, no async, no DOM). Hooks: readonly state, never expose setters.
+- Feature domain → nothing (no imports from other features or layers)
+- Feature data → own domain + shared domain
+- Feature presentation → own domain + shared/presentation
+- Shared modules can be imported by any feature
+- `container.server.ts` never imports React. `container.client.ts` never imports `server-only`.
+- Services: pure (no I/O, no async, no DOM). Hooks: readonly state, never expose setters.
 
 ## Workflow
 Before any work (feature / fix / chore / refactor):
@@ -41,6 +65,6 @@ Follow **CLEAN**, **DRY**, and **SOLID** at all times:
 - **Open/Closed** — open for extension, closed for modification
 - **Liskov Substitution** — subtypes must be substitutable for their base types
 - **Interface Segregation** — prefer small, focused interfaces over large ones
-- **Dependency Inversion** — depend on abstractions, not concretions (wire via `src/di/`)
+- **Dependency Inversion** — depend on abstractions, not concretions (wire via `src/shared/di/`)
 - **DRY** — extract shared logic; no copy-paste across layers
 - **Clean** — clear naming, no dead code, each unit does one thing well
