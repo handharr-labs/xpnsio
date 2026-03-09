@@ -1,4 +1,4 @@
-import { BudgetSettingsView } from '@/presentation/features/budget-settings/BudgetSettingsView';
+import { BudgetSettingsView } from '@/features/budget-settings/presentation/BudgetSettingsView';
 
 export default function BudgetSettingsPage() {
   return <BudgetSettingsView />;

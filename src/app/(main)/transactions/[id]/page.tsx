@@ -1,4 +1,4 @@
-import { TransactionDetailView } from '@/presentation/features/transactions/TransactionDetailView';
+import { TransactionDetailView } from '@/features/transactions/presentation/TransactionDetailView';
 
 export default async function TransactionDetailPage({
   params,
