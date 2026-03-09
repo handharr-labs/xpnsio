@@ -38,6 +38,7 @@ export function SetupView() {
   const [categories, setCategories] = useState<SetupCategory[]>(DEFAULT_CATEGORIES);
   const [budgetName, setBudgetName] = useState('My Budget');
   const [currency, setCurrency] = useState('IDR');
+  const [startDay, setStartDay] = useState(1);
 
   const totalAllocated = categories.reduce((sum, c) => sum + (c.amount || 0), 0);
 
@@ -58,7 +59,7 @@ export function SetupView() {
 
   const handleComplete = async () => {
     try {
-      await completeSetup({ categories, budgetName, currency, totalBudget: totalAllocated });
+      await completeSetup({ categories, budgetName, currency, totalBudget: totalAllocated, startDay });
       router.push(ROUTES.dashboard);
     } catch {
       // error set by ViewModel
@@ -219,6 +220,23 @@ export function SetupView() {
                   ))}
                 </select>
               </div>
+              <div className="space-y-1">
+                <label className="text-sm font-medium">Budget Start Day</label>
+                <select
+                  className="w-full rounded-md border px-3 py-2 text-sm"
+                  value={startDay}
+                  onChange={(e) => setStartDay(Number(e.target.value))}
+                >
+                  {Array.from({ length: 28 }, (_, i) => i + 1).map((day) => (
+                    <option key={day} value={day}>
+                      {day}{day === 1 ? 'st' : day === 2 ? 'nd' : day === 3 ? 'rd' : day === 21 || day === 22 || day === 23 ? (day === 21 ? 'st' : day === 22 ? 'nd' : 'rd') : 'th'}
+                    </option>
+                  ))}
+                </select>
+                <p className="text-xs text-muted-foreground">
+                  The day of the month when your budget period starts (e.g., 1st, 15th, 25th).
+                </p>
+              </div>
               <div className="flex gap-3">
                 <Button variant="outline" className="flex-1" onClick={() => setStep(2)}>← Back</Button>
                 <Button className="flex-1" onClick={() => setStep(4)}>Next →</Button>
@@ -237,6 +255,9 @@ export function SetupView() {
                   <p className="text-sm font-medium">Budget: {budgetName}</p>
                   <p className="text-sm text-muted-foreground">
                     {currency} · {formatCurrency(totalAllocated, currency)} / month
+                  </p>
+                  <p className="text-xs text-muted-foreground">
+                    Starts on the {startDay}{startDay === 1 ? 'st' : startDay === 2 ? 'nd' : startDay === 3 ? 'rd' : 'th'} of each month
                   </p>
                 </div>
 

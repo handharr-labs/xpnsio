@@ -24,6 +24,7 @@ export function useSetupViewModel() {
     budgetName: string;
     currency: string;
     totalBudget: number;
+    startDay: number;
   }) => {
     setError(null);
     setIsSubmitting(true);
@@ -48,6 +49,7 @@ export function useSetupViewModel() {
         name: input.budgetName.trim() || 'My Budget',
         totalMonthlyBudget: input.totalBudget || totalAllocated,
         currency: input.currency,
+        starterDay: input.startDay,
         items: createdIds
           .filter((c) => c.amount > 0)
           .map((c) => ({ categoryId: c.id, monthlyAmount: c.amount })),
