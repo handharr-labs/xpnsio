@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.3.1](https://github.com/handharr-labs/xpnsio/compare/v0.3.0...v0.3.1) (2026-03-10)
+
+### Bug Fixes
+
+* **dashboard:** show "Over by Rp X" instead of "-Rp X left" when budget is overrun ([9f29fe1](https://github.com/handharr-labs/xpnsio/commit/9f29fe1))
+
 ## [0.3.0](https://github.com/handharr-labs/xpnsio/compare/v0.2.0...v0.3.0) (2026-03-09)
 
 ### Features
