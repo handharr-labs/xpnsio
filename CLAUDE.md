@@ -30,7 +30,7 @@ Before any work: `/create-issue [title]` → wait for instruction → invoke age
 | Tests | `test-writer` |
 | Arch review | `arch-reviewer` |
 | Refactor | `/simplify` |
-| Use case / entity / hook / repo | `.claude/commands/` |
+| Use case / entity / hook / repo | `.claude/skills/` |
 
 **Issue Creation Rule:**
 - When on a `fix/` or `feature/` branch: Add feedback to current issue, don't create new issues
