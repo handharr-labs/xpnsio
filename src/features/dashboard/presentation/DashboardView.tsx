@@ -144,11 +144,16 @@ export function DashboardView() {
                             return (
                               <Card key={c.categoryId} size="sm">
                                 <CardContent className="pt-3">
-                                  <div className="flex items-center justify-between mb-1">
+                                  <div className="flex items-center justify-between mb-1 gap-2">
                                     <span className="text-sm font-medium">{c.categoryName}</span>
-                                    <span className="text-xs bg-muted px-2 py-0.5 rounded-full text-muted-foreground">
-                                      {formatIDR(c.dailyBudget!)}/day
-                                    </span>
+                                    <div className="flex gap-1.5">
+                                      <span className="text-xs bg-muted px-2 py-0.5 rounded-full text-muted-foreground whitespace-nowrap">
+                                        {formatIDR(c.dailyBudget!)}/day
+                                      </span>
+                                      <span className="text-xs bg-muted px-2 py-0.5 rounded-full text-muted-foreground whitespace-nowrap">
+                                        {formatIDR(c.dailyBudget! * 7)}/week
+                                      </span>
+                                    </div>
                                   </div>
                                   <p className="text-xs text-muted-foreground mb-1">
                                     {formatIDR(c.totalSpent)} / {formatIDR(accumulated)} ({c.periodDaysElapsed} days)
