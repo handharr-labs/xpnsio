@@ -38,7 +38,6 @@ export function SetupView() {
   const [categories, setCategories] = useState<SetupCategory[]>(DEFAULT_CATEGORIES);
   const [budgetName, setBudgetName] = useState('My Budget');
   const [currency, setCurrency] = useState('IDR');
-  const [totalBudget, setTotalBudget] = useState(0);
 
   const totalAllocated = categories.reduce((sum, c) => sum + (c.amount || 0), 0);
 
@@ -59,7 +58,7 @@ export function SetupView() {
 
   const handleComplete = async () => {
     try {
-      await completeSetup({ categories, budgetName, currency, totalBudget });
+      await completeSetup({ categories, budgetName, currency, totalBudget: totalAllocated });
       router.push(ROUTES.dashboard);
     } catch {
       // error set by ViewModel
@@ -157,11 +156,6 @@ export function SetupView() {
                 How much do you want to budget for each category per month?
               </p>
 
-              <div className="space-y-1">
-                <label className="text-sm font-medium">Total Monthly Budget</label>
-                <CurrencyInput value={totalBudget} onChange={setTotalBudget} currency={currency} />
-              </div>
-
               <div className="space-y-2">
                 {categories.map((cat, index) => (
                   <div key={index} className="flex items-center gap-3">
@@ -180,19 +174,14 @@ export function SetupView() {
               </div>
 
               {totalAllocated > 0 && (
-                <div className="border-t pt-3 text-sm space-y-1">
-                  <div className="flex justify-between">
-                    <span className="text-muted-foreground">Total Allocated</span>
+                <div className="border-t pt-3 text-sm">
+                  <div className="flex justify-between font-medium">
+                    <span>Total Monthly Budget</span>
                     <span>{formatCurrency(totalAllocated, currency)}</span>
                   </div>
-                  {totalBudget > 0 && (
-                    <div className="flex justify-between font-medium">
-                      <span>Remaining</span>
-                      <span className={totalBudget - totalAllocated < 0 ? 'text-red-600' : 'text-green-600'}>
-                        {formatCurrency(totalBudget - totalAllocated, currency)}
-                      </span>
-                    </div>
-                  )}
+                  <p className="text-xs text-muted-foreground mt-1">
+                    Total is calculated from your category budgets.
+                  </p>
                 </div>
               )}
 
@@ -247,7 +236,7 @@ export function SetupView() {
                 <div className="rounded-lg bg-muted p-3 space-y-1">
                   <p className="text-sm font-medium">Budget: {budgetName}</p>
                   <p className="text-sm text-muted-foreground">
-                    {currency} · {formatCurrency(totalBudget || totalAllocated, currency)} / month
+                    {currency} · {formatCurrency(totalAllocated, currency)} / month
                   </p>
                 </div>
 
