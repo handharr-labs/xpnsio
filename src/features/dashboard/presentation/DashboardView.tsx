@@ -208,12 +208,33 @@ export function DashboardView() {
                                     <div className="space-y-1">
                                       <div className="flex justify-between text-xs text-muted-foreground">
                                         <span>Weekly</span>
-                                        <span>{accumulated > 0 ? Math.round((c.totalSpent / accumulated) * 100) : 0}%</span>
+                                        <span>{
+                                          (() => {
+                                            const weekNumber = Math.ceil((c.periodDaysElapsed ?? 0) / 7);
+                                            const cumulativeWeekBudget = c.dailyBudget! * (weekNumber * 7);
+                                            return cumulativeWeekBudget > 0 ? Math.round((c.totalSpent / cumulativeWeekBudget) * 100) : 0;
+                                          })()}%
+                                        </span>
                                       </div>
                                       <div className="w-full bg-muted rounded-full h-1.5">
                                         <div
-                                          className={`h-1.5 rounded-full ${isOverrun ? 'bg-red-500' : 'bg-primary'}`}
-                                          style={{ width: `${accumulated > 0 ? Math.min((c.totalSpent / accumulated) * 100, 100) : 0}%` }}
+                                          className={`h-1.5 rounded-full ${
+                                            (() => {
+                                              const weekNumber = Math.ceil((c.periodDaysElapsed ?? 0) / 7);
+                                              const cumulativeWeekBudget = c.dailyBudget! * (weekNumber * 7);
+                                              const weeklyLeft = cumulativeWeekBudget - c.totalSpent;
+                                              return weeklyLeft <= 0 ? 'bg-red-500' : 'bg-primary';
+                                            })()
+                                          }`}
+                                          style={{
+                                            width: `${
+                                              (() => {
+                                                const weekNumber = Math.ceil((c.periodDaysElapsed ?? 0) / 7);
+                                                const cumulativeWeekBudget = c.dailyBudget! * (weekNumber * 7);
+                                                return cumulativeWeekBudget > 0 ? Math.min((c.totalSpent / cumulativeWeekBudget) * 100, 100) : 0;
+                                              })()
+                                            }%`
+                                          }}
                                         />
                                       </div>
                                     </div>
