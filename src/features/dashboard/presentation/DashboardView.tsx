@@ -155,13 +155,32 @@ export function DashboardView() {
                                       </span>
                                     </div>
                                   </div>
+                                  {/* Daily summary */}
                                   <p className="text-xs text-muted-foreground mb-1">
-                                    {formatIDR(c.totalSpent)} / {formatIDR(accumulated)} ({c.periodDaysElapsed} days)
+                                    Daily: {formatIDR(c.totalSpent)} / {formatIDR(accumulated)} ({c.periodDaysElapsed} days)
                                   </p>
-                                  <p className={`text-xs font-medium mb-2 ${isOverrun ? 'text-red-600' : 'text-green-600'}`}>
-                                    {isOverrun
+                                  <p className={`text-xs font-medium mb-1 ${isOverrun ? 'text-red-600' : 'text-green-600'}`}>
+                                    Daily: {isOverrun
                                       ? `Over by ${formatIDR(Math.abs(dailyLeft))}`
                                       : `${formatIDR(dailyLeft)} left`}
+                                  </p>
+                                  {/* Weekly summary */}
+                                  <p className="text-xs text-muted-foreground mb-1">
+                                    Weekly: {formatIDR(c.totalSpent)} / {formatIDR(accumulated)} ({Math.ceil((c.periodDaysElapsed ?? 0) / 7)} week{Math.ceil((c.periodDaysElapsed ?? 0) / 7) > 1 ? 's' : ''})
+                                  </p>
+                                  <p className={`text-xs font-medium mb-1 ${isOverrun ? 'text-red-600' : 'text-green-600'}`}>
+                                    Weekly: {isOverrun
+                                      ? `Over by ${formatIDR(Math.abs(dailyLeft))}`
+                                      : `${formatIDR(dailyLeft)} left`}
+                                  </p>
+                                  {/* Monthly summary */}
+                                  <p className="text-xs text-muted-foreground mb-2">
+                                    Monthly: {formatIDR(c.totalSpent)} / {formatIDR(c.monthlyBudget)}
+                                  </p>
+                                  <p className={`text-xs font-medium mb-2 ${c.totalSpent > c.monthlyBudget ? 'text-red-600' : 'text-green-600'}`}>
+                                    Monthly: {c.totalSpent > c.monthlyBudget
+                                      ? `Over by ${formatIDR(c.totalSpent - c.monthlyBudget)}`
+                                      : `${formatIDR(c.monthlyBudget - c.totalSpent)} left`}
                                   </p>
                                   <div className="space-y-2">
                                     <div className="space-y-1">
