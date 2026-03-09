@@ -1,7 +1,7 @@
 ---
 name: arch-reviewer
 description: Review code for Clean Architecture violations, layer boundary breaches, and naming convention issues. Use when asked to review, audit, or check architectural compliance of a file, feature, or the entire codebase.
-model: claude-sonnet-4-6
+model: sonnet
 tools: Read, Glob, Grep
 ---
 

@@ -1,7 +1,7 @@
 ---
 name: test-writer
 description: Write tests for a given file or module following the test pyramid. Use when asked to write, add, or generate tests for any layer — domain service, use case, mapper, repository, ViewModel hook, or View component.
-model: claude-sonnet-4-6
+model: sonnet
 tools: Read, Write, Edit, Glob, Grep
 ---
 

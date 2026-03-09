@@ -1,6 +1,7 @@
 ---
 name: new-db-repository
 description: Scaffold a DB-backed data source and repository implementation. Use when adding a full-stack feature that reads from or writes to a database instead of an external API.
+disable-model-invocation: true
 ---
 
 Scaffold a database-backed data source and repository for this full-stack Next.js Clean Architecture project.

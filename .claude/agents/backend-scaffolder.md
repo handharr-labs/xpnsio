@@ -1,7 +1,7 @@
 ---
 name: backend-scaffolder
 description: Scaffold a complete full-stack backend feature — Server Action, Use Case (if missing), DB DataSource, DB Repository implementation, and DI wiring. Use when adding a new feature that writes to or reads from a database in a full-stack Next.js project.
-model: claude-sonnet-4-6
+model: sonnet
 tools: Read, Write, Edit, Glob, Grep
 ---
 

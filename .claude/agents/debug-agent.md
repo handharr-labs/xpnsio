@@ -1,7 +1,7 @@
 ---
 name: debug-agent
 description: Trace a runtime error or unexpected behavior through the Clean Architecture layers. Use when you have an error message, stack trace, or a description of something that isn't working as expected.
-model: claude-sonnet-4-6
+model: sonnet
 tools: Read, Glob, Grep
 ---
 

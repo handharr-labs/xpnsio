@@ -1,7 +1,7 @@
 ---
 name: feature-scaffolder
 description: Scaffold a complete new feature end-to-end. Use when asked to create, add, or implement a new feature, screen, or module. Generates all layers — domain, data, presentation — and wires DI.
-model: claude-sonnet-4-6
+model: sonnet
 tools: Read, Write, Edit, Glob, Grep
 ---
 

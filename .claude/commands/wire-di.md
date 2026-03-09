@@ -1,6 +1,7 @@
 ---
 name: wire-di
 description: Wire one or more use cases into the DI containers. Use after creating a new use case that hasn't been registered yet.
+disable-model-invocation: true
 ---
 
 Wire a use case into the DI containers for this Next.js Clean Architecture project.

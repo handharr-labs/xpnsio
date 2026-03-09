@@ -1,6 +1,7 @@
 ---
 name: create-issue
 description: Create a new issue file in issues/ and a matching git branch. Use when asked to create, track, or log a new issue or task.
+disable-model-invocation: true
 ---
 
 Create a new issue for this project from $ARGUMENTS.
