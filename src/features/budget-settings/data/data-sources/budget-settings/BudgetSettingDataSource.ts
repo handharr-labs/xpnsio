@@ -1,16 +1,19 @@
-import type {
-  BudgetSetting as DbBudgetSetting,
-  BudgetSettingItem as DbBudgetSettingItem,
-  NewBudgetSetting,
-  NewBudgetSettingItem,
-} from '@/lib/schema';
-
-export interface BudgetSettingItemRecord extends DbBudgetSettingItem {
+export interface BudgetSettingItemRecord {
+  id: string;
+  budgetSettingId: string;
+  categoryId: string;
+  monthlyAmount: string;
   categoryName: string;
   masterCategory: 'daily' | 'weekly' | 'monthly' | null;
 }
 
-export interface BudgetSettingRecord extends DbBudgetSetting {
+export interface BudgetSettingRecord {
+  id: string;
+  userId: string;
+  name: string;
+  totalMonthlyBudget: string;
+  currency: string;
+  createdAt: Date;
   items: BudgetSettingItemRecord[];
 }
 
@@ -18,13 +21,18 @@ export interface BudgetSettingDataSource {
   getByUser(userId: string): Promise<BudgetSettingRecord[]>;
   getById(id: string): Promise<BudgetSettingRecord | null>;
   create(
-    data: Omit<NewBudgetSetting, 'id' | 'createdAt'>,
-    items: Array<Omit<NewBudgetSettingItem, 'id' | 'budgetSettingId'>>
+    data: {
+      userId: string;
+      name: string;
+      totalMonthlyBudget: string;
+      currency?: string;
+    },
+    items: Array<{ categoryId: string; monthlyAmount: string }>
   ): Promise<BudgetSettingRecord>;
   update(
     id: string,
-    data: Partial<Pick<NewBudgetSetting, 'name' | 'totalMonthlyBudget'>>,
-    items?: Array<Omit<NewBudgetSettingItem, 'id' | 'budgetSettingId'>>
+    data: { name?: string; totalMonthlyBudget?: string },
+    items?: Array<{ categoryId: string; monthlyAmount: string }>
   ): Promise<BudgetSettingRecord>;
   delete(id: string): Promise<void>;
 }

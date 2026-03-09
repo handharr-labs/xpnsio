@@ -1,5 +1,6 @@
 import type { Transaction } from '@/features/transactions/domain/entities/Transaction';
 import type { BudgetRepository } from '@/features/budget-settings/domain/repositories/BudgetRepository';
+import type { BudgetSettingRepository } from '@/features/budget-settings/domain/repositories/BudgetSettingRepository';
 import type { TransactionRepository } from '@/features/transactions/domain/repositories/TransactionRepository';
 import type { CategoryRepository } from '@/features/categories/domain/repositories/CategoryRepository';
 import type { BudgetComputationService } from '@/features/budget-settings/domain/services/BudgetComputationService';
@@ -27,6 +28,7 @@ export interface GetDashboardDataParams {
   userId: string;
   year: number;
   month: number;
+  today: string; // YYYY-MM-DD, provided by the caller (Server Action)
 }
 
 export interface GetDashboardDataUseCase {
@@ -38,24 +40,33 @@ export class GetDashboardDataUseCaseImpl implements GetDashboardDataUseCase {
     private readonly budgetRepository: BudgetRepository,
     private readonly transactionRepository: TransactionRepository,
     private readonly computationService: BudgetComputationService,
-    private readonly categoryRepository: CategoryRepository
+    private readonly categoryRepository: CategoryRepository,
+    private readonly budgetSettingRepository: BudgetSettingRepository
   ) {}
 
   async execute(params: GetDashboardDataParams): Promise<DashboardData> {
-    const { userId, year, month } = params;
+    const { userId, year, month, today } = params;
 
     // Auto-carry logic: if no budget for this month, copy from last applied setting
     let budgets = await this.budgetRepository.getByMonth(userId, year, month);
     if (budgets.length === 0) {
       const lastApp = await this.budgetRepository.getLastApplication(userId);
       if (lastApp) {
-        await this.budgetRepository.applyBudgetSetting(
-          userId,
-          lastApp.budgetSettingId,
-          year,
-          month
-        );
-        budgets = await this.budgetRepository.getByMonth(userId, year, month);
+        const setting = await this.budgetSettingRepository.getById(lastApp.budgetSettingId);
+        if (setting) {
+          const items = setting.items.map((item) => ({
+            categoryId: item.categoryId,
+            monthlyAmount: String(item.monthlyAmount),
+          }));
+          await this.budgetRepository.applyBudgetSetting(
+            userId,
+            lastApp.budgetSettingId,
+            items,
+            year,
+            month
+          );
+          budgets = await this.budgetRepository.getByMonth(userId, year, month);
+        }
       }
     }
 
@@ -65,8 +76,6 @@ export class GetDashboardDataUseCaseImpl implements GetDashboardDataUseCase {
     const monthStr = String(month).padStart(2, '0');
     const monthStart = `${year}-${monthStr}-01`;
     const monthEnd = `${year}-${monthStr}-${String(daysInMonth).padStart(2, '0')}`;
-    const today = this.formatDate(new Date());
-
     // Fetch all expense transactions and category metadata
     const [allExpenseTransactions, allCategories] = await Promise.all([
       this.transactionRepository.getFiltered({
@@ -152,10 +161,5 @@ export class GetDashboardDataUseCaseImpl implements GetDashboardDataUseCase {
     };
   }
 
-  private formatDate(date: Date): string {
-    const y = date.getFullYear();
-    const m = String(date.getMonth() + 1).padStart(2, '0');
-    const d = String(date.getDate()).padStart(2, '0');
-    return `${y}-${m}-${d}`;
-  }
 }
+

@@ -7,6 +7,7 @@ export interface BudgetSettingRepository {
     userId: string;
     name: string;
     totalMonthlyBudget: number;
+    currency: string;
     items: Array<{ categoryId: string; monthlyAmount: number }>;
   }): Promise<BudgetSetting>;
   update(

@@ -7,7 +7,6 @@ import {
   deleteTransactionAction,
 } from '@/features/transactions/presentation/actions/transactions';
 import { getCategoriesAction } from '@/features/categories/presentation/actions/categories';
-import { getDashboardDataAction } from '@/features/dashboard/presentation/actions/dashboard';
 import type { Transaction } from '@/features/transactions/domain/entities/Transaction';
 import type { Category } from '@/features/categories/domain/entities/Category';
 
@@ -20,11 +19,9 @@ export function useTransactionDetailViewModel(id: string) {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    const now = new Date();
     Promise.all([
       getTransactionsAction({}),
       getCategoriesAction({}),
-      getDashboardDataAction({ year: now.getFullYear(), month: now.getMonth() + 1 }),
     ]).then(([txResult, catResult]) => {
       if (txResult?.data) {
         const found = txResult.data.find((t) => t.id === id) ?? null;

@@ -8,6 +8,7 @@ export interface BudgetRepository {
   applyBudgetSetting(
     userId: string,
     budgetSettingId: string,
+    items: Array<{ categoryId: string; monthlyAmount: string }>,
     year: number,
     month: number
   ): Promise<void>;

@@ -105,13 +105,13 @@ export function useBudgetSettingEditViewModel(budgetSettingId: string) {
 
   return {
     name,
-    setName,
+    updateName: (v: string) => setName(v),
     currency,
-    setCurrency,
+    updateCurrency: (v: string) => setCurrency(v),
     totalMonthlyBudget,
-    setTotalMonthlyBudget,
+    updateTotalMonthlyBudget: (v: number) => setTotalMonthlyBudget(v),
     items,
-    setItems,
+    updateItems: (v: EditableCategoryItem[]) => setItems(v),
     isLoading: isLoading && !initialized,
     isSubmitting,
     error,

@@ -15,7 +15,8 @@ export const getDashboardDataAction = authActionClient
     const now = new Date();
     const year = parsedInput.year ?? now.getFullYear();
     const month = parsedInput.month ?? now.getMonth() + 1;
+    const today = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
     const container = createServerContainer();
-    const data = await container.getDashboardDataUseCase.execute({ userId: user.id, year, month });
+    const data = await container.getDashboardDataUseCase.execute({ userId: user.id, year, month, today });
     return { ...data, year, month };
   });

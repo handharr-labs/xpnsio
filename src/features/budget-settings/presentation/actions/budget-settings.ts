@@ -31,6 +31,7 @@ export const createBudgetSettingAction = authActionClient
       userId: user.id,
       name: parsedInput.name,
       totalMonthlyBudget: parsedInput.totalMonthlyBudget,
+      currency: parsedInput.currency,
       items: parsedInput.items,
     });
   });

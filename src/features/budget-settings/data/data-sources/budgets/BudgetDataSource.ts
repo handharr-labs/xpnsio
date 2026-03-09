@@ -1,16 +1,30 @@
-import type {
-  Budget as DbBudget,
-  MonthlyBudgetApplication as DbMonthlyBudgetApplication,
-  NewBudget,
-  NewMonthlyBudgetApplication,
-} from '@/lib/schema';
+export interface BudgetRecord {
+  id: string;
+  userId: string;
+  categoryId: string;
+  amount: string;
+  month: number;
+  year: number;
+  createdAt: Date;
+}
 
-export type BudgetRecord = DbBudget;
-export type MonthlyBudgetApplicationRecord = DbMonthlyBudgetApplication;
+export interface MonthlyBudgetApplicationRecord {
+  id: string;
+  userId: string;
+  budgetSettingId: string;
+  month: number;
+  year: number;
+}
 
 export interface BudgetDataSource {
   getByMonth(userId: string, year: number, month: number): Promise<BudgetRecord[]>;
-  upsertMany(budgets: Omit<NewBudget, 'id' | 'createdAt'>[]): Promise<void>;
+  upsertMany(budgets: Array<{
+    userId: string;
+    categoryId: string;
+    amount: string;
+    month: number;
+    year: number;
+  }>): Promise<void>;
   getApplication(
     userId: string,
     year: number,
@@ -18,6 +32,6 @@ export interface BudgetDataSource {
   ): Promise<MonthlyBudgetApplicationRecord | null>;
   getLastApplication(userId: string): Promise<MonthlyBudgetApplicationRecord | null>;
   upsertApplication(
-    data: Omit<NewMonthlyBudgetApplication, 'id'>
+    data: { userId: string; budgetSettingId: string; month: number; year: number }
   ): Promise<MonthlyBudgetApplicationRecord>;
 }

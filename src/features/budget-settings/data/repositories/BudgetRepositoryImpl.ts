@@ -1,14 +1,12 @@
 import type { BudgetRepository } from '@/features/budget-settings/domain/repositories/BudgetRepository';
 import type { Budget, MonthlyBudgetApplication } from '@/features/budget-settings/domain/entities/Budget';
 import type { BudgetDataSource } from '@/features/budget-settings/data/data-sources/budgets/BudgetDataSource';
-import type { BudgetSettingDataSource } from '@/features/budget-settings/data/data-sources/budget-settings/BudgetSettingDataSource';
 import { BudgetMapperImpl, type BudgetMapper } from '@/features/budget-settings/data/mappers/BudgetMapper';
 import { DomainError } from '@/shared/domain/errors/DomainError';
 
 export class BudgetRepositoryImpl implements BudgetRepository {
   constructor(
     private readonly budgetDataSource: BudgetDataSource,
-    private readonly budgetSettingDataSource: BudgetSettingDataSource,
     private readonly mapper: BudgetMapper = new BudgetMapperImpl()
   ) {}
 
@@ -62,20 +60,14 @@ export class BudgetRepositoryImpl implements BudgetRepository {
   async applyBudgetSetting(
     userId: string,
     budgetSettingId: string,
+    items: Array<{ categoryId: string; monthlyAmount: string }>,
     year: number,
     month: number
   ): Promise<void> {
     try {
-      // Get the budget setting with items
-      const setting = await this.budgetSettingDataSource.getById(budgetSettingId);
-      if (!setting) {
-        throw DomainError.notFound('BudgetSetting', budgetSettingId);
-      }
-
-      // Snapshot items into budgets table for the given month/year
-      if (setting.items.length > 0) {
+      if (items.length > 0) {
         await this.budgetDataSource.upsertMany(
-          setting.items.map((item) => ({
+          items.map((item) => ({
             userId,
             categoryId: item.categoryId,
             amount: item.monthlyAmount,
@@ -85,7 +77,6 @@ export class BudgetRepositoryImpl implements BudgetRepository {
         );
       }
 
-      // Record the application
       await this.budgetDataSource.upsertApplication({
         userId,
         budgetSettingId,

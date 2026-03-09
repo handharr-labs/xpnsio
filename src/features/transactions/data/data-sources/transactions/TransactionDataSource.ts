@@ -1,9 +1,13 @@
-import type {
-  Transaction as DbTransaction,
-  NewTransaction,
-} from '@/lib/schema';
-
-export interface TransactionRecord extends DbTransaction {
+export interface TransactionRecord {
+  id: string;
+  userId: string;
+  categoryId: string | null;
+  amount: string;
+  type: 'income' | 'expense';
+  description: string | null;
+  date: string;
+  createdAt: Date;
+  updatedAt: Date;
   categoryName: string | null;
 }
 
@@ -20,10 +24,23 @@ export interface TransactionFilterParams {
 export interface TransactionDataSource {
   getFiltered(params: TransactionFilterParams): Promise<TransactionRecord[]>;
   getById(id: string): Promise<TransactionRecord | null>;
-  create(data: Omit<NewTransaction, 'id' | 'createdAt' | 'updatedAt'>): Promise<TransactionRecord>;
+  create(data: {
+    userId: string;
+    categoryId?: string | null;
+    amount: string;
+    type: 'income' | 'expense';
+    description?: string | null;
+    date: string;
+  }): Promise<TransactionRecord>;
   update(
     id: string,
-    data: Partial<Pick<NewTransaction, 'amount' | 'categoryId' | 'description' | 'date' | 'type'>>
+    data: {
+      amount?: string;
+      categoryId?: string | null;
+      description?: string | null;
+      date?: string;
+      type?: 'income' | 'expense';
+    }
   ): Promise<TransactionRecord>;
   delete(id: string): Promise<void>;
   sumByMonth(userId: string, year: number, month: number, type: 'income' | 'expense'): Promise<string>;

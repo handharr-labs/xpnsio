@@ -17,17 +17,6 @@ import { BudgetRepositoryImpl } from '@/features/budget-settings/data/repositori
 // --- Services ---
 import { BudgetComputationServiceImpl } from '@/features/budget-settings/domain/services/BudgetComputationService';
 
-// --- Domain Interfaces ---
-import type { CategoryDataSource } from '@/features/categories/data/data-sources/categories/CategoryDataSource';
-import type { TransactionDataSource } from '@/features/transactions/data/data-sources/transactions/TransactionDataSource';
-import type { BudgetSettingDataSource } from '@/features/budget-settings/data/data-sources/budget-settings/BudgetSettingDataSource';
-import type { BudgetDataSource } from '@/features/budget-settings/data/data-sources/budgets/BudgetDataSource';
-import type { CategoryRepository } from '@/features/categories/domain/repositories/CategoryRepository';
-import type { TransactionRepository } from '@/features/transactions/domain/repositories/TransactionRepository';
-import type { BudgetSettingRepository } from '@/features/budget-settings/domain/repositories/BudgetSettingRepository';
-import type { BudgetRepository } from '@/features/budget-settings/domain/repositories/BudgetRepository';
-import type { BudgetComputationService } from '@/features/budget-settings/domain/services/BudgetComputationService';
-
 // --- Use Cases: Categories ---
 import { GetCategoriesUseCaseImpl } from '@/features/categories/domain/use-cases/categories/GetCategoriesUseCase';
 import { CreateCategoryUseCaseImpl } from '@/features/categories/domain/use-cases/categories/CreateCategoryUseCase';
@@ -64,7 +53,7 @@ import type { DeleteTransactionUseCase } from '@/features/transactions/domain/us
 import { GetDashboardDataUseCaseImpl } from '@/features/dashboard/domain/use-cases/dashboard/GetDashboardDataUseCase';
 import type { GetDashboardDataUseCase } from '@/features/dashboard/domain/use-cases/dashboard/GetDashboardDataUseCase';
 
-// --- Singleton instances (module-level) ---
+// --- Singleton instances (module-level, private) ---
 
 // Data sources
 const categoryDataSource = new CategoryDataSourceImpl();
@@ -76,7 +65,7 @@ const budgetDataSource = new BudgetDataSourceImpl();
 const categoryRepository = new CategoryRepositoryImpl(categoryDataSource);
 const transactionRepository = new TransactionRepositoryImpl(transactionDataSource);
 const budgetSettingRepository = new BudgetSettingRepositoryImpl(budgetSettingDataSource);
-const budgetRepository = new BudgetRepositoryImpl(budgetDataSource, budgetSettingDataSource);
+const budgetRepository = new BudgetRepositoryImpl(budgetDataSource);
 
 // Services
 const budgetComputationService = new BudgetComputationServiceImpl();
@@ -108,27 +97,13 @@ const getDashboardDataUseCase = new GetDashboardDataUseCaseImpl(
   budgetRepository,
   transactionRepository,
   budgetComputationService,
-  categoryRepository
+  categoryRepository,
+  budgetSettingRepository
 );
 
 // --- Container ---
 
 export interface ServerContainer {
-  // Data sources
-  categoryDataSource: CategoryDataSource;
-  transactionDataSource: TransactionDataSource;
-  budgetSettingDataSource: BudgetSettingDataSource;
-  budgetDataSource: BudgetDataSource;
-
-  // Repositories
-  categoryRepository: CategoryRepository;
-  transactionRepository: TransactionRepository;
-  budgetSettingRepository: BudgetSettingRepository;
-  budgetRepository: BudgetRepository;
-
-  // Services
-  budgetComputationService: BudgetComputationService;
-
   // Use cases: Categories
   getCategoriesUseCase: GetCategoriesUseCase;
   createCategoryUseCase: CreateCategoryUseCase;
@@ -154,21 +129,6 @@ export interface ServerContainer {
 
 export function createServerContainer(): ServerContainer {
   return {
-    // Data sources
-    categoryDataSource,
-    transactionDataSource,
-    budgetSettingDataSource,
-    budgetDataSource,
-
-    // Repositories
-    categoryRepository,
-    transactionRepository,
-    budgetSettingRepository,
-    budgetRepository,
-
-    // Services
-    budgetComputationService,
-
     // Use cases: Categories
     getCategoriesUseCase,
     createCategoryUseCase,

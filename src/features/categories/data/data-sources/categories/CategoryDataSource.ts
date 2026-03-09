@@ -1,17 +1,31 @@
-import type {
-  Category as DbCategory,
-  NewCategory,
-} from '@/lib/schema';
-
-export type CategoryRecord = DbCategory;
+export interface CategoryRecord {
+  id: string;
+  userId: string;
+  name: string;
+  masterCategory: 'daily' | 'weekly' | 'monthly';
+  color: string;
+  icon: string;
+  createdAt: Date;
+}
 
 export interface CategoryDataSource {
   getByUser(userId: string): Promise<CategoryRecord[]>;
   getById(id: string): Promise<CategoryRecord | null>;
-  create(data: Omit<NewCategory, 'id' | 'createdAt'>): Promise<CategoryRecord>;
+  create(data: {
+    userId: string;
+    name: string;
+    masterCategory: 'daily' | 'weekly' | 'monthly';
+    color?: string;
+    icon?: string;
+  }): Promise<CategoryRecord>;
   update(
     id: string,
-    data: Partial<Pick<NewCategory, 'name' | 'color' | 'icon' | 'masterCategory'>>
+    data: {
+      name?: string;
+      color?: string;
+      icon?: string;
+      masterCategory?: 'daily' | 'weekly' | 'monthly';
+    }
   ): Promise<CategoryRecord>;
   delete(id: string): Promise<void>;
   countTransactions(id: string): Promise<number>;

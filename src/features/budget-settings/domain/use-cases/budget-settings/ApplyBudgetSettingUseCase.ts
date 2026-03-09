@@ -27,6 +27,11 @@ export class ApplyBudgetSettingUseCaseImpl implements ApplyBudgetSettingUseCase 
       throw DomainError.notFound('BudgetSetting', budgetSettingId);
     }
 
-    await this.budgetRepository.applyBudgetSetting(userId, budgetSettingId, year, month);
+    const items = setting.items.map((item) => ({
+      categoryId: item.categoryId,
+      monthlyAmount: String(item.monthlyAmount),
+    }));
+
+    await this.budgetRepository.applyBudgetSetting(userId, budgetSettingId, items, year, month);
   }
 }

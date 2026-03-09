@@ -26,13 +26,13 @@ export function BudgetSettingEditView({ id }: { id: string }) {
   const router = useRouter();
   const {
     name,
-    setName,
+    updateName,
     currency,
-    setCurrency,
+    updateCurrency,
     totalMonthlyBudget,
-    setTotalMonthlyBudget,
+    updateTotalMonthlyBudget,
     items,
-    setItems,
+    updateItems,
     isLoading,
     isSubmitting,
     error,
@@ -43,19 +43,19 @@ export function BudgetSettingEditView({ id }: { id: string }) {
   const remaining = totalMonthlyBudget - totalAllocated;
 
   const addItem = () => {
-    setItems((prev) => [
-      ...prev,
+    updateItems([
+      ...items,
       { name: '', masterCategory: 'monthly', color: '#6366f1', icon: 'circle', monthlyAmount: 0 },
     ]);
   };
 
   const updateItem = (index: number, field: keyof EditableCategoryItem, value: string | number) => {
-    setItems((prev) => prev.map((item, i) => (i === index ? { ...item, [field]: value } : item)));
+    updateItems(items.map((item, i) => (i === index ? { ...item, [field]: value } : item)));
   };
 
   const removeItem = (index: number) => {
     if (!confirm('Remove this category from the budget setting?')) return;
-    setItems((prev) => prev.filter((_, i) => i !== index));
+    updateItems(items.filter((_, i) => i !== index));
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -97,7 +97,7 @@ export function BudgetSettingEditView({ id }: { id: string }) {
                 <input
                   className="w-full rounded-md border px-3 py-2 text-sm"
                   value={name}
-                  onChange={(e) => setName(e.target.value)}
+                  onChange={(e) => updateName(e.target.value)}
                   placeholder="e.g. Monthly Budget"
                   required
                 />
@@ -108,7 +108,7 @@ export function BudgetSettingEditView({ id }: { id: string }) {
                 <select
                   className="w-full rounded-md border px-3 py-2 text-sm"
                   value={currency}
-                  onChange={(e) => setCurrency(e.target.value)}
+                  onChange={(e) => updateCurrency(e.target.value)}
                 >
                   {CURRENCY_OPTIONS.map((c) => (
                     <option key={c.value} value={c.value}>{c.label}</option>
@@ -120,7 +120,7 @@ export function BudgetSettingEditView({ id }: { id: string }) {
                 <label className="text-sm font-medium">Total Monthly Budget</label>
                 <CurrencyInput
                   value={totalMonthlyBudget}
-                  onChange={setTotalMonthlyBudget}
+                  onChange={updateTotalMonthlyBudget}
                   currency={currency}
                   required
                 />
