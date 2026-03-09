@@ -20,6 +20,25 @@ const MASTER_LABELS: Record<string, string> = {
   monthly: 'Monthly',
 };
 
+// Progress color helpers
+const getProgressColor = (percent: number): string => {
+  if (percent >= 100) return 'bg-red-500';
+  if (percent >= 90) return 'bg-yellow-500';
+  return 'bg-green-500';
+};
+
+const getProgressTextColor = (percent: number): string => {
+  if (percent >= 100) return 'text-red-600';
+  if (percent >= 90) return 'text-yellow-600';
+  return 'text-green-600';
+};
+
+// Calculate progress percentage using floor to avoid premature red at 99.9%
+const calcPercent = (spent: number, budget: number): number => {
+  if (budget <= 0) return 0;
+  return Math.floor((spent / budget) * 100);
+};
+
 export function DashboardView() {
   const router = useRouter();
 
@@ -102,19 +121,15 @@ export function DashboardView() {
 
                 {dashboardData.totalMonthlyBudget > 0 && (
                   <div className="w-full bg-muted rounded-full h-2">
-                    <div
-                      className={`h-2 rounded-full transition-all ${
-                        dashboardData.totalSpent / dashboardData.totalMonthlyBudget > 0.9
-                          ? 'bg-red-500'
-                          : 'bg-primary'
-                      }`}
-                      style={{
-                        width: `${Math.min(
-                          (dashboardData.totalSpent / dashboardData.totalMonthlyBudget) * 100,
-                          100
-                        )}%`,
-                      }}
-                    />
+                    {(() => {
+                      const overallPercent = calcPercent(dashboardData.totalSpent, dashboardData.totalMonthlyBudget);
+                      return (
+                        <div
+                          className={`h-2 rounded-full transition-all ${getProgressColor(overallPercent)}`}
+                          style={{ width: `${Math.min(overallPercent, 100)}%` }}
+                        />
+                      );
+                    })()}
                   </div>
                 )}
               </CardContent>
@@ -157,40 +172,44 @@ export function DashboardView() {
                                   </div>
                                   <div className="space-y-3">
                                     {/* Daily */}
-                                    <div className="space-y-1">
-                                      <p className="text-xs text-muted-foreground">
-                                        Daily: {formatIDR(c.totalSpent)} / {formatIDR(accumulated)} ({c.periodDaysElapsed} days)
-                                      </p>
-                                      <p className={`text-xs font-medium ${isOverrun ? 'text-red-600' : 'text-green-600'}`}>
-                                        {isOverrun
-                                          ? `Over by ${formatIDR(Math.abs(dailyLeft))}`
-                                          : `${formatIDR(dailyLeft)} left`}
-                                      </p>
-                                      <div className="flex justify-between text-xs text-muted-foreground">
-                                        <span>Progress</span>
-                                        <span>{accumulated > 0 ? Math.round((c.totalSpent / accumulated) * 100) : 0}%</span>
-                                      </div>
-                                      <div className="w-full bg-muted rounded-full h-1.5">
-                                        <div
-                                          className={`h-1.5 rounded-full ${isOverrun ? 'bg-red-500' : 'bg-primary'}`}
-                                          style={{ width: `${accumulated > 0 ? Math.min((c.totalSpent / accumulated) * 100, 100) : 0}%` }}
-                                        />
-                                      </div>
-                                    </div>
+                                    {(() => {
+                                      const dailyPercent = calcPercent(c.totalSpent, accumulated);
+                                      return (
+                                        <div className="space-y-1">
+                                          <p className="text-xs text-muted-foreground">
+                                            Daily: {formatIDR(c.totalSpent)} / {formatIDR(accumulated)} ({c.periodDaysElapsed} days)
+                                          </p>
+                                          <p className={`text-xs font-medium ${getProgressTextColor(dailyPercent)}`}>
+                                            {isOverrun
+                                              ? `Over by ${formatIDR(Math.abs(dailyLeft))}`
+                                              : `${formatIDR(dailyLeft)} left`}
+                                          </p>
+                                          <div className="flex justify-between text-xs text-muted-foreground">
+                                            <span>Progress</span>
+                                            <span>{dailyPercent}%</span>
+                                          </div>
+                                          <div className="w-full bg-muted rounded-full h-1.5">
+                                            <div
+                                              className={`h-1.5 rounded-full ${getProgressColor(dailyPercent)}`}
+                                              style={{ width: `${Math.min(dailyPercent, 100)}%` }}
+                                            />
+                                          </div>
+                                        </div>
+                                      );
+                                    })()}
                                     {/* Weekly */}
                                     {(() => {
                                       const weekNumber = Math.ceil((c.periodDaysElapsed ?? 0) / 7);
                                       const cumulativeWeekBudget = c.dailyBudget! * (weekNumber * 7);
                                       const weeklyLeft = cumulativeWeekBudget - c.totalSpent;
-                                      const isWeeklyOverrun = weeklyLeft <= 0;
-                                      const weeklyPercent = cumulativeWeekBudget > 0 ? Math.round((c.totalSpent / cumulativeWeekBudget) * 100) : 0;
+                                      const weeklyPercent = calcPercent(c.totalSpent, cumulativeWeekBudget);
                                       return (
                                         <div className="space-y-1">
                                           <p className="text-xs text-muted-foreground">
                                             Weekly: {formatIDR(c.totalSpent)} / {formatIDR(cumulativeWeekBudget)} (week {weekNumber})
                                           </p>
-                                          <p className={`text-xs font-medium ${isWeeklyOverrun ? 'text-red-600' : 'text-green-600'}`}>
-                                            {isWeeklyOverrun
+                                          <p className={`text-xs font-medium ${getProgressTextColor(weeklyPercent)}`}>
+                                            {weeklyLeft <= 0
                                               ? `Over by ${formatIDR(Math.abs(weeklyLeft))}`
                                               : `${formatIDR(weeklyLeft)} left`}
                                           </p>
@@ -200,8 +219,8 @@ export function DashboardView() {
                                           </div>
                                           <div className="w-full bg-muted rounded-full h-1.5">
                                             <div
-                                              className={`h-1.5 rounded-full ${isWeeklyOverrun ? 'bg-red-500' : 'bg-primary'}`}
-                                              style={{ width: `${cumulativeWeekBudget > 0 ? Math.min((c.totalSpent / cumulativeWeekBudget) * 100, 100) : 0}%` }}
+                                              className={`h-1.5 rounded-full ${getProgressColor(weeklyPercent)}`}
+                                              style={{ width: `${Math.min(weeklyPercent, 100)}%` }}
                                             />
                                           </div>
                                         </div>
@@ -210,15 +229,14 @@ export function DashboardView() {
                                     {/* Monthly */}
                                     {(() => {
                                       const monthlyLeft = c.monthlyBudget - c.totalSpent;
-                                      const isMonthlyOverrun = c.totalSpent > c.monthlyBudget;
-                                      const monthlyPercent = c.monthlyBudget > 0 ? Math.round((c.totalSpent / c.monthlyBudget) * 100) : 0;
+                                      const monthlyPercent = calcPercent(c.totalSpent, c.monthlyBudget);
                                       return (
                                         <div className="space-y-1">
                                           <p className="text-xs text-muted-foreground">
                                             Monthly: {formatIDR(c.totalSpent)} / {formatIDR(c.monthlyBudget)}
                                           </p>
-                                          <p className={`text-xs font-medium ${isMonthlyOverrun ? 'text-red-600' : 'text-green-600'}`}>
-                                            {isMonthlyOverrun
+                                          <p className={`text-xs font-medium ${getProgressTextColor(monthlyPercent)}`}>
+                                            {c.totalSpent > c.monthlyBudget
                                               ? `Over by ${formatIDR(c.totalSpent - c.monthlyBudget)}`
                                               : `${formatIDR(monthlyLeft)} left`}
                                           </p>
@@ -228,8 +246,8 @@ export function DashboardView() {
                                           </div>
                                           <div className="w-full bg-muted rounded-full h-1.5">
                                             <div
-                                              className={`h-1.5 rounded-full ${isMonthlyOverrun ? 'bg-red-500' : 'bg-primary'}`}
-                                              style={{ width: `${c.monthlyBudget > 0 ? Math.min((c.totalSpent / c.monthlyBudget) * 100, 100) : 0}%` }}
+                                              className={`h-1.5 rounded-full ${getProgressColor(monthlyPercent)}`}
+                                              style={{ width: `${Math.min(monthlyPercent, 100)}%` }}
                                             />
                                           </div>
                                         </div>
@@ -260,21 +278,15 @@ export function DashboardView() {
                                 </div>
                               </div>
                               <div className="w-full bg-muted rounded-full h-1.5">
-                                <div
-                                  className={`h-1.5 rounded-full ${
-                                    c.monthlyBudget > 0 &&
-                                    c.totalSpent / c.monthlyBudget > 0.9
-                                      ? 'bg-red-500'
-                                      : 'bg-primary'
-                                  }`}
-                                  style={{
-                                    width: `${
-                                      c.monthlyBudget > 0
-                                        ? Math.min((c.totalSpent / c.monthlyBudget) * 100, 100)
-                                        : 0
-                                    }%`,
-                                  }}
-                                />
+                                {(() => {
+                                  const monthlyPercent = calcPercent(c.totalSpent, c.monthlyBudget);
+                                  return (
+                                    <div
+                                      className={`h-1.5 rounded-full ${getProgressColor(monthlyPercent)}`}
+                                      style={{ width: `${Math.min(monthlyPercent, 100)}%` }}
+                                    />
+                                  );
+                                })()}
                               </div>
                             </CardContent>
                           </Card>
