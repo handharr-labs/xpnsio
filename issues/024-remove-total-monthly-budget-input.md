@@ -1,7 +1,7 @@
 # 024 · Remove Total Monthly Budget Input from Budget Settings
 
 **Phase:** Phase 2 — Improvements
-**Status:** `pending`
+**Status:** `done`
 
 ---
 
@@ -23,9 +23,9 @@ The "Total Monthly Budget" field in the budget settings (create and edit forms) 
 
 ## Acceptance Criteria
 
-- [ ] "Total Monthly Budget" input is no longer shown on the create budget setting form
-- [ ] "Total Monthly Budget" input is no longer shown on the edit budget setting form
-- [ ] The total is computed as the sum of all category `amount` values
-- [ ] The computed total is displayed as a read-only summary (e.g. "Total: Rp1.500.000")
-- [ ] Saving a budget setting works correctly without requiring the user to input a total
-- [ ] Existing budget settings with a stored total are not broken
+- [x] "Total Monthly Budget" input is no longer shown on the create budget setting form
+- [x] "Total Monthly Budget" input is no longer shown on the edit budget setting form
+- [x] The total is computed as the sum of all category `amount` values
+- [x] The computed total is displayed as a read-only summary (e.g. "Total: Rp1.500.000")
+- [x] Saving a budget setting works correctly without requiring the user to input a total
+- [x] Existing budget settings with a stored total are not broken
