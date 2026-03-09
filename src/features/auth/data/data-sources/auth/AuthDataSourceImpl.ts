@@ -14,6 +14,9 @@ export class AuthDataSourceImpl implements AuthDataSource {
       provider: 'google',
       options: {
         redirectTo: `${this.redirectOrigin}/auth/callback`,
+        queryParams: {
+          prompt: 'select_account',
+        },
       },
     });
     if (error) throw new Error(error.message);
