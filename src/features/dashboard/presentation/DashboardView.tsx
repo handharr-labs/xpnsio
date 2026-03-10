@@ -4,6 +4,7 @@ import { useRouter } from 'next/navigation';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { useDashboardViewModel } from './useDashboardViewModel';
+import { usePullToRefresh } from '@/shared/presentation/hooks/usePullToRefresh';
 import { ROUTES } from '@/shared/presentation/navigation/routes';
 
 const formatIDR = (amount: number) =>
@@ -24,17 +25,31 @@ export function DashboardView() {
   const router = useRouter();
 
   const now = new Date();
-  const { dashboardData, isLoading, error } = useDashboardViewModel(
+  const { dashboardData, isLoading, error, refresh } = useDashboardViewModel(
     now.getFullYear(),
     now.getMonth() + 1
   );
+
+  const { containerRef, pullDistance, isRefreshing } = usePullToRefresh(refresh);
 
   const monthLabel = dashboardData
     ? `${MONTH_NAMES[dashboardData.month - 1]} ${dashboardData.year}`
     : `${MONTH_NAMES[now.getMonth()]} ${now.getFullYear()}`;
 
   return (
-    <main className="min-h-screen p-6 pb-24">
+    <main
+      ref={containerRef as React.RefObject<HTMLElement>}
+      className="min-h-screen p-6 pb-24 overscroll-none"
+    >
+      {(pullDistance > 0 || isRefreshing) && (
+        <div
+          className="flex items-center justify-center gap-2 text-sm text-muted-foreground pb-2 transition-all"
+          style={{ height: isRefreshing ? 40 : pullDistance }}
+        >
+          <span className={isRefreshing ? 'animate-spin' : ''}>↻</span>
+          <span>{isRefreshing ? 'Refreshing…' : 'Release to refresh'}</span>
+        </div>
+      )}
       <div className="max-w-2xl mx-auto space-y-6">
         {/* Header */}
         <div className="flex items-center justify-between">

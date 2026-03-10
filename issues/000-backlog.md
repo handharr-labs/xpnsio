@@ -79,6 +79,8 @@
 
 ---
 
+| 032 | Dashboard pull-to-refresh | `pending` | [032-dashboard-pull-to-refresh.md](./032-dashboard-pull-to-refresh.md) |
+
 ## Ideas / Future
 - Recurring transactions
 - Multi-currency support
