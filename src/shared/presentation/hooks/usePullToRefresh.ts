@@ -10,6 +10,7 @@ export function usePullToRefresh(
   const startYRef = useRef(0);
   const rawDeltaRef = useRef(0);
   const isRefreshingRef = useRef(false);
+  const wasAtTopRef = useRef(false);
   const [pullDistance, setPullDistance] = useState(0);
   const [isRefreshing, setIsRefreshing] = useState(false);
 
@@ -20,9 +21,10 @@ export function usePullToRefresh(
     const onTouchStart = (e: TouchEvent) => {
       startYRef.current = e.touches[0].clientY;
       rawDeltaRef.current = 0;
+      wasAtTopRef.current = window.scrollY === 0;
     };
     const onTouchMove = (e: TouchEvent) => {
-      if (isRefreshingRef.current || el.scrollTop !== 0) return;
+      if (isRefreshingRef.current || !wasAtTopRef.current) return;
       const raw = e.touches[0].clientY - startYRef.current;
       if (raw <= 0) return;
       e.preventDefault();
