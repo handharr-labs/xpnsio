@@ -1,4 +1,4 @@
-import { and, eq, gte, lte, sql, sum } from 'drizzle-orm';
+import { and, eq, gte, lte, ilike, sql, sum } from 'drizzle-orm';
 import { db } from '@/lib/db';
 import { transactions, categories } from '@/lib/schema';
 import type { TransactionDataSource, TransactionRecord, TransactionFilterParams } from './TransactionDataSource';
@@ -19,6 +19,9 @@ export class TransactionDataSourceImpl implements TransactionDataSource {
     }
     if (params.type) {
       conditions.push(eq(transactions.type, params.type));
+    }
+    if (params.description) {
+      conditions.push(ilike(transactions.description, `%${params.description}%`));
     }
 
     const query = db

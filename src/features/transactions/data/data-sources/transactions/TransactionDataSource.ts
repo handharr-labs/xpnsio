@@ -17,6 +17,7 @@ export interface TransactionFilterParams {
   endDate?: string;
   categoryId?: string;
   type?: 'income' | 'expense';
+  description?: string;
   limit?: number;
   offset?: number;
 }

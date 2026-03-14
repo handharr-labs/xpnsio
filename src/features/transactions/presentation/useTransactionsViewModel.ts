@@ -9,13 +9,14 @@ import {
 } from '@/features/transactions/presentation/actions/transactions';
 import type { Transaction } from '@/features/transactions/domain/entities/Transaction';
 
+const PAGE_SIZE = 20;
+
 export type TransactionFilters = {
   startDate?: string;
   endDate?: string;
   categoryId?: string;
   type?: 'income' | 'expense';
-  limit?: number;
-  offset?: number;
+  description?: string;
 };
 
 export function useTransactionsViewModel() {
@@ -23,13 +24,15 @@ export function useTransactionsViewModel() {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [filters, setFilters] = useState<TransactionFilters>({});
+  const [hasMore, setHasMore] = useState(false);
 
   const load = useCallback(async (currentFilters: TransactionFilters = {}) => {
     setIsLoading(true);
     setError(null);
-    const result = await getTransactionsAction(currentFilters);
+    const result = await getTransactionsAction({ ...currentFilters, limit: PAGE_SIZE, offset: 0 });
     if (result?.data) {
       setTransactions(result.data);
+      setHasMore(result.data.length === PAGE_SIZE);
     } else if (result?.serverError) {
       setError(result.serverError);
     }
@@ -40,6 +43,20 @@ export function useTransactionsViewModel() {
     // eslint-disable-next-line react-hooks/set-state-in-effect
     load(filters);
   }, [filters, load]);
+
+  const loadMore = async () => {
+    const result = await getTransactionsAction({
+      ...filters,
+      limit: PAGE_SIZE,
+      offset: transactions.length,
+    });
+    if (result?.data) {
+      setTransactions((prev) => [...prev, ...result.data!]);
+      setHasMore(result.data.length === PAGE_SIZE);
+    } else if (result?.serverError) {
+      setError(result.serverError);
+    }
+  };
 
   const createTransaction = async (input: {
     categoryId?: string;
@@ -103,7 +120,9 @@ export function useTransactionsViewModel() {
     isLoading,
     error,
     filters,
+    hasMore,
     applyFilters,
+    loadMore,
     createTransaction,
     updateTransaction,
     deleteTransaction,

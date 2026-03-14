@@ -11,6 +11,7 @@ export const getTransactionsAction = authActionClient
       endDate: z.string().optional(),
       categoryId: z.string().uuid().optional(),
       type: z.enum(['income', 'expense']).optional(),
+      description: z.string().optional(),
       limit: z.number().int().positive().optional(),
       offset: z.number().int().min(0).optional(),
     })

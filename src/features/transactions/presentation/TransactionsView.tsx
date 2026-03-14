@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -8,6 +8,7 @@ import { useTransactionsViewModel } from './useTransactionsViewModel';
 import { getCategoriesAction } from '@/features/categories/presentation/actions/categories';
 import { ROUTES } from '@/shared/presentation/navigation/routes';
 import type { Category } from '@/features/categories/domain/entities/Category';
+import type { Transaction } from '@/features/transactions/domain/entities/Transaction';
 
 const formatIDR = (amount: number | string) =>
   new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR' }).format(
@@ -23,7 +24,7 @@ const formatDate = (dateStr: string) =>
 
 export function TransactionsView() {
   const router = useRouter();
-  const { transactions, isLoading, error, applyFilters } =
+  const { transactions, isLoading, error, hasMore, applyFilters, loadMore } =
     useTransactionsViewModel();
 
   const [categories, setCategories] = useState<Category[]>([]);
@@ -32,7 +33,10 @@ export function TransactionsView() {
     endDate: '',
     categoryId: '',
     type: '' as '' | 'income' | 'expense',
+    description: '',
   });
+
+  const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {
     getCategoriesAction({}).then((result) => {
@@ -46,15 +50,40 @@ export function TransactionsView() {
       endDate: localFilters.endDate || undefined,
       categoryId: localFilters.categoryId || undefined,
       type: (localFilters.type as 'income' | 'expense') || undefined,
+      description: localFilters.description || undefined,
     });
   };
 
   const clearFilters = () => {
-    setLocalFilters({ startDate: '', endDate: '', categoryId: '', type: '' });
+    setLocalFilters({ startDate: '', endDate: '', categoryId: '', type: '', description: '' });
     applyFilters({});
   };
 
+  const handleDescriptionChange = (value: string) => {
+    setLocalFilters((f) => ({ ...f, description: value }));
+    if (debounceRef.current) clearTimeout(debounceRef.current);
+    debounceRef.current = setTimeout(() => {
+      applyFilters({
+        startDate: localFilters.startDate || undefined,
+        endDate: localFilters.endDate || undefined,
+        categoryId: localFilters.categoryId || undefined,
+        type: (localFilters.type as 'income' | 'expense') || undefined,
+        description: value || undefined,
+      });
+    }, 400);
+  };
+
   const categoryMap = new Map(categories.map((c) => [c.id, c]));
+
+  // Group transactions by date (already sorted DESC from server)
+  const grouped = transactions.reduce(
+    (acc, tx) => {
+      (acc[tx.date] ??= []).push(tx);
+      return acc;
+    },
+    {} as Record<string, Transaction[]>
+  );
+  const dates = Object.keys(grouped);
 
   return (
     <main className="min-h-screen p-6 pb-24">
@@ -63,6 +92,15 @@ export function TransactionsView() {
           <h1 className="text-2xl font-bold">Transactions</h1>
           <Button onClick={() => router.push(ROUTES.transactionNew)}>+ Add</Button>
         </div>
+
+        {/* Search */}
+        <input
+          type="search"
+          placeholder="Search by description..."
+          className="w-full rounded-md border px-3 py-2 text-sm"
+          value={localFilters.description}
+          onChange={(e) => handleDescriptionChange(e.target.value)}
+        />
 
         {/* Filters */}
         <Card>
@@ -151,42 +189,56 @@ export function TransactionsView() {
             No transactions found.
           </p>
         ) : (
-          <div className="space-y-2">
-            {transactions.map((tx) => {
-              const cat = tx.categoryId ? categoryMap.get(tx.categoryId) : null;
-              return (
-                <div
-                  key={tx.id}
-                  className="flex items-center justify-between rounded-lg border p-4 hover:bg-muted/50 cursor-pointer"
-                  onClick={() => router.push(ROUTES.transactionDetail(tx.id))}
-                >
-                  <div className="flex items-center gap-3">
-                    {cat && (
-                      <span
-                        className="w-3 h-3 rounded-full flex-shrink-0"
-                        style={{ backgroundColor: cat.color }}
-                      />
-                    )}
-                    <div>
-                      <p className="text-sm font-medium">
-                        {cat?.name ?? (tx.type === 'income' ? 'Income' : 'Expense')}
-                      </p>
-                      {tx.description && (
-                        <p className="text-xs text-muted-foreground">{tx.description}</p>
-                      )}
-                      <p className="text-xs text-muted-foreground">{formatDate(tx.date)}</p>
-                    </div>
-                  </div>
-                  <span
-                    className={`text-sm font-semibold ${
-                      tx.type === 'income' ? 'text-green-600' : 'text-red-600'
-                    }`}
-                  >
-                    {tx.type === 'income' ? '+' : '-'}{formatIDR(tx.amount)}
-                  </span>
+          <div className="space-y-4">
+            {dates.map((date) => (
+              <div key={date}>
+                <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-2 px-1">
+                  {formatDate(date)}
+                </p>
+                <div className="space-y-2">
+                  {grouped[date].map((tx) => {
+                    const cat = tx.categoryId ? categoryMap.get(tx.categoryId) : null;
+                    return (
+                      <div
+                        key={tx.id}
+                        className="flex items-center justify-between rounded-lg border p-4 hover:bg-muted/50 cursor-pointer"
+                        onClick={() => router.push(ROUTES.transactionDetail(tx.id))}
+                      >
+                        <div className="flex items-center gap-3">
+                          {cat && (
+                            <span
+                              className="w-3 h-3 rounded-full flex-shrink-0"
+                              style={{ backgroundColor: cat.color }}
+                            />
+                          )}
+                          <div>
+                            <p className="text-sm font-medium">
+                              {cat?.name ?? (tx.type === 'income' ? 'Income' : 'Expense')}
+                            </p>
+                            {tx.description && (
+                              <p className="text-xs text-muted-foreground">{tx.description}</p>
+                            )}
+                          </div>
+                        </div>
+                        <span
+                          className={`text-sm font-semibold ${
+                            tx.type === 'income' ? 'text-green-600' : 'text-red-600'
+                          }`}
+                        >
+                          {tx.type === 'income' ? '+' : '-'}{formatIDR(tx.amount)}
+                        </span>
+                      </div>
+                    );
+                  })}
                 </div>
-              );
-            })}
+              </div>
+            ))}
+
+            {hasMore && (
+              <Button variant="outline" className="w-full" onClick={loadMore}>
+                Load more
+              </Button>
+            )}
           </div>
         )}
       </div>

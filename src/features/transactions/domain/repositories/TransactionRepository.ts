@@ -6,6 +6,7 @@ export interface TransactionFilter {
   endDate?: string;
   categoryId?: string;
   type?: 'income' | 'expense';
+  description?: string;
   limit?: number;
   offset?: number;
 }

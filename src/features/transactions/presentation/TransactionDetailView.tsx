@@ -50,7 +50,7 @@ export function TransactionDetailView({ id }: { id: string }) {
     try {
       await updateTransaction({
         amount,
-        type: 'expense',
+        type: transaction!.type,
         categoryId: categoryId || undefined,
         description: description.trim() || undefined,
         date,
@@ -99,8 +99,8 @@ export function TransactionDetailView({ id }: { id: string }) {
         {!isEditing ? (
           <Card>
             <CardHeader>
-              <CardTitle className="text-red-600">
-                -{formatCurrency(transaction.amount, currency)}
+              <CardTitle className={transaction.type === 'income' ? 'text-green-600' : 'text-red-600'}>
+                {transaction.type === 'income' ? '+' : '-'}{formatCurrency(transaction.amount, currency)}
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-3">
