@@ -80,6 +80,7 @@
 ---
 
 | 032 | Dashboard pull-to-refresh | `pending` | [032-dashboard-pull-to-refresh.md](./032-dashboard-pull-to-refresh.md) |
+| 033 | Dashboard month navigation | `in-progress` | [033-dashboard-month-navigation.md](./033-dashboard-month-navigation.md) |
 
 ## Ideas / Future
 - Recurring transactions
