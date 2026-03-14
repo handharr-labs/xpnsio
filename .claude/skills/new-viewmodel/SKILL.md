@@ -1,6 +1,7 @@
 ---
 name: new-viewmodel
 description: Create a ViewModel hook and its paired View component for a feature. Use when building a new screen or interactive UI section.
+allowed-tools: Read, Write, Glob, Grep
 ---
 
 Create a ViewModel hook and View component for this Next.js Clean Architecture project.

@@ -1,6 +1,7 @@
 ---
 name: new-usecase
 description: Create a use case (interface + implementation) for a domain operation. Use when adding a new business action.
+allowed-tools: Read, Write, Glob
 ---
 
 Create a new use case for this Next.js Clean Architecture project.

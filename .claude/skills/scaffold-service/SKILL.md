@@ -1,6 +1,7 @@
 ---
 name: scaffold-service
 description: Create a domain service for pure business logic. Use when business rules are too complex for a single use case or need to be shared across multiple use cases.
+allowed-tools: Read, Write, Glob
 ---
 
 Scaffold a domain service for this Next.js Clean Architecture project.

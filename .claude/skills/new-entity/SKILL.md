@@ -1,6 +1,7 @@
 ---
 name: new-entity
 description: Create a domain entity and its corresponding DTO. Use when defining a new business object.
+allowed-tools: Read, Write, Glob
 ---
 
 Create a new domain entity and its DTO for this Next.js Clean Architecture project.

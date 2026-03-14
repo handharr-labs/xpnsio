@@ -1,6 +1,7 @@
 ---
 name: write-tests
 description: Write tests for the current file or a named module. Automatically selects the right test type based on the layer.
+allowed-tools: Read, Write, Edit, Glob, Grep
 ---
 
 Write tests for this Next.js Clean Architecture project.

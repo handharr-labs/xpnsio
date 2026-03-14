@@ -1,6 +1,7 @@
 ---
 name: create-mock
 description: Scaffold a mock implementation of any interface for use in tests. Generates a Mock class with jest.fn() / vi.fn() for every method.
+allowed-tools: Read, Write, Glob, Grep
 ---
 
 Create a mock implementation of an interface for this Next.js Clean Architecture project's test suite.

@@ -1,6 +1,7 @@
 ---
 name: ssr-check
 description: Decide whether a component or page should be a Server Component or Client Component, and how to structure SSR data fetching. Use when unsure about 'use client' placement or rendering strategy.
+allowed-tools: Read, Glob, Grep
 ---
 
 Help me decide the rendering strategy for a component or page in this Next.js 15 / App Router project.

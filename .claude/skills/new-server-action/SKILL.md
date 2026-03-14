@@ -2,6 +2,7 @@
 name: new-server-action
 description: Scaffold a validated Server Action using next-safe-action. Use when adding a mutation (create, update, delete, form submit) in a full-stack Next.js project.
 disable-model-invocation: true
+allowed-tools: Read, Write, Glob
 ---
 
 Scaffold a Server Action for this full-stack Next.js Clean Architecture project.

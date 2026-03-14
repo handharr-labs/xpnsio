@@ -1,6 +1,7 @@
 ---
 name: integration-test
 description: Scaffold integration tests for a data layer file (repository or data source). Covers happy path, all HTTP error codes, and network failure.
+allowed-tools: Read, Write, Glob, Grep
 ---
 
 Scaffold integration tests for a data layer file in this Next.js Clean Architecture project.

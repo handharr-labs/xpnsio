@@ -1,6 +1,8 @@
 ---
 name: new-feature
 description: Scaffold a complete new feature following Clean Architecture. Generates all layers from entity to view, including DI wiring.
+context: fork
+allowed-tools: Read, Write, Edit, Glob, Grep
 ---
 
 Scaffold a complete new feature for this Next.js Clean Architecture project.

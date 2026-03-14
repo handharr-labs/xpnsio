@@ -1,6 +1,7 @@
 ---
 name: scaffold-repository
 description: Create a repository implementation with mapper injection and ErrorMapper error mapping. Use when adding a new feature's data layer.
+allowed-tools: Read, Write, Edit, Glob, Grep
 ---
 
 Scaffold a repository implementation for this Next.js Clean Architecture project.
