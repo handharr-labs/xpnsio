@@ -4,7 +4,7 @@ import type { BudgetSettingRepository } from '@/features/budget-settings/domain/
 import type { TransactionRepository } from '@/features/transactions/domain/repositories/TransactionRepository';
 import type { CategoryRepository } from '@/features/categories/domain/repositories/CategoryRepository';
 import type { BudgetComputationService } from '@/features/budget-settings/domain/services/BudgetComputationService';
-import type { BudgetProgressService, BudgetProgressData } from '@/features/budget-settings/domain/services/BudgetProgressService';
+import type { BudgetProgressService, BudgetProgressData } from '@/features/dashboard/domain/services/BudgetProgressService';
 
 export interface CategoryBudgetInfo {
   categoryId: string;
@@ -23,6 +23,12 @@ export interface CategoryBudgetInfo {
   dailyProgress?: BudgetProgressData;
   weeklyProgress?: BudgetProgressData;
   monthlyProgress?: BudgetProgressData;
+  spentToday?: number;
+  availableToday?: number;
+  todayProgress?: BudgetProgressData;
+  spentThisWeek?: number;
+  availableThisWeek?: number;
+  thisWeekProgress?: BudgetProgressData;
 }
 
 export interface DashboardData {
@@ -154,6 +160,24 @@ export class GetDashboardDataUseCaseImpl implements GetDashboardDataUseCase {
           budget: budget.amount,
         });
 
+        const { spentToday, availableToday } = this.computationService.computeTodayAvailable({
+          accumulatedBudgetToDate,
+          transactions: categoryTransactions.map((tx) => ({ date: tx.date, amount: tx.amount })),
+          today,
+        });
+        const todayProgress = this.progressService.calculateProgress({ spent: spentToday, budget: availableToday });
+
+        const currentWeekStart = new Date(periodStart);
+        currentWeekStart.setDate(currentWeekStart.getDate() + (weekNumber - 1) * 7);
+        const weekStartStr = currentWeekStart.toISOString().split('T')[0];
+        const { spentThisWeek, availableThisWeek } = this.computationService.computeThisWeekAvailable({
+          accumulatedWeeklyBudget: dailyBudget * weekNumber * 7,
+          transactions: categoryTransactions.map((tx) => ({ date: tx.date, amount: tx.amount })),
+          weekStartStr,
+          today,
+        });
+        const thisWeekProgress = this.progressService.calculateProgress({ spent: spentThisWeek, budget: availableThisWeek });
+
         categoryInfoList.push({
           categoryId: budget.categoryId,
           categoryName: category?.name ?? budget.categoryId,
@@ -168,6 +192,12 @@ export class GetDashboardDataUseCaseImpl implements GetDashboardDataUseCase {
           dailyProgress,
           weeklyProgress,
           monthlyProgress,
+          spentToday,
+          availableToday,
+          todayProgress,
+          spentThisWeek,
+          availableThisWeek,
+          thisWeekProgress,
         });
         continue;
       } else if (masterCategory === 'weekly') {
@@ -194,6 +224,17 @@ export class GetDashboardDataUseCaseImpl implements GetDashboardDataUseCase {
           budget: budget.amount,
         });
 
+        const weekStart = new Date(periodStart);
+        weekStart.setDate(weekStart.getDate() + (weeksElapsed - 1) * 7);
+        const weekStartStr = weekStart.toISOString().split('T')[0];
+        const { spentThisWeek, availableThisWeek } = this.computationService.computeThisWeekAvailable({
+          accumulatedWeeklyBudget,
+          transactions: categoryTransactions.map((tx) => ({ date: tx.date, amount: tx.amount })),
+          weekStartStr,
+          today,
+        });
+        const thisWeekProgress = this.progressService.calculateProgress({ spent: spentThisWeek, budget: availableThisWeek });
+
         categoryInfoList.push({
           categoryId: budget.categoryId,
           categoryName: category?.name ?? budget.categoryId,
@@ -207,6 +248,9 @@ export class GetDashboardDataUseCaseImpl implements GetDashboardDataUseCase {
           periodWeeksElapsed: weeksElapsed,
           weeklyProgress,
           monthlyProgress,
+          spentThisWeek,
+          availableThisWeek,
+          thisWeekProgress,
         });
         continue;
       } else {
