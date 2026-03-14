@@ -16,7 +16,7 @@ import { BudgetRepositoryImpl } from '@/features/budget-settings/data/repositori
 
 // --- Services ---
 import { BudgetComputationServiceImpl } from '@/features/budget-settings/domain/services/BudgetComputationService';
-import { BudgetProgressServiceImpl } from '@/features/budget-settings/domain/services/BudgetProgressService';
+import { BudgetProgressServiceImpl } from '@/features/dashboard/domain/services/BudgetProgressService';
 
 // --- Use Cases: Categories ---
 import { GetCategoriesUseCaseImpl } from '@/features/categories/domain/use-cases/categories/GetCategoriesUseCase';

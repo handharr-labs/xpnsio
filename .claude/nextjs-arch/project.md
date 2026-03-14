@@ -140,6 +140,8 @@ src/
 │   │
 │   └── dashboard/
 │       ├── domain/
+│       │   ├── services/
+│       │   │   └── BudgetProgressService.ts   # dashboard-specific domain service
 │       │   └── use-cases/
 │       │       └── GetDashboardDataUseCase.ts
 │       └── presentation/
@@ -227,6 +229,7 @@ features/[feature-name]/
 - Shared UI components go in `shared/presentation/`
 - No circular dependencies between features
 - Import rule: `feature/domain` → `feature/data` → `feature/presentation`
+- Services belong to the feature that owns the concept; move to `shared/` when consumed by ≥2 features
 
 ---
 

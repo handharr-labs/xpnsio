@@ -19,6 +19,19 @@ export interface MonthlyBudgetInput {
   transactions: Array<{ amount: number }>;
 }
 
+export interface ComputeTodayAvailableInput {
+  accumulatedBudgetToDate: number;
+  transactions: { date: string; amount: number }[];
+  today: string;
+}
+
+export interface ComputeThisWeekAvailableInput {
+  accumulatedWeeklyBudget: number;
+  transactions: { date: string; amount: number }[];
+  weekStartStr: string;
+  today: string;
+}
+
 export interface BudgetComputationService {
   computeDailyRemaining(input: DailyBudgetInput): number;
   computeWeeklyRemaining(input: WeeklyBudgetInput): number;
@@ -30,6 +43,8 @@ export interface BudgetComputationService {
     periodEnd: string;     // YYYY-MM-DD
     daysInPeriod: number;
   };
+  computeTodayAvailable(input: ComputeTodayAvailableInput): { spentToday: number; availableToday: number };
+  computeThisWeekAvailable(input: ComputeThisWeekAvailableInput): { spentThisWeek: number; availableThisWeek: number };
 }
 
 export class BudgetComputationServiceImpl implements BudgetComputationService {
@@ -165,6 +180,22 @@ export class BudgetComputationServiceImpl implements BudgetComputationService {
     const periodEnd = `${year}-${cm}-${String(starterDay).padStart(2, '0')}`;
     const diff = (new Date(periodEnd).getTime() - new Date(periodStart).getTime()) / 86400000;
     return { periodStart, periodEnd, daysInPeriod: Math.round(diff) + 1 };
+  }
+
+  computeTodayAvailable(input: ComputeTodayAvailableInput): { spentToday: number; availableToday: number } {
+    const { accumulatedBudgetToDate, transactions, today } = input;
+    const spentToday = transactions.filter(tx => tx.date === today).reduce((sum, tx) => sum + tx.amount, 0);
+    const totalSpent = transactions.reduce((sum, tx) => sum + tx.amount, 0);
+    const availableToday = accumulatedBudgetToDate - (totalSpent - spentToday);
+    return { spentToday, availableToday: Math.max(availableToday, 0) };
+  }
+
+  computeThisWeekAvailable(input: ComputeThisWeekAvailableInput): { spentThisWeek: number; availableThisWeek: number } {
+    const { accumulatedWeeklyBudget, transactions, weekStartStr, today } = input;
+    const spentThisWeek = transactions.filter(tx => tx.date >= weekStartStr && tx.date <= today).reduce((sum, tx) => sum + tx.amount, 0);
+    const totalSpent = transactions.reduce((sum, tx) => sum + tx.amount, 0);
+    const availableThisWeek = accumulatedWeeklyBudget - (totalSpent - spentThisWeek);
+    return { spentThisWeek, availableThisWeek: Math.max(availableThisWeek, 0) };
   }
 
   private formatDate(date: Date): string {

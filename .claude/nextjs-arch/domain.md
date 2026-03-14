@@ -277,6 +277,17 @@ export class SubmitLeaveRequestUseCaseImpl {
 | Reused across multiple UseCases | Extract to Service |
 | Needs independent unit testing | Extract to Service |
 
+**Where to place it:**
+
+| Scenario | Path |
+|----------|------|
+| Logic belongs to one feature's concept | `src/features/[feature]/domain/services/` |
+| Used by ≥2 features | `src/shared/domain/services/` |
+
+Place the service in the feature that *owns the concept*, not the feature that consumes it.
+A service consumed only by `dashboard` but computing `budget` math belongs in `budget-settings`.
+A service computing only dashboard display logic belongs in `dashboard`.
+
 **Naming convention:** `[Feature][Noun]` interface + `[Feature][Noun]Service` class — e.g., `LeaveBalanceCalculator` / `LeaveBalanceCalculatorService`
 
 ### 3.5 Domain Errors
