@@ -1,5 +1,6 @@
 'use client';
 
+import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -25,16 +26,33 @@ export function DashboardView() {
   const router = useRouter();
 
   const now = new Date();
+  const [selectedPeriod, setSelectedPeriod] = useState({
+    year: now.getFullYear(),
+    month: now.getMonth() + 1,
+  });
+
   const { dashboardData, isLoading, error, refresh } = useDashboardViewModel(
-    now.getFullYear(),
-    now.getMonth() + 1
+    selectedPeriod.year,
+    selectedPeriod.month
   );
 
   const { containerRef, pullDistance, isRefreshing } = usePullToRefresh(refresh);
 
-  const monthLabel = dashboardData
-    ? `${MONTH_NAMES[dashboardData.month - 1]} ${dashboardData.year}`
-    : `${MONTH_NAMES[now.getMonth()]} ${now.getFullYear()}`;
+  const isCurrentMonth =
+    selectedPeriod.year === now.getFullYear() &&
+    selectedPeriod.month === now.getMonth() + 1;
+
+  const monthLabel = `${MONTH_NAMES[selectedPeriod.month - 1]} ${selectedPeriod.year}`;
+
+  const goToPrevMonth = () => setSelectedPeriod(({ year, month }) => {
+    if (month === 1) return { year: year - 1, month: 12 };
+    return { year, month: month - 1 };
+  });
+
+  const goToNextMonth = () => setSelectedPeriod(({ year, month }) => {
+    if (month === 12) return { year: year + 1, month: 1 };
+    return { year, month: month + 1 };
+  });
 
   return (
     <main
@@ -55,7 +73,11 @@ export function DashboardView() {
         <div className="flex items-center justify-between">
           <div>
             <h1 className="text-2xl font-bold">Dashboard</h1>
-            <p className="text-muted-foreground text-sm">{monthLabel}</p>
+          </div>
+          <div className="flex items-center gap-2">
+            <button onClick={goToPrevMonth} className="p-1 rounded hover:bg-muted">‹</button>
+            <span className="text-sm text-muted-foreground w-32 text-center">{monthLabel}</span>
+            <button onClick={goToNextMonth} disabled={isCurrentMonth} className="p-1 rounded hover:bg-muted disabled:opacity-30">›</button>
           </div>
         </div>
 
@@ -75,13 +97,15 @@ export function DashboardView() {
           /* No budget CTA */
           <Card>
             <CardContent className="py-12 text-center space-y-4">
-              <p className="text-lg font-medium">No budget set for this month</p>
-              <p className="text-muted-foreground text-sm">
-                Set up a budget to track your spending.
-              </p>
-              <Button onClick={() => router.push(ROUTES.setup)}>
-                Set Up Budget
-              </Button>
+              <p className="text-lg font-medium">No budget for this period</p>
+              {isCurrentMonth ? (
+                <>
+                  <p className="text-muted-foreground text-sm">Set up a budget to track your spending.</p>
+                  <Button onClick={() => router.push(ROUTES.setup)}>Set Up Budget</Button>
+                </>
+              ) : (
+                <p className="text-muted-foreground text-sm">No budget was applied for this month.</p>
+              )}
             </CardContent>
           </Card>
         ) : (
