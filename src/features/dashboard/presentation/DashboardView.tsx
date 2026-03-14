@@ -188,9 +188,10 @@ export function DashboardView() {
                                       </span>
                                     </div>
                                   </div>
-                                  <div className="space-y-3">
+                                  <div className="divide-y divide-border">
                                     {/* Daily */}
-                                    <div className="space-y-1">
+                                    <div className="space-y-1 pb-3">
+                                      <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-2">Daily</p>
                                       <p className="text-xs text-muted-foreground">
                                         Daily: {formatIDR(c.totalSpent)} / {formatIDR(accumulated)} ({c.periodDaysElapsed} days)
                                       </p>
@@ -200,7 +201,7 @@ export function DashboardView() {
                                           : `${formatIDR(dailyProgress.remaining)} left`}
                                       </p>
                                       <div className="flex justify-between text-xs text-muted-foreground">
-                                        <span>Progress</span>
+                                        <span>Pacing</span>
                                         <span>{dailyProgress.percent}%</span>
                                       </div>
                                       <div className="w-full bg-muted rounded-full h-1.5">
@@ -209,9 +210,23 @@ export function DashboardView() {
                                           style={{ width: `${Math.min(dailyProgress.percent, 100)}%` }}
                                         />
                                       </div>
+                                      <div className="flex justify-between text-xs text-muted-foreground pt-1">
+                                        <span>Today</span>
+                                        <span>{c.todayProgress!.percent}%</span>
+                                      </div>
+                                      <p className="text-xs text-muted-foreground">
+                                        Available: {formatIDR(c.availableToday!)} (incl. rollover)
+                                      </p>
+                                      <div className="w-full bg-muted rounded-full h-1.5">
+                                        <div
+                                          className={`h-1.5 rounded-full ${c.todayProgress!.colorClass}`}
+                                          style={{ width: `${Math.min(c.todayProgress!.percent, 100)}%` }}
+                                        />
+                                      </div>
                                     </div>
                                     {/* Weekly */}
-                                    <div className="space-y-1">
+                                    <div className="space-y-1 py-3">
+                                      <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-2">Weekly</p>
                                       <p className="text-xs text-muted-foreground">
                                         Weekly: {formatIDR(c.totalSpent)} / {formatIDR(c.dailyBudget! * (weekNumber * 7))} (week {weekNumber})
                                       </p>
@@ -221,7 +236,7 @@ export function DashboardView() {
                                           : `${formatIDR(weeklyProgress.remaining)} left`}
                                       </p>
                                       <div className="flex justify-between text-xs text-muted-foreground">
-                                        <span>Progress</span>
+                                        <span>Pacing</span>
                                         <span>{weeklyProgress.percent}%</span>
                                       </div>
                                       <div className="w-full bg-muted rounded-full h-1.5">
@@ -230,9 +245,23 @@ export function DashboardView() {
                                           style={{ width: `${Math.min(weeklyProgress.percent, 100)}%` }}
                                         />
                                       </div>
+                                      <div className="flex justify-between text-xs text-muted-foreground pt-1">
+                                        <span>This Week</span>
+                                        <span>{c.thisWeekProgress!.percent}%</span>
+                                      </div>
+                                      <p className="text-xs text-muted-foreground">
+                                        Available: {formatIDR(c.availableThisWeek!)} (incl. rollover)
+                                      </p>
+                                      <div className="w-full bg-muted rounded-full h-1.5">
+                                        <div
+                                          className={`h-1.5 rounded-full ${c.thisWeekProgress!.colorClass}`}
+                                          style={{ width: `${Math.min(c.thisWeekProgress!.percent, 100)}%` }}
+                                        />
+                                      </div>
                                     </div>
                                     {/* Monthly */}
-                                    <div className="space-y-1">
+                                    <div className="space-y-1 pt-3">
+                                      <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-2">Monthly</p>
                                       <p className="text-xs text-muted-foreground">
                                         Monthly: {formatIDR(c.totalSpent)} / {formatIDR(c.monthlyBudget)}
                                       </p>
@@ -260,6 +289,7 @@ export function DashboardView() {
                           if (isWeekly) {
                             const weeklyProgress = c.weeklyProgress!;
                             const monthlyProgress = c.monthlyProgress!;
+                            const thisWeekProgress = c.thisWeekProgress!;
                             const accumulated = c.accumulatedWeeklyBudget!;
                             return (
                               <Card key={c.categoryId} size="sm">
@@ -272,9 +302,10 @@ export function DashboardView() {
                                       </span>
                                     </div>
                                   </div>
-                                  <div className="space-y-3">
+                                  <div className="divide-y divide-border">
                                     {/* Weekly */}
-                                    <div className="space-y-1">
+                                    <div className="space-y-1 pb-3">
+                                      <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-2">Weekly</p>
                                       <p className="text-xs text-muted-foreground">
                                         Weekly: {formatIDR(c.totalSpent)} / {formatIDR(accumulated)} ({c.periodWeeksElapsed} weeks)
                                       </p>
@@ -284,7 +315,7 @@ export function DashboardView() {
                                           : `${formatIDR(weeklyProgress.remaining)} left`}
                                       </p>
                                       <div className="flex justify-between text-xs text-muted-foreground">
-                                        <span>Progress</span>
+                                        <span>Pacing</span>
                                         <span>{weeklyProgress.percent}%</span>
                                       </div>
                                       <div className="w-full bg-muted rounded-full h-1.5">
@@ -293,9 +324,23 @@ export function DashboardView() {
                                           style={{ width: `${Math.min(weeklyProgress.percent, 100)}%` }}
                                         />
                                       </div>
+                                      <div className="flex justify-between text-xs text-muted-foreground pt-1">
+                                        <span>This Week</span>
+                                        <span>{thisWeekProgress.percent}%</span>
+                                      </div>
+                                      <p className="text-xs text-muted-foreground">
+                                        Available: {formatIDR(c.availableThisWeek!)} (incl. rollover)
+                                      </p>
+                                      <div className="w-full bg-muted rounded-full h-1.5">
+                                        <div
+                                          className={`h-1.5 rounded-full ${thisWeekProgress.colorClass}`}
+                                          style={{ width: `${Math.min(thisWeekProgress.percent, 100)}%` }}
+                                        />
+                                      </div>
                                     </div>
                                     {/* Monthly */}
-                                    <div className="space-y-1">
+                                    <div className="space-y-1 pt-3">
+                                      <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-2">Monthly</p>
                                       <p className="text-xs text-muted-foreground">
                                         Monthly: {formatIDR(c.totalSpent)} / {formatIDR(c.monthlyBudget)}
                                       </p>
