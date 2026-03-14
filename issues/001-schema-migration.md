@@ -2,6 +2,7 @@
 
 **Phase:** 0 — Foundation
 **Status:** `done`
+**GitHub:** [#1](https://github.com/handharr-labs/xpnsio/issues/1)
 **File:** `src/lib/schema.ts`
 
 ---

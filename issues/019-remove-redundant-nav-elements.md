@@ -2,6 +2,7 @@
 
 **Phase:** 1 (cleanup)
 **Status:** `done`
+**GitHub:** [#19](https://github.com/handharr-labs/xpnsio/issues/19)
 **Affects:** `DashboardView.tsx`, `SettingsView.tsx`
 
 ---

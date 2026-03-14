@@ -2,6 +2,7 @@
 
 **Phase:** 2
 **Status:** `done`
+**GitHub:** [#16](https://github.com/handharr-labs/xpnsio/issues/16)
 **Affects:** `/categories` page, Budget Setting create/edit, schema relationship, navigation
 
 ---

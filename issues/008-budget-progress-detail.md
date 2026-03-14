@@ -2,6 +2,7 @@
 
 **Phase:** 2 — Core Features
 **Status:** `planned`
+**GitHub:** [#8](https://github.com/handharr-labs/xpnsio/issues/8)
 **Route:** `/categories/:id/budget`
 **Depends on:** 006
 

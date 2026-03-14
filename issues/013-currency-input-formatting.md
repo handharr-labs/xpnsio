@@ -2,6 +2,7 @@
 
 **Phase:** 2
 **Status:** `done`
+**GitHub:** [#13](https://github.com/handharr-labs/xpnsio/issues/13)
 **Affects:** All amount input fields across the app
 
 ---

@@ -2,6 +2,7 @@
 
 **Phase:** 1 — MVP
 **Status:** `done`
+**GitHub:** [#4](https://github.com/handharr-labs/xpnsio/issues/4)
 **Routes:** `/budget-settings`, `/budget-settings/new`, `/budget-settings/:id/edit`
 **Depends on:** 001, 003
 

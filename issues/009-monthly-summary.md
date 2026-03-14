@@ -2,6 +2,7 @@
 
 **Phase:** 3 — Extended Features
 **Status:** `planned`
+**GitHub:** [#9](https://github.com/handharr-labs/xpnsio/issues/9)
 **Route:** `/summary?month=YYYY-MM`
 **Depends on:** 006, 007
 

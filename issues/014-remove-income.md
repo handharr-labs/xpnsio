@@ -2,6 +2,7 @@
 
 **Phase:** 2
 **Status:** `done`
+**GitHub:** [#14](https://github.com/handharr-labs/xpnsio/issues/14)
 **Affects:** Categories, Budget Settings, Dashboard, Transactions, Schema
 
 ---

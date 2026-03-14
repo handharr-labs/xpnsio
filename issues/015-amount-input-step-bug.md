@@ -2,6 +2,7 @@
 
 **Phase:** 2
 **Status:** `done`
+**GitHub:** [#15](https://github.com/handharr-labs/xpnsio/issues/15)
 **Severity:** High — blocks users from logging transactions
 **Root Cause:** Known, fix is 1 line
 

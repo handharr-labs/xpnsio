@@ -2,6 +2,7 @@
 
 **Phase:** 1 — MVP
 **Status:** `done`
+**GitHub:** [#5](https://github.com/handharr-labs/xpnsio/issues/5)
 **Route:** `/transactions/new`
 **Depends on:** 001, 003
 

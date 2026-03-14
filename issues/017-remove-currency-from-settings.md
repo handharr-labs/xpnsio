@@ -2,6 +2,7 @@
 
 **Phase:** 2
 **Status:** `done`
+**GitHub:** [#17](https://github.com/handharr-labs/xpnsio/issues/17)
 **Affects:** `SettingsView.tsx`, `profiles` table (optional cleanup)
 
 ---

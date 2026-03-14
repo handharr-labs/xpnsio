@@ -2,6 +2,7 @@
 
 **Phase:** TBD  
 **Status:** `pending`
+**GitHub:** [#22](https://github.com/handharr-labs/xpnsio/issues/22)
 
 ---
 

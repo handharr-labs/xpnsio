@@ -1,6 +1,7 @@
 # Issue 021 — Semantic Versioning Setup
 
 **Status:** done
+**GitHub:** [#21](https://github.com/handharr-labs/xpnsio/issues/21)
 **Branch:** `feat/issue-021-versioning`
 
 ## Problem

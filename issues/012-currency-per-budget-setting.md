@@ -2,6 +2,7 @@
 
 **Phase:** 2
 **Status:** `done`
+**GitHub:** [#12](https://github.com/handharr-labs/xpnsio/issues/12)
 **Affects:** `budget_settings` table, Budget Setting form, Dashboard, all amount displays
 
 ---

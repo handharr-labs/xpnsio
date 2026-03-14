@@ -2,6 +2,7 @@
 
 **Phase:** 2 — Core Features
 **Status:** `planned`
+**GitHub:** [#7](https://github.com/handharr-labs/xpnsio/issues/7)
 **Routes:** `/transactions`, `/transactions/:id`
 **Depends on:** 005
 

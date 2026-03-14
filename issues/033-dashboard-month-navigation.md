@@ -2,6 +2,7 @@
 
 **Phase:** Phase 2 — Improvements
 **Status:** `in-progress`
+**GitHub:** [#31](https://github.com/handharr-labs/xpnsio/issues/31)
 
 ---
 

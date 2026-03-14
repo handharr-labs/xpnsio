@@ -2,6 +2,7 @@
 
 **Phase:** 1 — MVP
 **Status:** `done`
+**GitHub:** [#6](https://github.com/handharr-labs/xpnsio/issues/6)
 **Route:** `/dashboard`
 **Depends on:** 001, 003, 004, 005
 

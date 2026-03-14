@@ -2,6 +2,7 @@
 
 **Phase:** infra (bug)
 **Status:** `done`
+**GitHub:** [#20](https://github.com/handharr-labs/xpnsio/issues/20)
 **Affects:** `drizzle.config.ts`, local development workflow
 
 ---

@@ -2,6 +2,7 @@
 
 **Phase:** 1 (bug)
 **Status:** `done`
+**GitHub:** [#18](https://github.com/handharr-labs/xpnsio/issues/18)
 **Affects:** All main views except Dashboard
 
 ---

@@ -2,6 +2,7 @@
 
 **Phase:** 3 — Extended Features
 **Status:** `planned`
+**GitHub:** [#10](https://github.com/handharr-labs/xpnsio/issues/10)
 **Route:** Button on `/transactions` or `/summary`
 **Depends on:** 007
 

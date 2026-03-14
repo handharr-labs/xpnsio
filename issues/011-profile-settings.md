@@ -2,6 +2,7 @@
 
 **Phase:** 3 — Extended Features
 **Status:** `planned`
+**GitHub:** [#11](https://github.com/handharr-labs/xpnsio/issues/11)
 **Route:** `/settings`
 **Depends on:** 001
 

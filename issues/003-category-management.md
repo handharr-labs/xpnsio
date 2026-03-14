@@ -2,6 +2,7 @@
 
 **Phase:** 1 — MVP
 **Status:** `done`
+**GitHub:** [#3](https://github.com/handharr-labs/xpnsio/issues/3)
 **Route:** `/categories`
 **Depends on:** 001
 
