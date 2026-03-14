@@ -53,14 +53,8 @@ Steps:
    Run: `git checkout -b [type]/issue-NNN-slug`
    Example: `feat/issue-035-add-export-button`
 
-6. **Update backlog**
-   Add a row under the "## Inbox" section at the bottom of `issues/000-backlog.md`
-   (create the section if it doesn't exist):
-   `| NNN | Title | \`pending\` | [NNN-slug.md](./NNN-slug.md) · [#NNN](url) |`
-
-7. **Confirm** — show the user:
+6. **Confirm** — show the user:
    - GitHub Issue fetched: title + URL
    - Issue file created: `issues/NNN-slug.md`
    - Branch created: `[type]/issue-NNN-slug`
-   - Backlog updated
    - Suggested next step: invoke `feature-scaffolder` or `debug-agent` depending on issue type

@@ -50,13 +50,7 @@ Steps:
    Run: `git checkout -b [type]/issue-NNN-slug`
    Example: `feat/issue-034-add-export-button`
 
-5. **Update backlog**
-   Add a row to the appropriate phase table in `issues/000-backlog.md`:
-   `| NNN | Title | \`pending\` | [NNN-slug.md](./NNN-slug.md) · [#NNN](GitHub URL) |`
-   If unsure which phase, add under a "## Inbox" section at the bottom (create it if it doesn't exist).
-
-6. **Confirm** — show the user:
+5. **Confirm** — show the user:
    - GitHub Issue created: URL
    - Issue file created: `issues/NNN-slug.md`
    - Branch created: `[type]/issue-NNN-slug`
-   - Backlog updated
