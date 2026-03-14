@@ -27,6 +27,12 @@ Only allowed imports: other files within `src/features/*/domain/`, `src/shared/d
 - No side effects: no `fetch`, no `console`, no filesystem, no DOM access
 - Parameters and return types use only domain entities, primitives, or value objects defined within the domain layer
 
+### Service placement
+- Place a service in the feature that *owns the domain concept* it encapsulates
+- If two or more features depend on the same service, move it to `src/shared/domain/services/`
+- A service used exclusively by feature X but conceptually about feature Y's domain → feature Y
+- A service used exclusively by feature X and about feature X's domain → feature X
+
 ### Use cases
 - Constructor receives repository **interfaces** only — never `*Impl` classes
 - One `execute()` method per use case — single responsibility

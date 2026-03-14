@@ -10,6 +10,7 @@ First, ask me:
 1. Service name (e.g. `LeaveBalanceCalculator`, `PayrollRounder`, `OvertimeEligibilityChecker`)
 2. Methods needed — for each method: name, parameters (name + type), return type
 3. Business rule this service enforces (describe in plain language)
+4. Which feature *owns* this concept? (or is it cross-feature / shared?)
 
 Then:
 
@@ -22,9 +23,18 @@ A domain service is the right choice when:
 
 If the logic only applies to one use case, put it directly in that use case's `execute()` instead.
 
+Use the answer to question 4 to resolve the output path:
+
+| Ownership | Output path |
+|-----------|-------------|
+| Belongs to one feature's concept | `src/features/[feature]/domain/services/[Feature][Noun].ts` |
+| Used by ≥2 features | `src/shared/domain/services/[Feature][Noun].ts` |
+
+Place the service in the feature that *owns the concept*, not the feature that calls it.
+
 **Step 2 — Generate the service**
 
-Output file: `src/domain/services/[Feature][Noun].ts`
+Output file: (feature-aware path from the table above)
 
 ```typescript
 // Domain layer — zero external imports (no react, no next, no axios, no data layer)
@@ -65,6 +75,6 @@ This makes the service usable without DI wiring while still being overridable in
 **Step 4 — Reminders**
 
 After generating, remind me:
-- Add a unit test at `__tests__/domain/services/[Feature][Noun].test.ts` targeting 100% branch coverage
+- Add a unit test co-located at `[same-dir]/[Feature][Noun].test.ts` targeting 100% branch coverage
 - If the service has complex logic, run `/create-mock` for the interface so use cases that inject it can be tested in isolation
 - If this service will be injected into a use case, update the use case's constructor signature
