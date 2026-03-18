@@ -1,11 +1,15 @@
 ---
 name: pickup-issue
-description: Pick up a GitHub Issue created by the PM. Fetches issue data, creates the local issue file, and checks out a matching branch.
+description: Pick up a GitHub Issue created by the PM. Fetches issue data, checks out a matching branch, and updates the backlog.
 context: fork
-allowed-tools: Bash, Write, Edit, Read
+allowed-tools: Bash, Edit, Read
 ---
 
 Pick up GitHub Issue #$ARGUMENTS for local development.
+
+> **IMPORTANT — branch first, code never:** This skill MUST be invoked before any implementation work begins. Do NOT write or modify any code until the branch has been created in Step 4.
+>
+> **Gate rule for implementers:** If you are about to implement a plan and the current branch is `main`, STOP. Do NOT treat a branch name mentioned inside a plan document as a substitute for actually creating the branch. Run `/pickup-issue <N>` (or `git checkout -b <branch-name>`) first, then proceed with implementation. A plan specifying a branch name is documentation, not execution.
 
 Steps:
 
@@ -23,38 +27,19 @@ Steps:
    - Zero-pad the issue number to 3 digits → `NNN` (e.g. `35` → `035`)
    - Build a kebab-case slug from the title (lowercase, spaces→dashes, strip special chars)
 
-4. **Create issue file** at `issues/NNN-slug.md`
-   Populate it from the GitHub issue content. Template:
-
-   ```
-   # NNN · Title
-
-   **Phase:** TBD
-   **Status:** `pending`
-   **GitHub:** [#NNN](url)
-
-   ---
-
-   ## Goal
-   [Copy or summarise from the GitHub issue body]
-
-   ---
-
-   ## Changes
-   [Key changes needed — infer from the issue body or leave as TBD]
-
-   ---
-
-   ## Acceptance Criteria
-   - [ ] [Derive from issue body if present, otherwise leave placeholder]
-   ```
-
-5. **Create git branch**
+4. **Create git branch** ← must happen before any code is written
    Run: `git checkout -b [type]/issue-NNN-slug`
    Example: `feat/issue-035-add-export-button`
+   If already on the correct branch, skip. If on `main` with uncommitted changes, stash them first (`git stash`), create the branch, then pop (`git stash pop`).
+
+5. **Update backlog**
+   Add a row to the "## Inbox" section in `issues/000-backlog.md`:
+   `| NNN | Title | \`pending\` | [#NNN](url) |`
+   Create the "## Inbox" section if it doesn't exist.
 
 6. **Confirm** — show the user:
    - GitHub Issue fetched: title + URL
-   - Issue file created: `issues/NNN-slug.md`
    - Branch created: `[type]/issue-NNN-slug`
    - Suggested next step: invoke `feature-scaffolder` or `debug-agent` depending on issue type
+
+> **PR reminder:** when opening a PR for this issue, put `Closes #NNN` as the **first line** of the PR body so GitHub auto-closes the issue on merge.

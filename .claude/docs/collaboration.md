@@ -71,11 +71,14 @@ Engineer runs /create-issue "add dark mode"
    - New feature/screen → `feature-scaffolder`
    - Backend + DB → `backend-scaffolder`
    - Bug fix → `debug-agent`
-4. **Push PR** — reference the GitHub issue in the PR description:
+4. **Push PR** — always put `Closes #NNN` as the **first line** of the PR body so GitHub auto-closes the issue on merge:
    ```
    Closes #35
+
+   ## Summary
+   ...
    ```
-   GitHub will auto-close the issue when the PR is merged.
+   > Without `Closes #NNN`, the GitHub Issue stays open after merge and must be closed manually.
 
 ---
 
