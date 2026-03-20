@@ -215,7 +215,7 @@ export function DashboardView() {
                                         <span>{c.todayProgress!.percent}%</span>
                                       </div>
                                       <p className="text-xs text-muted-foreground">
-                                        Available: {formatIDR(c.availableToday!)} (incl. rollover)
+                                        {formatIDR(c.spentToday!)} / {formatIDR(c.availableToday!)} (incl. rollover)
                                       </p>
                                       <div className="w-full bg-muted rounded-full h-1.5">
                                         <div
@@ -250,7 +250,7 @@ export function DashboardView() {
                                         <span>{c.thisWeekProgress!.percent}%</span>
                                       </div>
                                       <p className="text-xs text-muted-foreground">
-                                        Available: {formatIDR(c.availableThisWeek!)} (incl. rollover)
+                                        {formatIDR(c.spentThisWeek!)} / {formatIDR(c.availableThisWeek!)} (incl. rollover)
                                       </p>
                                       <div className="w-full bg-muted rounded-full h-1.5">
                                         <div
@@ -329,7 +329,7 @@ export function DashboardView() {
                                         <span>{thisWeekProgress.percent}%</span>
                                       </div>
                                       <p className="text-xs text-muted-foreground">
-                                        Available: {formatIDR(c.availableThisWeek!)} (incl. rollover)
+                                        {formatIDR(c.spentThisWeek!)} / {formatIDR(c.availableThisWeek!)} (incl. rollover)
                                       </p>
                                       <div className="w-full bg-muted rounded-full h-1.5">
                                         <div
