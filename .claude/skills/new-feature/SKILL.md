@@ -28,7 +28,8 @@ Then generate all files in this order:
 - `data-sources/remote/[Feature]RemoteDataSourceImpl.ts` — Axios implementation
 - `repositories/[Feature]RepositoryImpl.ts` — implements domain interface
 
-**Presentation layer** (`src/presentation/features/[feature-name]/`):
+**Presentation layer** (`src/features/[feature-name]/presentation/`):
+- `organisms/` — Feature-specific composite components (create if feature has reusable sections)
 - `use[Feature]ViewModel.ts` — `'use client'`, TanStack Query hooks, deps-injected
 - `[Feature]View.tsx` — `'use client'`, calls `useDI()`, renders loading/error/data states
 

@@ -62,6 +62,15 @@ ViewModel hooks must return only readonly state. Never expose raw state setters 
 | View component | `[Feature]View.tsx` |
 | Server Action | `[verb][Feature]Action.ts` inside `actions/` folder |
 
+## Atomic Design Compliance (Presentation Layer)
+
+Check that:
+- Atoms and molecules (`shared/presentation/common/atoms|molecules/`) accept only primitive props — no domain entities, no use case hooks
+- Organisms (`features/{name}/presentation/organisms/`) render but do not fetch — they accept domain entities as props but never call `useDI()`
+- Views are the only components that call `useDI()` and ViewModel hooks
+- Any inline UI block repeated in ≥2 views is extracted (as atom or molecule to `shared/`, or organism to feature)
+- Any organism used in ≥2 features is promoted to `shared/presentation/common/`
+
 ## Review Process
 
 1. Accept: a file path, feature folder, or "full codebase"
