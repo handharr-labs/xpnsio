@@ -1,0 +1,3 @@
+[submodule ".claude/starter-kit"]
+	path = .claude/starter-kit
+	url = https://github.com/handharr-labs/nextjs-arch
