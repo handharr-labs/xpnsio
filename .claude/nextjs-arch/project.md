@@ -162,11 +162,10 @@ src/
 │   │   │   ├── routes.ts                   # Route constants
 │   │   │   └── useAppRouter.ts
 │   │   └── common/
+│   │       ├── atoms/              # Indivisible UI elements (ErrorBanner, ProgressBar)
+│   │       ├── molecules/          # Grouped atoms (PageHeader, PageShell)
 │   │       ├── QueryState.ts
-│   │       ├── LoadingView.tsx
-│   │       ├── ErrorView.tsx
-│   │       ├── EmptyStateView.tsx
-│   │       └── CurrencyInput.tsx
+│   │       └── CurrencyInput.tsx   # Promoted shared atom
 │   └── core/                              # Infrastructure (no framework deps)
 │       ├── logger/
 │       │   └── Logger.ts
@@ -216,10 +215,10 @@ features/[feature-name]/
 └── presentation/                         # UI layer (React/Next.js)
     ├── actions/
     │   └── [feature].ts                # Server actions
+    ├── organisms/              # Feature-specific composite components
+    │   └── [FeatureSection].tsx
     ├── [Feature]View.tsx                # Main view component
-    ├── use[Feature]ViewModel.ts         # Orchestration hook
-    └── components/                       # (optional) Feature-specific UI
-        └── [Component].tsx
+    └── use[Feature]ViewModel.ts         # Orchestration hook
 ```
 
 **Key principles:**
@@ -252,6 +251,9 @@ features/[feature-name]/
 | Service Impl class | `[Feature][Noun]Service` | `LeaveBalanceCalculatorService` |
 | ViewModel Hook | `use[Feature]ViewModel.ts` | `useEmployeeListViewModel.ts` |
 | View Component | `[Feature]View.tsx` | `EmployeeListView.tsx` |
+| Atom | `[Name].tsx` in `common/atoms/` | `ErrorBanner.tsx`, `ProgressBar.tsx` |
+| Molecule | `[Name].tsx` in `common/molecules/` | `PageHeader.tsx`, `PageShell.tsx` |
+| Organism | `[Name].tsx` in `feature/presentation/organisms/` | `TransactionListItem.tsx`, `CategoryItemEditor.tsx` |
 | Mapper Interface | `[Name]Mapper.ts` | `EmployeeMapper.ts` |
 | Mapper Impl class | `[Name]MapperImpl` | `EmployeeMapperImpl` |
 | Route constant | `ROUTES.[feature]` | `ROUTES.employeeDetail(id)` |
@@ -278,7 +280,7 @@ Every feature follows this pattern:
 features/[feature-name]/
 ├── [FeatureName]View.tsx            # React component (dumb renderer)
 ├── use[FeatureName]ViewModel.ts     # Custom hook (orchestration)
-└── components/                      # Feature-specific sub-components (optional)
+└── organisms/                       # Feature-specific composite components (optional)
     └── [ComponentName].tsx
 ```
 

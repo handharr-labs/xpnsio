@@ -247,3 +247,24 @@ export function EmployeeListView({ initialData }: Props) {
 
 ---
 
+### 5.5 Atomic Design within the Presentation Layer
+
+Clean Architecture owns the **vertical** slice (domain → data → presentation).
+Atomic Design owns the **horizontal** slice (how components are structured *within* presentation).
+
+| Atomic Level | Location | Description | Example |
+|---|---|---|---|
+| Atoms | `shared/presentation/common/atoms/` | Indivisible elements. No business logic, primitive props only | `ErrorBanner`, `ProgressBar`, `Badge` |
+| Molecules | `shared/presentation/common/molecules/` | Small groups of atoms forming a meaningful unit | `PageHeader`, `PageShell` |
+| Organisms | `features/{name}/presentation/organisms/` | Complex, feature-aware sections. May accept domain entities as props | `TransactionListItem`, `CategoryItemEditor` |
+| Views (Pages) | `features/{name}/presentation/` | Connects ViewModel hook to organisms. No direct API calls | `TransactionsView`, `DashboardView` |
+
+**Rules:**
+1. Atoms and molecules accept only primitive props (`string`, `number`, `boolean`, `ReactNode`). No domain entities, no use case hooks.
+2. Organisms may accept domain entities as props — they render, but do not fetch.
+3. Only Views call `useDI()` and ViewModel hooks — they pass data down to organisms.
+4. Shared atoms/molecules live in `src/shared/presentation/common/`. Feature-specific organisms live inside their own feature slice.
+5. A component that is used in ≥2 features must be promoted to `shared/presentation/common/`.
+
+---
+
