@@ -192,9 +192,6 @@ export function DashboardView() {
                                     {/* Daily */}
                                     <div className="space-y-1 pb-3">
                                       <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-2">Daily</p>
-                                      <p className="text-xs text-muted-foreground">
-                                        Daily: {formatIDR(c.totalSpent)} / {formatIDR(accumulated)} ({c.periodDaysElapsed} days)
-                                      </p>
                                       <p className={`text-xs font-medium ${dailyProgress.textClass}`}>
                                         {dailyProgress.isOverrun
                                           ? `Over by ${formatIDR(Math.abs(dailyProgress.remaining))}`
@@ -217,8 +214,10 @@ export function DashboardView() {
                                       <p className="text-xs text-muted-foreground">
                                         {formatIDR(c.spentToday!)} / {formatIDR(c.availableToday!)} (incl. rollover)
                                       </p>
-                                      <p className="text-xs text-muted-foreground">
-                                        {formatIDR(c.availableToday! - c.spentToday!)} left
+                                      <p className={`text-xs font-medium ${c.todayProgress!.textClass}`}>
+                                        {c.todayProgress!.isOverrun
+                                          ? `Over by ${formatIDR(Math.abs(c.availableToday! - c.spentToday!))}`
+                                          : `${formatIDR(c.availableToday! - c.spentToday!)} left`}
                                       </p>
                                       <div className="w-full bg-muted rounded-full h-1.5">
                                         <div
@@ -230,9 +229,6 @@ export function DashboardView() {
                                     {/* Weekly */}
                                     <div className="space-y-1 py-3">
                                       <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-2">Weekly</p>
-                                      <p className="text-xs text-muted-foreground">
-                                        Weekly: {formatIDR(c.totalSpent)} / {formatIDR(c.dailyBudget! * (weekNumber * 7))} (week {weekNumber})
-                                      </p>
                                       <p className={`text-xs font-medium ${weeklyProgress.textClass}`}>
                                         {weeklyProgress.isOverrun
                                           ? `Over by ${formatIDR(Math.abs(weeklyProgress.remaining))}`
@@ -255,8 +251,10 @@ export function DashboardView() {
                                       <p className="text-xs text-muted-foreground">
                                         {formatIDR(c.spentThisWeek!)} / {formatIDR(c.availableThisWeek!)} (incl. rollover)
                                       </p>
-                                      <p className="text-xs text-muted-foreground">
-                                        {formatIDR(c.availableThisWeek! - c.spentThisWeek!)} left
+                                      <p className={`text-xs font-medium ${c.thisWeekProgress!.textClass}`}>
+                                        {c.thisWeekProgress!.isOverrun
+                                          ? `Over by ${formatIDR(Math.abs(c.availableThisWeek! - c.spentThisWeek!))}`
+                                          : `${formatIDR(c.availableThisWeek! - c.spentThisWeek!)} left`}
                                       </p>
                                       <div className="w-full bg-muted rounded-full h-1.5">
                                         <div
@@ -312,9 +310,6 @@ export function DashboardView() {
                                     {/* Weekly */}
                                     <div className="space-y-1 pb-3">
                                       <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-2">Weekly</p>
-                                      <p className="text-xs text-muted-foreground">
-                                        Weekly: {formatIDR(c.totalSpent)} / {formatIDR(accumulated)} ({c.periodWeeksElapsed} weeks)
-                                      </p>
                                       <p className={`text-xs font-medium ${weeklyProgress.textClass}`}>
                                         {weeklyProgress.isOverrun
                                           ? `Over by ${formatIDR(Math.abs(weeklyProgress.remaining))}`
@@ -337,8 +332,10 @@ export function DashboardView() {
                                       <p className="text-xs text-muted-foreground">
                                         {formatIDR(c.spentThisWeek!)} / {formatIDR(c.availableThisWeek!)} (incl. rollover)
                                       </p>
-                                      <p className="text-xs text-muted-foreground">
-                                        {formatIDR(c.availableThisWeek! - c.spentThisWeek!)} left
+                                      <p className={`text-xs font-medium ${thisWeekProgress.textClass}`}>
+                                        {thisWeekProgress.isOverrun
+                                          ? `Over by ${formatIDR(Math.abs(c.availableThisWeek! - c.spentThisWeek!))}`
+                                          : `${formatIDR(c.availableThisWeek! - c.spentThisWeek!)} left`}
                                       </p>
                                       <div className="w-full bg-muted rounded-full h-1.5">
                                         <div
