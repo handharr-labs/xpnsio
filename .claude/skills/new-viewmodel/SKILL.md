@@ -46,6 +46,8 @@ Rules:
 - Renders `<ErrorView message={...} onRetry={...} />` when `isError`
 - Is a dumb renderer — no business logic, no direct API calls
 - Accepts `initialData?` prop if SSR seeding is needed
+- Composes feature organisms from `./organisms/` for complex UI sections
+- Atoms/molecules come from `@/shared/presentation/common/atoms/` or `molecules/`
 
 After creating, remind me to:
 - Add the feature's use cases to DI containers if not yet wired
