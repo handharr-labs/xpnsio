@@ -11,7 +11,7 @@ export interface BudgetProgressInput {
 export interface BudgetProgressData {
   readonly percent: number;           // 0-100+, using Math.floor
   readonly remaining: number;         // Can be negative for overrun
-  readonly isOverrun: boolean;        // true if remaining <= 0
+  readonly isOverrun: boolean;        // true if remaining < 0
   readonly colorClass: string;        // Tailwind class: bg-green-500/yellow-500/red-500
   readonly textClass: string;         // Tailwind class: text-green-600/yellow-600/red-600
   readonly displayText: string;       // Formatted "X left" or "Over by X"
@@ -30,7 +30,7 @@ export class BudgetProgressServiceImpl implements BudgetProgressService {
     const { spent, budget } = input;
     const percent = this.calculatePercent(spent, budget);
     const remaining = budget - spent;
-    const isOverrun = remaining <= 0;
+    const isOverrun = remaining < 0;
 
     return {
       percent,
