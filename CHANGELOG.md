@@ -1,5 +1,18 @@
 # Changelog
 
+## [1.3.2](https://github.com/handharr-labs/xpnsio/compare/v0.3.1...v1.3.2) (2026-03-20)
+
+### Features
+
+* **dashboard:** show spent/available breakdown line on budget cards ([f4b29be](https://github.com/handharr-labs/xpnsio/commit/f4b29be))
+* **dashboard:** add remaining amount left line below spent/available breakdown ([46364c2](https://github.com/handharr-labs/xpnsio/commit/46364c2))
+* **dashboard:** apply color logic to remaining amount text ([c6293b9](https://github.com/handharr-labs/xpnsio/commit/c6293b9))
+
+### Bug Fixes
+
+* **dashboard:** treat zero remaining as "X left" not "Over by X" ([4c66568](https://github.com/handharr-labs/xpnsio/commit/4c66568))
+* **dashboard:** restore accumulated budget line above pacing, remove redundant left text ([7cfb61c](https://github.com/handharr-labs/xpnsio/commit/7cfb61c))
+
 ## [0.3.1](https://github.com/handharr-labs/xpnsio/compare/v0.3.0...v0.3.1) (2026-03-10)
 
 ### Bug Fixes

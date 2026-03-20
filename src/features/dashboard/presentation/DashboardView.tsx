@@ -195,11 +195,6 @@ export function DashboardView() {
                                       <p className="text-xs text-muted-foreground">
                                         Daily: {formatIDR(c.totalSpent)} / {formatIDR(accumulated)} ({c.periodDaysElapsed} days)
                                       </p>
-                                      <p className={`text-xs font-medium ${dailyProgress.textClass}`}>
-                                        {dailyProgress.isOverrun
-                                          ? `Over by ${formatIDR(Math.abs(dailyProgress.remaining))}`
-                                          : `${formatIDR(dailyProgress.remaining)} left`}
-                                      </p>
                                       <div className="flex justify-between text-xs text-muted-foreground">
                                         <span>Pacing</span>
                                         <span>{dailyProgress.percent}%</span>
@@ -215,7 +210,12 @@ export function DashboardView() {
                                         <span>{c.todayProgress!.percent}%</span>
                                       </div>
                                       <p className="text-xs text-muted-foreground">
-                                        Available: {formatIDR(c.availableToday!)} (incl. rollover)
+                                        {formatIDR(c.spentToday!)} / {formatIDR(c.availableToday!)} (incl. rollover)
+                                      </p>
+                                      <p className={`text-xs font-medium ${c.todayProgress!.textClass}`}>
+                                        {c.todayProgress!.isOverrun
+                                          ? `Over by ${formatIDR(Math.abs(c.availableToday! - c.spentToday!))}`
+                                          : `${formatIDR(c.availableToday! - c.spentToday!)} left`}
                                       </p>
                                       <div className="w-full bg-muted rounded-full h-1.5">
                                         <div
@@ -228,12 +228,7 @@ export function DashboardView() {
                                     <div className="space-y-1 py-3">
                                       <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-2">Weekly</p>
                                       <p className="text-xs text-muted-foreground">
-                                        Weekly: {formatIDR(c.totalSpent)} / {formatIDR(c.dailyBudget! * (weekNumber * 7))} (week {weekNumber})
-                                      </p>
-                                      <p className={`text-xs font-medium ${weeklyProgress.textClass}`}>
-                                        {weeklyProgress.isOverrun
-                                          ? `Over by ${formatIDR(Math.abs(weeklyProgress.remaining))}`
-                                          : `${formatIDR(weeklyProgress.remaining)} left`}
+                                        Weekly: {formatIDR(c.totalSpent)} / {formatIDR(c.accumulatedWeeklyBudget!)} (Week {weekNumber})
                                       </p>
                                       <div className="flex justify-between text-xs text-muted-foreground">
                                         <span>Pacing</span>
@@ -250,7 +245,12 @@ export function DashboardView() {
                                         <span>{c.thisWeekProgress!.percent}%</span>
                                       </div>
                                       <p className="text-xs text-muted-foreground">
-                                        Available: {formatIDR(c.availableThisWeek!)} (incl. rollover)
+                                        {formatIDR(c.spentThisWeek!)} / {formatIDR(c.availableThisWeek!)} (incl. rollover)
+                                      </p>
+                                      <p className={`text-xs font-medium ${c.thisWeekProgress!.textClass}`}>
+                                        {c.thisWeekProgress!.isOverrun
+                                          ? `Over by ${formatIDR(Math.abs(c.availableThisWeek! - c.spentThisWeek!))}`
+                                          : `${formatIDR(c.availableThisWeek! - c.spentThisWeek!)} left`}
                                       </p>
                                       <div className="w-full bg-muted rounded-full h-1.5">
                                         <div
@@ -307,12 +307,7 @@ export function DashboardView() {
                                     <div className="space-y-1 pb-3">
                                       <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-2">Weekly</p>
                                       <p className="text-xs text-muted-foreground">
-                                        Weekly: {formatIDR(c.totalSpent)} / {formatIDR(accumulated)} ({c.periodWeeksElapsed} weeks)
-                                      </p>
-                                      <p className={`text-xs font-medium ${weeklyProgress.textClass}`}>
-                                        {weeklyProgress.isOverrun
-                                          ? `Over by ${formatIDR(Math.abs(weeklyProgress.remaining))}`
-                                          : `${formatIDR(weeklyProgress.remaining)} left`}
+                                        Weekly: {formatIDR(c.totalSpent)} / {formatIDR(accumulated)} (Week {Math.ceil((c.periodDaysElapsed ?? 0) / 7)})
                                       </p>
                                       <div className="flex justify-between text-xs text-muted-foreground">
                                         <span>Pacing</span>
@@ -329,7 +324,12 @@ export function DashboardView() {
                                         <span>{thisWeekProgress.percent}%</span>
                                       </div>
                                       <p className="text-xs text-muted-foreground">
-                                        Available: {formatIDR(c.availableThisWeek!)} (incl. rollover)
+                                        {formatIDR(c.spentThisWeek!)} / {formatIDR(c.availableThisWeek!)} (incl. rollover)
+                                      </p>
+                                      <p className={`text-xs font-medium ${thisWeekProgress.textClass}`}>
+                                        {thisWeekProgress.isOverrun
+                                          ? `Over by ${formatIDR(Math.abs(c.availableThisWeek! - c.spentThisWeek!))}`
+                                          : `${formatIDR(c.availableThisWeek! - c.spentThisWeek!)} left`}
                                       </p>
                                       <div className="w-full bg-muted rounded-full h-1.5">
                                         <div

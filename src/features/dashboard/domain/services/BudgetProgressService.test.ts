@@ -74,8 +74,8 @@ describe('BudgetProgressService', () => {
       expect(service.getRemainingText(-100.5, true)).toBe('Over by 100.5');
     });
 
-    it('should return "Over by X" when remaining is 0', () => {
-      expect(service.getRemainingText(0, true)).toBe('Over by 0');
+    it('should return "X left" when remaining is 0', () => {
+      expect(service.getRemainingText(0, false)).toBe('0 left');
     });
   });
 
@@ -118,10 +118,10 @@ describe('BudgetProgressService', () => {
 
       expect(result.percent).toBe(100);
       expect(result.remaining).toBe(0);
-      expect(result.isOverrun).toBe(true);
+      expect(result.isOverrun).toBe(false);
       expect(result.colorClass).toBe('bg-red-500');
       expect(result.textClass).toBe('text-red-600');
-      expect(result.displayText).toBe('Over by 0');
+      expect(result.displayText).toBe('0 left');
     });
 
     it('should return complete progress data for zero budget', () => {
