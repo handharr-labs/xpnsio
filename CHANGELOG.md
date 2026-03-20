@@ -1,5 +1,17 @@
 # Changelog
 
+## [1.4.0](https://github.com/handharr-labs/xpnsio/compare/v1.3.2...v1.4.0) (2026-03-21)
+
+### Refactors
+
+* **shared/atoms:** move `CurrencyInput` to `common/atoms/`, add `CategoryColorDot` atom ([32cf2c5](https://github.com/handharr-labs/xpnsio/commit/32cf2c5))
+* **shared/molecules:** add `MonthNavigator` molecule ([b20a678](https://github.com/handharr-labs/xpnsio/commit/b20a678))
+* **shared/organisms:** move `BottomNav` to `common/organisms/` ([96d41e6](https://github.com/handharr-labs/xpnsio/commit/96d41e6))
+* **dashboard:** extract `BudgetOverviewCard`, `CategoryBreakdownSection`, `RecentTransactionsSection` organisms ([ad3b15b](https://github.com/handharr-labs/xpnsio/commit/ad3b15b))
+* **transactions:** extract `TransactionFilterPanel`, `TransactionListSection` organisms ([acfebff](https://github.com/handharr-labs/xpnsio/commit/acfebff))
+* **categories:** extract `CategoryFormDialog`, `CategoryGroupSection` organisms ([15bac0d](https://github.com/handharr-labs/xpnsio/commit/15bac0d))
+* **budget-settings:** extract `BudgetSettingCard` organism ([f9d1c1b](https://github.com/handharr-labs/xpnsio/commit/f9d1c1b))
+
 ## [1.3.2](https://github.com/handharr-labs/xpnsio/compare/v0.3.1...v1.3.2) (2026-03-20)
 
 ### Features

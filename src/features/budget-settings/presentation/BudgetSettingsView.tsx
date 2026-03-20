@@ -2,15 +2,11 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { useBudgetSettingsViewModel } from './useBudgetSettingsViewModel';
+import { BudgetSettingCard } from './organisms/BudgetSettingCard';
 import { ROUTES } from '@/shared/presentation/navigation/routes';
-
-const formatIDR = (amount: number | string) =>
-  new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR' }).format(
-    typeof amount === 'string' ? parseFloat(amount) : amount
-  );
 
 export function BudgetSettingsView() {
   const router = useRouter();
@@ -74,46 +70,14 @@ export function BudgetSettingsView() {
         ) : (
           <div className="space-y-4">
             {budgetSettings.map((setting) => (
-              <Card key={setting.id}>
-                <CardHeader>
-                  <CardTitle className="flex items-center justify-between">
-                    <span>{setting.name}</span>
-                    <span className="text-base font-normal text-muted-foreground">
-                      {formatIDR(setting.totalMonthlyBudget)} / month
-                    </span>
-                  </CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-3">
-                  <p className="text-sm text-muted-foreground">
-                    {setting.items.length} categor{setting.items.length === 1 ? 'y' : 'ies'} allocated
-                  </p>
-                  <div className="flex gap-2">
-                    <Button
-                      size="sm"
-                      variant="outline"
-                      onClick={() => router.push(ROUTES.budgetSettingEdit(setting.id))}
-                    >
-                      Edit
-                    </Button>
-                    <Button
-                      size="sm"
-                      variant="outline"
-                      onClick={() => handleApply(setting.id)}
-                      disabled={applyingId === setting.id}
-                    >
-                      {applyingId === setting.id ? 'Applying...' : 'Apply to This Month'}
-                    </Button>
-                    <Button
-                      size="sm"
-                      variant="outline"
-                      className="text-red-600 hover:text-red-700"
-                      onClick={() => handleDelete(setting.id, setting.name)}
-                    >
-                      Delete
-                    </Button>
-                  </div>
-                </CardContent>
-              </Card>
+              <BudgetSettingCard
+                key={setting.id}
+                setting={setting}
+                isApplying={applyingId === setting.id}
+                onApply={handleApply}
+                onEdit={(id) => router.push(ROUTES.budgetSettingEdit(id))}
+                onDelete={handleDelete}
+              />
             ))}
           </div>
         )}

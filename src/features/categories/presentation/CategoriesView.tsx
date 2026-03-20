@@ -1,10 +1,12 @@
 'use client';
 
 import { useState } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { useCategoriesViewModel } from './useCategoriesViewModel';
+import { CategoryFormDialog } from './organisms/CategoryFormDialog';
+import { CategoryGroupSection } from './organisms/CategoryGroupSection';
 import type { Category } from '@/features/categories/domain/entities/Category';
+import type { CategoryFormState } from './organisms/CategoryFormDialog';
 
 const MASTER_LABELS: Record<string, string> = {
   daily: 'Daily Spend',
@@ -12,21 +14,7 @@ const MASTER_LABELS: Record<string, string> = {
   monthly: 'Monthly Spend',
 };
 
-const COLOR_OPTIONS = [
-  '#6366f1', '#ec4899', '#f59e0b', '#10b981', '#3b82f6',
-  '#8b5cf6', '#ef4444', '#14b8a6', '#f97316', '#84cc16',
-];
-
-const ICON_OPTIONS = ['circle', 'home', 'car', 'food', 'shopping', 'health', 'education', 'entertainment', 'travel', 'other'];
-
-type FormState = {
-  name: string;
-  masterCategory: 'daily' | 'weekly' | 'monthly';
-  color: string;
-  icon: string;
-};
-
-const DEFAULT_FORM: FormState = {
+const DEFAULT_FORM: CategoryFormState = {
   name: '',
   masterCategory: 'monthly',
   color: '#6366f1',
@@ -39,7 +27,7 @@ export function CategoriesView() {
 
   const [showDialog, setShowDialog] = useState(false);
   const [editingCategory, setEditingCategory] = useState<Category | null>(null);
-  const [form, setForm] = useState<FormState>(DEFAULT_FORM);
+  const [form, setForm] = useState<CategoryFormState>(DEFAULT_FORM);
   const [isSaving, setIsSaving] = useState(false);
   const [formError, setFormError] = useState<string | null>(null);
 
@@ -54,7 +42,7 @@ export function CategoriesView() {
     setEditingCategory(cat);
     setForm({
       name: cat.name,
-      masterCategory: cat.masterCategory as FormState['masterCategory'],
+      masterCategory: cat.masterCategory as CategoryFormState['masterCategory'],
       color: cat.color,
       icon: cat.icon,
     });
@@ -124,41 +112,13 @@ export function CategoriesView() {
               const items = grouped[group];
               if (items.length === 0) return null;
               return (
-                <Card key={group}>
-                  <CardHeader>
-                    <CardTitle>{MASTER_LABELS[group]}</CardTitle>
-                  </CardHeader>
-                  <CardContent className="space-y-2">
-                    {items.map((cat) => (
-                      <div
-                        key={cat.id}
-                        className="flex items-center justify-between rounded-lg border p-3"
-                      >
-                        <div className="flex items-center gap-3">
-                          <span
-                            className="w-4 h-4 rounded-full flex-shrink-0"
-                            style={{ backgroundColor: cat.color }}
-                          />
-                          <span className="font-medium">{cat.name}</span>
-                          <span className="text-xs text-muted-foreground">{cat.icon}</span>
-                        </div>
-                        <div className="flex gap-2">
-                          <Button size="sm" variant="outline" onClick={() => openEdit(cat)}>
-                            Edit
-                          </Button>
-                          <Button
-                            size="sm"
-                            variant="outline"
-                            onClick={() => handleDelete(cat)}
-                            className="text-red-600 hover:text-red-700"
-                          >
-                            Delete
-                          </Button>
-                        </div>
-                      </div>
-                    ))}
-                  </CardContent>
-                </Card>
+                <CategoryGroupSection
+                  key={group}
+                  masterLabel={MASTER_LABELS[group]}
+                  categories={items}
+                  onEdit={openEdit}
+                  onDelete={handleDelete}
+                />
               );
             })}
 
@@ -171,106 +131,16 @@ export function CategoriesView() {
         )}
       </div>
 
-      {/* Dialog */}
       {showDialog && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
-          <div className="bg-background rounded-xl shadow-lg w-full max-w-md p-6 space-y-4">
-            <h2 className="text-lg font-semibold">
-              {editingCategory ? 'Edit Category' : 'New Category'}
-            </h2>
-
-            <form onSubmit={handleSubmit} className="space-y-4">
-              {formError && (
-                <div className="text-sm text-red-600 bg-red-50 border border-red-200 rounded p-2">
-                  {formError}
-                </div>
-              )}
-
-              <div className="space-y-1">
-                <label className="text-sm font-medium">Name</label>
-                <input
-                  className="w-full rounded-md border px-3 py-2 text-sm"
-                  value={form.name}
-                  onChange={(e) => setForm((f) => ({ ...f, name: e.target.value }))}
-                  required
-                  placeholder="e.g. Food & Dining"
-                />
-              </div>
-
-              <div className="space-y-1">
-                <label className="text-sm font-medium">Budget Period</label>
-                <div className="flex gap-2">
-                  {(['daily', 'weekly', 'monthly'] as const).map((m) => (
-                    <button
-                      key={m}
-                      type="button"
-                      className={`flex-1 rounded-md border px-3 py-2 text-sm capitalize transition-colors ${
-                        form.masterCategory === m
-                          ? 'bg-primary text-primary-foreground border-primary'
-                          : 'hover:bg-muted'
-                      }`}
-                      onClick={() => setForm((f) => ({ ...f, masterCategory: m }))}
-                    >
-                      {m}
-                    </button>
-                  ))}
-                </div>
-              </div>
-
-              <div className="space-y-1">
-                <label className="text-sm font-medium">Color</label>
-                <div className="flex gap-2 flex-wrap">
-                  {COLOR_OPTIONS.map((c) => (
-                    <button
-                      key={c}
-                      type="button"
-                      className={`w-7 h-7 rounded-full border-2 transition-transform ${
-                        form.color === c ? 'border-foreground scale-110' : 'border-transparent'
-                      }`}
-                      style={{ backgroundColor: c }}
-                      onClick={() => setForm((f) => ({ ...f, color: c }))}
-                    />
-                  ))}
-                </div>
-              </div>
-
-              <div className="space-y-1">
-                <label className="text-sm font-medium">Icon</label>
-                <div className="flex gap-2 flex-wrap">
-                  {ICON_OPTIONS.map((ic) => (
-                    <button
-                      key={ic}
-                      type="button"
-                      className={`px-2 py-1 rounded text-xs border transition-colors ${
-                        form.icon === ic
-                          ? 'bg-primary text-primary-foreground border-primary'
-                          : 'hover:bg-muted'
-                      }`}
-                      onClick={() => setForm((f) => ({ ...f, icon: ic }))}
-                    >
-                      {ic}
-                    </button>
-                  ))}
-                </div>
-              </div>
-
-              <div className="flex gap-2 pt-2">
-                <Button
-                  type="button"
-                  variant="outline"
-                  className="flex-1"
-                  onClick={() => setShowDialog(false)}
-                  disabled={isSaving}
-                >
-                  Cancel
-                </Button>
-                <Button type="submit" className="flex-1" disabled={isSaving}>
-                  {isSaving ? 'Saving...' : editingCategory ? 'Save Changes' : 'Create'}
-                </Button>
-              </div>
-            </form>
-          </div>
-        </div>
+        <CategoryFormDialog
+          isEdit={editingCategory !== null}
+          form={form}
+          isSaving={isSaving}
+          error={formError}
+          onFormChange={(patch) => setForm((f) => ({ ...f, ...patch }))}
+          onSubmit={handleSubmit}
+          onClose={() => setShowDialog(false)}
+        />
       )}
     </main>
   );

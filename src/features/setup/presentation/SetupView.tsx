@@ -6,7 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { useSetupViewModel } from './useSetupViewModel';
 import type { SetupCategory } from './useSetupViewModel';
-import { CurrencyInput } from '@/shared/presentation/common/CurrencyInput';
+import { CurrencyInput } from '@/shared/presentation/common/atoms/CurrencyInput';
 import { formatCurrency } from '@/shared/core/utils/formatCurrency';
 import { ROUTES } from '@/shared/presentation/navigation/routes';
 

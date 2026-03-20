@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { useBudgetSettingNewViewModel } from './useBudgetSettingNewViewModel';
-import { CurrencyInput } from '@/shared/presentation/common/CurrencyInput';
+import { CurrencyInput } from '@/shared/presentation/common/atoms/CurrencyInput';
 import { ROUTES } from '@/shared/presentation/navigation/routes';
 
 const CURRENCY_OPTIONS = [
