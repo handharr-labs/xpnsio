@@ -217,6 +217,9 @@ export function DashboardView() {
                                       <p className="text-xs text-muted-foreground">
                                         {formatIDR(c.spentToday!)} / {formatIDR(c.availableToday!)} (incl. rollover)
                                       </p>
+                                      <p className="text-xs text-muted-foreground">
+                                        {formatIDR(c.availableToday! - c.spentToday!)} left
+                                      </p>
                                       <div className="w-full bg-muted rounded-full h-1.5">
                                         <div
                                           className={`h-1.5 rounded-full ${c.todayProgress!.colorClass}`}
@@ -251,6 +254,9 @@ export function DashboardView() {
                                       </div>
                                       <p className="text-xs text-muted-foreground">
                                         {formatIDR(c.spentThisWeek!)} / {formatIDR(c.availableThisWeek!)} (incl. rollover)
+                                      </p>
+                                      <p className="text-xs text-muted-foreground">
+                                        {formatIDR(c.availableThisWeek! - c.spentThisWeek!)} left
                                       </p>
                                       <div className="w-full bg-muted rounded-full h-1.5">
                                         <div
@@ -330,6 +336,9 @@ export function DashboardView() {
                                       </div>
                                       <p className="text-xs text-muted-foreground">
                                         {formatIDR(c.spentThisWeek!)} / {formatIDR(c.availableThisWeek!)} (incl. rollover)
+                                      </p>
+                                      <p className="text-xs text-muted-foreground">
+                                        {formatIDR(c.availableThisWeek! - c.spentThisWeek!)} left
                                       </p>
                                       <div className="w-full bg-muted rounded-full h-1.5">
                                         <div
