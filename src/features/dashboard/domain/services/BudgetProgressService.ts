@@ -43,7 +43,7 @@ export class BudgetProgressServiceImpl implements BudgetProgressService {
   }
 
   calculatePercent(spent: number, budget: number): number {
-    if (budget <= 0) return 0;
+    if (budget <= 0) return spent > 0 ? 100 : 0;
     return Math.floor((spent / budget) * 100);
   }
 

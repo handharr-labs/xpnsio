@@ -4,6 +4,16 @@ import type { CategoryBudgetInfo } from '@/features/dashboard/domain/use-cases/d
 const formatIDR = (amount: number) =>
   new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR' }).format(amount);
 
+const formatWeekRange = (weekStartStr: string | undefined): string => {
+  if (!weekStartStr) return '';
+  const start = new Date(weekStartStr);
+  const end = new Date(weekStartStr);
+  end.setDate(end.getDate() + 6);
+  const fmt = (d: Date) =>
+    d.toLocaleDateString('en-GB', { day: 'numeric', month: 'short' });
+  return `${fmt(start)} – ${fmt(end)}`;
+};
+
 const MASTER_LABELS: Record<string, string> = {
   daily: 'Daily',
   weekly: 'Weekly',
@@ -76,7 +86,7 @@ function DailyCategoryCard({ c }: { c: CategoryBudgetInfo }) {
           <div className="space-y-1 py-3">
             <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-2">Weekly</p>
             <p className="text-xs text-muted-foreground">
-              Weekly: {formatIDR(c.totalSpent)} / {formatIDR(c.accumulatedWeeklyBudget!)} (Week {weekNumber})
+              Weekly: {formatIDR(c.totalSpent)} / {formatIDR(c.accumulatedWeeklyBudget!)} (Week {weekNumber} · {formatWeekRange(c.weekStartStr)})
             </p>
             <div className="flex justify-between text-xs text-muted-foreground">
               <span>Pacing</span>
@@ -142,7 +152,7 @@ function WeeklyCategoryCard({ c }: { c: CategoryBudgetInfo }) {
           <div className="space-y-1 pb-3">
             <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-2">Weekly</p>
             <p className="text-xs text-muted-foreground">
-              Weekly: {formatIDR(c.totalSpent)} / {formatIDR(accumulated)} (Week {Math.ceil((c.periodDaysElapsed ?? 0) / 7)})
+              Weekly: {formatIDR(c.totalSpent)} / {formatIDR(accumulated)} (Week {c.periodWeeksElapsed} · {formatWeekRange(c.weekStartStr)})
             </p>
             <div className="flex justify-between text-xs text-muted-foreground">
               <span>Pacing</span>

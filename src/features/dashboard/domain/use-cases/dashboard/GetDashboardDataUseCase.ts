@@ -20,6 +20,7 @@ export interface CategoryBudgetInfo {
   weeklyBudget?: number;            // monthlyBudget / weeksInPeriod (weekly only)
   accumulatedWeeklyBudget?: number; // weeklyBudget × weeksElapsed (weekly only)
   periodWeeksElapsed?: number;      // weeks elapsed since period start (weekly only)
+  weekStartStr?: string;            // ISO date string of the current week's start (daily/weekly)
   dailyProgress?: BudgetProgressData;
   weeklyProgress?: BudgetProgressData;
   monthlyProgress?: BudgetProgressData;
@@ -188,7 +189,9 @@ export class GetDashboardDataUseCaseImpl implements GetDashboardDataUseCase {
           rolloverAmount,
           dailyBudget,
           accumulatedBudgetToDate,
+          accumulatedWeeklyBudget: dailyBudget * weekNumber * 7,
           periodDaysElapsed: daysElapsed,
+          weekStartStr,
           dailyProgress,
           weeklyProgress,
           monthlyProgress,
@@ -246,6 +249,7 @@ export class GetDashboardDataUseCaseImpl implements GetDashboardDataUseCase {
           weeklyBudget,
           accumulatedWeeklyBudget,
           periodWeeksElapsed: weeksElapsed,
+          weekStartStr,
           weeklyProgress,
           monthlyProgress,
           spentThisWeek,

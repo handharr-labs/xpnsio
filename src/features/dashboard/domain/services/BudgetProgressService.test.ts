@@ -5,12 +5,20 @@ describe('BudgetProgressService', () => {
   const service = new BudgetProgressServiceImpl();
 
   describe('calculatePercent', () => {
-    it('should return 0 when budget is 0', () => {
-      expect(service.calculatePercent(100, 0)).toBe(0);
+    it('should return 0 when budget is 0 and no spending', () => {
+      expect(service.calculatePercent(0, 0)).toBe(0);
     });
 
-    it('should return 0 when budget is negative', () => {
-      expect(service.calculatePercent(100, -10)).toBe(0);
+    it('should return 0 when budget is negative and no spending', () => {
+      expect(service.calculatePercent(0, -10)).toBe(0);
+    });
+
+    it('should return 100 when budget is 0 and there is spending', () => {
+      expect(service.calculatePercent(500, 0)).toBe(100);
+    });
+
+    it('should return 100 when budget is negative and there is spending', () => {
+      expect(service.calculatePercent(500, -100)).toBe(100);
     });
 
     it('should return floor of percentage', () => {
@@ -124,15 +132,15 @@ describe('BudgetProgressService', () => {
       expect(result.displayText).toBe('0 left');
     });
 
-    it('should return complete progress data for zero budget', () => {
-      const result = service.calculateProgress({ spent: 50, budget: 0 });
+    it('should return complete progress data for zero budget with spending', () => {
+      const result = service.calculateProgress({ spent: 500, budget: 0 });
 
-      expect(result.percent).toBe(0);
-      expect(result.remaining).toBe(-50);
+      expect(result.percent).toBe(100);
+      expect(result.remaining).toBe(-500);
       expect(result.isOverrun).toBe(true);
-      expect(result.colorClass).toBe('bg-green-500');
-      expect(result.textClass).toBe('text-green-600');
-      expect(result.displayText).toBe('Over by 50');
+      expect(result.colorClass).toBe('bg-red-500');
+      expect(result.textClass).toBe('text-red-600');
+      expect(result.displayText).toBe('Over by 500');
     });
   });
 });
