@@ -227,7 +227,7 @@ export function CategoryBreakdownSection({ categories }: CategoryBreakdownSectio
 
   return (
     <section className="space-y-5">
-      <h2 className="text-lg font-semibold">Categories</h2>
+      <h2 className="text-lg font-semibold text-white">Categories</h2>
 
       {(['daily', 'weekly', 'monthly'] as const).map((period) => {
         const items = categories.filter((c) => c.masterCategory === period);
@@ -236,10 +236,10 @@ export function CategoryBreakdownSection({ categories }: CategoryBreakdownSectio
         return (
           <div key={period} className="space-y-3">
             <div className="flex items-center gap-2">
-              <h3 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+              <h3 className="text-xs font-semibold uppercase tracking-wider text-zinc-400">
                 {MASTER_LABELS[period]}
               </h3>
-              <div className="flex-1 h-px bg-border/50" />
+              <div className="flex-1 h-px bg-white/10" />
             </div>
 
             <div className="grid gap-3 md:grid-cols-2">

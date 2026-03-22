@@ -84,7 +84,7 @@ export function TransactionDetailView({ id }: { id: string }) {
   // Loading State
   if (isLoading) {
     return (
-      <main className="min-h-screen bg-background">
+      <main className="min-h-screen bg-zinc-950 dark">
         <div className="px-4 pt-4 pb-8 md:px-6 md:pt-6">
           <div className="max-w-lg mx-auto space-y-6">
             <div className="h-11 w-32 rounded-xl bg-muted animate-pulse" />
@@ -99,7 +99,7 @@ export function TransactionDetailView({ id }: { id: string }) {
   // Not Found State
   if (!transaction) {
     return (
-      <main className="min-h-screen bg-background">
+      <main className="min-h-screen bg-zinc-950 dark">
         <div className="px-4 pt-4 pb-8 md:px-6 md:pt-6">
           <div className="max-w-lg mx-auto">
             <div className="rounded-2xl ring-1 ring-border p-12 text-center space-y-4">
@@ -125,7 +125,7 @@ export function TransactionDetailView({ id }: { id: string }) {
   const isIncome = transaction.type === 'income';
 
   return (
-    <main className="min-h-screen bg-background">
+    <main className="min-h-screen bg-zinc-950 dark">
       <div className="px-4 pt-4 pb-8 md:px-6 md:pt-6">
         <div className="max-w-lg mx-auto space-y-6">
           {/* Header */}

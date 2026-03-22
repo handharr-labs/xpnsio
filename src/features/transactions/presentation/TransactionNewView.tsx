@@ -49,19 +49,19 @@ export function TransactionNewView() {
   const selectedCategory = categories.find((c) => c.id === categoryId);
 
   return (
-    <main className="min-h-screen bg-background">
+    <main className="min-h-screen bg-zinc-950 dark">
       <div className="px-4 pt-4 pb-8 md:px-6 md:pt-6">
         <div className="max-w-lg mx-auto">
           {/* Header */}
           <header className="flex items-center gap-3 mb-8">
             <button
               onClick={() => router.back()}
-              className="flex items-center justify-center w-11 h-11 rounded-xl bg-muted/50 hover:bg-muted transition-colors"
+              className="flex items-center justify-center w-11 h-11 rounded-xl bg-zinc-800/50 hover:bg-zinc-700 transition-colors text-white"
               aria-label="Go back"
             >
               <ArrowLeft className="w-5 h-5" />
             </button>
-            <h1 className="text-xl font-bold tracking-tight">New Expense</h1>
+            <h1 className="text-xl font-bold tracking-tight text-white">New Expense</h1>
           </header>
 
           <form onSubmit={handleSubmit} className="space-y-8">
@@ -73,8 +73,8 @@ export function TransactionNewView() {
             )}
 
             {/* Amount - Hero Section */}
-            <div className="rounded-2xl bg-muted/30 ring-1 ring-border p-6 md:p-8 text-center space-y-4">
-              <p className="text-sm font-medium text-muted-foreground">Amount</p>
+            <div className="rounded-2xl bg-zinc-900/50 ring-1 ring-white/10 p-6 md:p-8 text-center space-y-4">
+              <p className="text-sm font-medium text-zinc-400">Amount</p>
               <div className="max-w-xs mx-auto">
                 <CurrencyInput
                   value={amount}
@@ -88,15 +88,15 @@ export function TransactionNewView() {
 
             {/* Category - Chip/Pill Selector */}
             <div className="space-y-3">
-              <label className="text-sm font-medium text-muted-foreground">Category</label>
+              <label className="text-sm font-medium text-zinc-400">Category</label>
               <div className="flex flex-wrap gap-2">
                 <button
                   type="button"
                   onClick={() => setCategoryId('')}
                   className={`flex items-center gap-2 px-4 py-2.5 rounded-full text-sm font-medium transition-all min-h-[44px] ${
                     !categoryId
-                      ? 'bg-primary text-primary-foreground ring-2 ring-primary ring-offset-2 ring-offset-background'
-                      : 'bg-muted/50 ring-1 ring-border hover:bg-muted'
+                      ? 'bg-primary text-primary-foreground ring-2 ring-primary ring-offset-2 ring-offset-zinc-950'
+                      : 'bg-zinc-800/50 ring-1 ring-white/10 hover:bg-zinc-700 text-zinc-300'
                   }`}
                 >
                   {!categoryId && <Check className="w-4 h-4" />}
@@ -109,8 +109,8 @@ export function TransactionNewView() {
                     onClick={() => setCategoryId(cat.id)}
                     className={`flex items-center gap-2 px-4 py-2.5 rounded-full text-sm font-medium transition-all min-h-[44px] ${
                       categoryId === cat.id
-                        ? 'bg-primary text-primary-foreground ring-2 ring-primary ring-offset-2 ring-offset-background'
-                        : 'bg-muted/50 ring-1 ring-border hover:bg-muted'
+                        ? 'bg-primary text-primary-foreground ring-2 ring-primary ring-offset-2 ring-offset-zinc-950'
+                        : 'bg-zinc-800/50 ring-1 ring-white/10 hover:bg-zinc-700 text-zinc-300'
                     }`}
                   >
                     <span
@@ -126,12 +126,12 @@ export function TransactionNewView() {
 
             {/* Date - Compact */}
             <div className="space-y-2">
-              <label className="text-sm font-medium text-muted-foreground">Date</label>
+              <label className="text-sm font-medium text-zinc-400">Date</label>
               <div className="relative">
-                <Calendar className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground pointer-events-none" />
+                <Calendar className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-zinc-400 pointer-events-none" />
                 <input
                   type="date"
-                  className="w-full h-12 pl-12 pr-4 rounded-xl bg-muted/50 ring-1 ring-border text-sm focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all"
+                  className="w-full h-12 pl-12 pr-4 rounded-xl bg-zinc-900/50 ring-1 ring-white/10 text-sm text-white focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all"
                   value={date}
                   onChange={(e) => setDate(e.target.value)}
                   required
@@ -141,12 +141,12 @@ export function TransactionNewView() {
 
             {/* Description - Smallest */}
             <div className="space-y-2">
-              <label className="text-sm font-medium text-muted-foreground">
-                Description <span className="text-muted-foreground/60">(optional)</span>
+              <label className="text-sm font-medium text-zinc-400">
+                Description <span className="text-zinc-500">(optional)</span>
               </label>
               <input
                 type="text"
-                className="w-full h-12 px-4 rounded-xl bg-muted/50 ring-1 ring-border text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all"
+                className="w-full h-12 px-4 rounded-xl bg-zinc-900/50 ring-1 ring-white/10 text-sm text-white placeholder:text-zinc-500 focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all"
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
                 placeholder="e.g. Lunch at the office"

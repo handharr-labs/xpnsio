@@ -84,19 +84,19 @@ export function TransactionsView() {
   const hasActiveFilters = localFilters.startDate || localFilters.endDate || localFilters.categoryId || localFilters.type;
 
   return (
-    <main className="min-h-screen bg-background">
+    <main className="min-h-screen bg-zinc-950 dark">
       {/* Content Container - PWA safe area padding */}
       <div className="px-4 pt-4 pb-[calc(5rem+env(safe-area-inset-bottom))] md:px-6 md:pt-6 md:pb-6">
         <div className="max-w-3xl mx-auto space-y-4">
           {/* Header */}
           <header className="flex items-center justify-between min-h-[44px]">
-            <h1 className="text-xl md:text-2xl font-bold tracking-tight">Transactions</h1>
+            <h1 className="text-xl md:text-2xl font-bold tracking-tight text-white">Transactions</h1>
             <button
               onClick={() => setShowFilters(!showFilters)}
               className={`flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium transition-colors min-h-[44px] ${
                 showFilters || hasActiveFilters
                   ? 'bg-primary text-primary-foreground'
-                  : 'bg-muted hover:bg-muted/80 text-muted-foreground'
+                  : 'bg-zinc-800 hover:bg-zinc-700 text-zinc-400'
               }`}
             >
               <SlidersHorizontal className="w-4 h-4" />
@@ -109,20 +109,20 @@ export function TransactionsView() {
 
           {/* Search Bar - Prominent */}
           <div className="relative">
-            <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
+            <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-zinc-400" />
             <input
               type="search"
               placeholder="Search transactions..."
-              className="w-full h-12 pl-12 pr-4 rounded-xl bg-muted/50 ring-1 ring-border text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all"
+              className="w-full h-12 pl-12 pr-4 rounded-xl bg-zinc-900/50 ring-1 ring-white/10 text-sm text-white placeholder:text-zinc-500 focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all"
               value={localFilters.description}
               onChange={(e) => handleFiltersChange({ description: e.target.value })}
             />
             {localFilters.description && (
               <button
                 onClick={() => handleFiltersChange({ description: '' })}
-                className="absolute right-4 top-1/2 -translate-y-1/2 p-1 rounded-full hover:bg-muted"
+                className="absolute right-4 top-1/2 -translate-y-1/2 p-1 rounded-full hover:bg-zinc-800"
               >
-                <X className="w-4 h-4 text-muted-foreground" />
+                <X className="w-4 h-4 text-zinc-400" />
               </button>
             )}
           </div>
@@ -149,18 +149,18 @@ export function TransactionsView() {
           {isLoading ? (
             <div className="space-y-3">
               {[1, 2, 3, 4, 5].map((i) => (
-                <div key={i} className="h-16 rounded-xl bg-muted animate-pulse" />
+                <div key={i} className="h-16 rounded-xl bg-zinc-800/50 animate-pulse" />
               ))}
             </div>
           ) : transactions.length === 0 ? (
             /* Empty State */
-            <div className="rounded-2xl ring-1 ring-border p-12 text-center space-y-4">
-              <div className="w-16 h-16 rounded-full bg-muted mx-auto flex items-center justify-center">
-                <Search className="w-7 h-7 text-muted-foreground" />
+            <div className="rounded-2xl ring-1 ring-white/10 bg-zinc-900/50 p-12 text-center space-y-4">
+              <div className="w-16 h-16 rounded-full bg-zinc-800 mx-auto flex items-center justify-center">
+                <Search className="w-7 h-7 text-zinc-400" />
               </div>
               <div className="space-y-2">
-                <p className="text-lg font-semibold">No transactions found</p>
-                <p className="text-muted-foreground text-sm max-w-xs mx-auto">
+                <p className="text-lg font-semibold text-white">No transactions found</p>
+                <p className="text-zinc-400 text-sm max-w-xs mx-auto">
                   {hasActiveFilters || localFilters.description
                     ? 'Try adjusting your filters or search term.'
                     : 'Start tracking your spending by adding your first transaction.'}
