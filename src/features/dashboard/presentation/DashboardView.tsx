@@ -30,7 +30,7 @@ export function DashboardView() {
   return (
     <main
       ref={containerRef as React.RefObject<HTMLElement>}
-      className="min-h-screen overscroll-none bg-background"
+      className="min-h-screen overscroll-none"
     >
       {/* Pull to Refresh Indicator */}
       {(pullDistance > 0 || isRefreshing) && (
@@ -48,7 +48,7 @@ export function DashboardView() {
         <div className="max-w-3xl mx-auto space-y-6">
           {/* Header */}
           <header className="flex items-center justify-between min-h-[44px]">
-            <h1 className="text-xl md:text-2xl font-bold tracking-tight">Dashboard</h1>
+            <h1 className="text-xl md:text-2xl font-bold tracking-tight text-white">Dashboard</h1>
             <MonthNavigator
               label={monthLabel}
               onPrev={goToPrevMonth}
@@ -67,29 +67,29 @@ export function DashboardView() {
           {/* Loading State */}
           {isLoading ? (
             <div className="space-y-4">
-              <div className="h-48 rounded-2xl bg-muted animate-pulse" />
-              <div className="h-8 w-32 rounded-lg bg-muted animate-pulse" />
+              <div className="h-48 rounded-2xl bg-zinc-800/50 animate-pulse" />
+              <div className="h-8 w-32 rounded-lg bg-zinc-800/50 animate-pulse" />
               <div className="grid gap-3 md:grid-cols-2">
                 {[1, 2, 3, 4].map((i) => (
-                  <div key={i} className="h-32 rounded-xl bg-muted animate-pulse" />
+                  <div key={i} className="h-32 rounded-xl bg-zinc-800/50 animate-pulse" />
                 ))}
               </div>
             </div>
           ) : !dashboardData?.hasActiveBudget ? (
             /* Empty State */
-            <Card className="border-dashed">
+            <Card className="border-dashed bg-zinc-900/50 ring-1 ring-white/10 border-zinc-700">
               <CardContent className="py-16 text-center space-y-4">
-                <div className="w-16 h-16 rounded-full bg-muted mx-auto flex items-center justify-center">
+                <div className="w-16 h-16 rounded-full bg-zinc-800 mx-auto flex items-center justify-center">
                   <span className="text-2xl">📊</span>
                 </div>
                 <div className="space-y-2">
-                  <p className="text-lg font-semibold">No budget for this period</p>
+                  <p className="text-lg font-semibold text-white">No budget for this period</p>
                   {isCurrentMonth ? (
-                    <p className="text-muted-foreground text-sm max-w-xs mx-auto">
+                    <p className="text-zinc-400 text-sm max-w-xs mx-auto">
                       Set up a budget to start tracking your spending and stay on top of your finances.
                     </p>
                   ) : (
-                    <p className="text-muted-foreground text-sm">No budget was applied for this month.</p>
+                    <p className="text-zinc-400 text-sm">No budget was applied for this month.</p>
                   )}
                 </div>
                 {isCurrentMonth && (

@@ -1,13 +1,10 @@
 import { Card, CardContent } from '@/components/ui/card';
 import { ChevronRight } from 'lucide-react';
 import type { CategoryBudgetInfo } from '@/features/dashboard/domain/use-cases/dashboard/GetDashboardDataUseCase';
-import { formatCurrency } from '@/shared/core/utils/formatCurrency';
+import { formatCurrency, formatCompactCurrency } from '@/shared/core/utils/formatCurrency';
 import { formatWeekRange } from '@/shared/core/utils/formatWeekRange';
 
-const formatIDR = (amount: number) => formatCurrency(amount, 'IDR');
-
-const formatCompact = (amount: number) =>
-  new Intl.NumberFormat('id-ID', { notation: 'compact', maximumFractionDigits: 1 }).format(amount);
+const formatCompact = (amount: number) => formatCompactCurrency(amount, 'IDR');
 
 const MASTER_LABELS: Record<string, string> = {
   daily: 'Daily',
@@ -110,7 +107,7 @@ function DailyCategoryCard({ c }: { c: CategoryBudgetInfo }) {
           </div>
           <ProgressBar percent={todayProgress.percent} colorClass={todayProgress.colorClass} height="md" />
           <p className="text-xs text-muted-foreground">
-            {formatIDR(c.spentToday)} of {formatIDR(c.availableToday)}
+            {formatCurrency(c.spentToday, 'IDR')} of {formatCurrency(c.availableToday, 'IDR')}
           </p>
         </div>
 
@@ -166,7 +163,7 @@ function WeeklyCategoryCard({ c }: { c: CategoryBudgetInfo }) {
           </div>
           <ProgressBar percent={thisWeekProgress.percent} colorClass={thisWeekProgress.colorClass} height="md" />
           <p className="text-xs text-muted-foreground">
-            {formatIDR(c.spentThisWeek)} of {formatIDR(c.availableThisWeek)}
+            {formatCurrency(c.spentThisWeek, 'IDR')} of {formatCurrency(c.availableThisWeek, 'IDR')}
           </p>
         </div>
 
@@ -213,7 +210,7 @@ function MonthlyCategoryCard({ c }: { c: CategoryBudgetInfo }) {
         {/* Stats Row */}
         <div className="flex items-center justify-between">
           <span className="text-xs text-muted-foreground">
-            {formatIDR(c.totalSpent)} / {formatIDR(c.monthlyBudget)}
+            {formatCurrency(c.totalSpent, 'IDR')} / {formatCurrency(c.monthlyBudget, 'IDR')}
           </span>
           <StatusBadge isOverrun={isOverrun} remaining={remaining} textClass={textClass} />
         </div>
@@ -227,7 +224,7 @@ export function CategoryBreakdownSection({ categories }: CategoryBreakdownSectio
 
   return (
     <section className="space-y-5">
-      <h2 className="text-lg font-semibold">Categories</h2>
+      <h2 className="text-lg font-semibold text-white">Categories</h2>
 
       {(['daily', 'weekly', 'monthly'] as const).map((period) => {
         const items = categories.filter((c) => c.masterCategory === period);
@@ -236,10 +233,10 @@ export function CategoryBreakdownSection({ categories }: CategoryBreakdownSectio
         return (
           <div key={period} className="space-y-3">
             <div className="flex items-center gap-2">
-              <h3 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+              <h3 className="text-xs font-semibold uppercase tracking-wider text-zinc-400">
                 {MASTER_LABELS[period]}
               </h3>
-              <div className="flex-1 h-px bg-border/50" />
+              <div className="flex-1 h-px bg-white/10" />
             </div>
 
             <div className="grid gap-3 md:grid-cols-2">
