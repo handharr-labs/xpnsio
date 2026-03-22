@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { Card, CardContent } from '@/components/ui/card';
+import { Plus, FileText } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useBudgetSettingsViewModel } from './useBudgetSettingsViewModel';
 import { BudgetSettingCard } from './organisms/BudgetSettingCard';
@@ -44,43 +44,72 @@ export function BudgetSettingsView() {
   };
 
   return (
-    <main className="min-h-screen p-6">
-      <div className="max-w-3xl mx-auto space-y-6">
-        <div className="flex items-center justify-between">
-          <h1 className="text-2xl font-bold">Budget Settings</h1>
-          <Button onClick={() => router.push(ROUTES.budgetSettingNew)}>
-            + New Budget Setting
-          </Button>
+    <main className="min-h-screen bg-background">
+      {/* Content Container - PWA safe area padding */}
+      <div className="px-4 pt-4 pb-[calc(5rem+env(safe-area-inset-bottom))] md:px-6 md:pt-6 md:pb-6">
+        <div className="max-w-3xl mx-auto space-y-6">
+          {/* Header */}
+          <header className="flex items-center justify-between min-h-[44px]">
+            <h1 className="text-xl md:text-2xl font-bold tracking-tight">Budget Templates</h1>
+            <Button
+              onClick={() => router.push(ROUTES.budgetSettingNew)}
+              className="h-11 rounded-xl gap-2"
+            >
+              <Plus className="w-4 h-4" />
+              <span className="hidden sm:inline">New Template</span>
+            </Button>
+          </header>
+
+          {/* Error State */}
+          {(error || actionError) && (
+            <div className="rounded-xl bg-red-500/10 ring-1 ring-red-500/20 p-4 text-sm text-red-700 dark:text-red-400">
+              {error ?? actionError}
+            </div>
+          )}
+
+          {/* Loading State */}
+          {isLoading ? (
+            <div className="space-y-4">
+              {[1, 2].map((i) => (
+                <div key={i} className="h-48 rounded-2xl bg-muted animate-pulse" />
+              ))}
+            </div>
+          ) : budgetSettings.length === 0 ? (
+            /* Empty State */
+            <div className="rounded-2xl ring-1 ring-border border-dashed p-12 text-center space-y-4">
+              <div className="w-16 h-16 rounded-full bg-muted mx-auto flex items-center justify-center">
+                <FileText className="w-7 h-7 text-muted-foreground" />
+              </div>
+              <div className="space-y-2">
+                <p className="text-lg font-semibold">No budget templates yet</p>
+                <p className="text-muted-foreground text-sm max-w-sm mx-auto">
+                  Create a budget template to quickly apply pre-configured budgets to any month.
+                </p>
+              </div>
+              <Button
+                onClick={() => router.push(ROUTES.budgetSettingNew)}
+                size="lg"
+                className="mt-2"
+              >
+                Create Your First Template
+              </Button>
+            </div>
+          ) : (
+            /* Budget Settings Grid */
+            <div className="grid gap-4 md:grid-cols-2">
+              {budgetSettings.map((setting) => (
+                <BudgetSettingCard
+                  key={setting.id}
+                  setting={setting}
+                  isApplying={applyingId === setting.id}
+                  onApply={handleApply}
+                  onEdit={(id) => router.push(ROUTES.budgetSettingEdit(id))}
+                  onDelete={handleDelete}
+                />
+              ))}
+            </div>
+          )}
         </div>
-
-        {(error || actionError) && (
-          <div className="rounded-md bg-red-50 border border-red-200 p-3 text-sm text-red-700">
-            {error ?? actionError}
-          </div>
-        )}
-
-        {isLoading ? (
-          <p className="text-muted-foreground">Loading budget settings...</p>
-        ) : budgetSettings.length === 0 ? (
-          <Card>
-            <CardContent className="py-12 text-center text-muted-foreground">
-              No budget settings yet. Create one to get started!
-            </CardContent>
-          </Card>
-        ) : (
-          <div className="space-y-4">
-            {budgetSettings.map((setting) => (
-              <BudgetSettingCard
-                key={setting.id}
-                setting={setting}
-                isApplying={applyingId === setting.id}
-                onApply={handleApply}
-                onEdit={(id) => router.push(ROUTES.budgetSettingEdit(id))}
-                onDelete={handleDelete}
-              />
-            ))}
-          </div>
-        )}
       </div>
     </main>
   );

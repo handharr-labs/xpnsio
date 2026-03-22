@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Layers, Wallet, Settings, CheckCircle2, Plus, Trash2, Check } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useSetupViewModel } from './useSetupViewModel';
 import type { SetupCategory } from './useSetupViewModel';
@@ -28,6 +28,13 @@ const DEFAULT_CATEGORIES: SetupCategory[] = [
   { name: 'Transport', masterCategory: 'daily', color: '#3b82f6', icon: 'car', amount: 0 },
   { name: 'Shopping', masterCategory: 'monthly', color: '#ec4899', icon: 'shopping', amount: 0 },
   { name: 'Health', masterCategory: 'monthly', color: '#10b981', icon: 'health', amount: 0 },
+];
+
+const STEPS = [
+  { id: 1, label: 'Categories', Icon: Layers },
+  { id: 2, label: 'Amounts', Icon: Wallet },
+  { id: 3, label: 'Settings', Icon: Settings },
+  { id: 4, label: 'Review', Icon: CheckCircle2 },
 ];
 
 export function SetupView() {
@@ -66,231 +73,374 @@ export function SetupView() {
     }
   };
 
+  const getOrdinalSuffix = (day: number) => {
+    if (day >= 11 && day <= 13) return 'th';
+    switch (day % 10) {
+      case 1: return 'st';
+      case 2: return 'nd';
+      case 3: return 'rd';
+      default: return 'th';
+    }
+  };
+
   return (
-    <main className="min-h-screen p-6">
-      <div className="max-w-2xl mx-auto space-y-6">
-        <div className="space-y-2">
-          <h1 className="text-2xl font-bold">Welcome to Xpnsio</h1>
-          <p className="text-muted-foreground">Let&apos;s set up your budget in a few quick steps.</p>
-          <div className="flex gap-2 mt-4">
-            {[1, 2, 3, 4].map((s) => (
-              <div
-                key={s}
-                className={`h-2 flex-1 rounded-full transition-colors ${s <= step ? 'bg-primary' : 'bg-muted'}`}
-              />
-            ))}
+    <main className="min-h-screen bg-background">
+      <div className="px-4 pt-6 pb-8 md:px-6 md:pt-8">
+        <div className="max-w-2xl mx-auto space-y-8">
+          {/* Header */}
+          <div className="text-center space-y-2">
+            <h1 className="text-2xl md:text-3xl font-bold tracking-tight">Welcome to Xpnsio</h1>
+            <p className="text-muted-foreground">
+              {"Let's set up your budget in a few quick steps."}
+            </p>
           </div>
-          <p className="text-xs text-muted-foreground text-right">Step {step} of 4</p>
-        </div>
 
-        {error && (
-          <div className="rounded-md bg-red-50 border border-red-200 p-3 text-sm text-red-700">{error}</div>
-        )}
+          {/* Step Indicator */}
+          <div className="space-y-4">
+            {/* Progress Bar */}
+            <div className="relative h-2 bg-muted rounded-full overflow-hidden">
+              <div
+                className="absolute inset-y-0 left-0 bg-primary rounded-full transition-all duration-500 ease-out"
+                style={{ width: `${(step / 4) * 100}%` }}
+              />
+            </div>
 
-        {/* Step 1: Categories */}
-        {step === 1 && (
-          <Card>
-            <CardHeader><CardTitle>Step 1: Your Categories</CardTitle></CardHeader>
-            <CardContent className="space-y-3">
-              <p className="text-sm text-muted-foreground">We&apos;ve added some defaults. Customize or add your own.</p>
-              {categories.map((cat, index) => (
-                <div key={cat.name + cat.color} className="space-y-2 rounded-lg border p-3">
-                  <div className="flex items-center gap-2">
-                    <input
-                      className="flex-1 rounded-md border px-3 py-2 text-sm"
-                      value={cat.name}
-                      onChange={(e) => updateCategory(index, 'name', e.target.value)}
-                      placeholder="Category name"
-                    />
-                    <button
-                      type="button"
-                      className="text-red-500 hover:text-red-700 text-lg font-bold px-2"
-                      onClick={() => removeCategory(index)}
+            {/* Step Labels */}
+            <div className="flex justify-between">
+              {STEPS.map((s) => {
+                const isActive = step === s.id;
+                const isCompleted = step > s.id;
+                const Icon = s.Icon;
+
+                return (
+                  <div
+                    key={s.id}
+                    className={`flex items-center gap-2 ${
+                      isActive ? 'text-primary' : isCompleted ? 'text-primary/60' : 'text-muted-foreground'
+                    }`}
+                  >
+                    <div
+                      className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-medium transition-colors ${
+                        isActive
+                          ? 'bg-primary text-primary-foreground'
+                          : isCompleted
+                          ? 'bg-primary/20 text-primary'
+                          : 'bg-muted'
+                      }`}
                     >
-                      ×
-                    </button>
+                      {isCompleted ? <Check className="w-4 h-4" /> : <Icon className="w-4 h-4" />}
+                    </div>
+                    <span className="text-xs font-medium hidden sm:inline">{s.label}</span>
                   </div>
-                  <div className="flex gap-2 items-center">
-                    <select
-                      className="flex-1 rounded-md border px-2 py-1 text-xs"
-                      value={cat.masterCategory}
-                      onChange={(e) => updateCategory(index, 'masterCategory', e.target.value)}
-                    >
-                      <option value="daily">Daily</option>
-                      <option value="weekly">Weekly</option>
-                      <option value="monthly">Monthly</option>
-                    </select>
-                    <div className="flex gap-1">
-                      {COLOR_OPTIONS.slice(0, 5).map((c) => (
-                        <button
-                          key={c}
-                          type="button"
-                          className={`w-5 h-5 rounded-full border-2 ${cat.color === c ? 'border-foreground' : 'border-transparent'}`}
-                          style={{ backgroundColor: c }}
-                          onClick={() => updateCategory(index, 'color', c)}
-                        />
-                      ))}
+                );
+              })}
+            </div>
+          </div>
+
+          {/* Error */}
+          {error && (
+            <div className="rounded-xl bg-red-500/10 ring-1 ring-red-500/20 p-4 text-sm text-red-700 dark:text-red-400">
+              {error}
+            </div>
+          )}
+
+          {/* Step 1: Categories */}
+          {step === 1 && (
+            <div className="rounded-2xl ring-1 ring-border bg-card overflow-hidden">
+              <div className="p-5 border-b border-border">
+                <h2 className="text-lg font-semibold">Step 1: Your Categories</h2>
+                <p className="text-sm text-muted-foreground mt-1">
+                  {"We've added some defaults. Customize or add your own."}
+                </p>
+              </div>
+              <div className="p-5 space-y-3">
+                {categories.map((cat, index) => (
+                  <div
+                    key={index}
+                    className="rounded-xl ring-1 ring-border p-4 space-y-3"
+                  >
+                    <div className="flex items-center gap-3">
+                      <input
+                        className="flex-1 h-11 px-4 rounded-lg bg-muted/50 ring-1 ring-border text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all"
+                        value={cat.name}
+                        onChange={(e) => updateCategory(index, 'name', e.target.value)}
+                        placeholder="Category name"
+                      />
+                      <button
+                        type="button"
+                        className="flex items-center justify-center w-11 h-11 rounded-lg hover:bg-red-500/10 text-red-600 transition-colors"
+                        onClick={() => removeCategory(index)}
+                        aria-label="Remove category"
+                      >
+                        <Trash2 className="w-5 h-5" />
+                      </button>
+                    </div>
+                    <div className="flex items-center gap-3 flex-wrap">
+                      {/* Period Selector */}
+                      <div className="flex rounded-lg ring-1 ring-border overflow-hidden">
+                        {(['daily', 'weekly', 'monthly'] as const).map((m) => (
+                          <button
+                            key={m}
+                            type="button"
+                            className={`px-3 py-2 text-xs font-medium capitalize transition-colors min-h-[36px] ${
+                              cat.masterCategory === m
+                                ? 'bg-primary text-primary-foreground'
+                                : 'bg-muted/50 hover:bg-muted'
+                            }`}
+                            onClick={() => updateCategory(index, 'masterCategory', m)}
+                          >
+                            {m}
+                          </button>
+                        ))}
+                      </div>
+                      {/* Color Picker */}
+                      <div className="flex gap-1.5">
+                        {COLOR_OPTIONS.slice(0, 6).map((c) => (
+                          <button
+                            key={c}
+                            type="button"
+                            className={`w-7 h-7 rounded-full transition-all ${
+                              cat.color === c ? 'ring-2 ring-foreground ring-offset-2 ring-offset-background scale-110' : 'hover:scale-105'
+                            }`}
+                            style={{ backgroundColor: c }}
+                            onClick={() => updateCategory(index, 'color', c)}
+                            aria-label={`Select color ${c}`}
+                          />
+                        ))}
+                      </div>
                     </div>
                   </div>
-                </div>
-              ))}
-              <Button type="button" variant="outline" className="w-full" onClick={addCategory}>
-                + Add Category
-              </Button>
-              <Button
-                className="w-full"
-                onClick={() => setStep(2)}
-                disabled={categories.filter((c) => c.name.trim()).length === 0}
-              >
-                Next →
-              </Button>
-            </CardContent>
-          </Card>
-        )}
+                ))}
+                <Button
+                  type="button"
+                  variant="outline"
+                  className="w-full h-12 rounded-xl gap-2"
+                  onClick={addCategory}
+                >
+                  <Plus className="w-4 h-4" />
+                  Add Category
+                </Button>
+              </div>
+              <div className="p-5 border-t border-border">
+                <Button
+                  className="w-full h-12 rounded-xl"
+                  onClick={() => setStep(2)}
+                  disabled={categories.filter((c) => c.name.trim()).length === 0}
+                >
+                  Continue
+                </Button>
+              </div>
+            </div>
+          )}
 
-        {/* Step 2: Budget amounts */}
-        {step === 2 && (
-          <Card>
-            <CardHeader><CardTitle>Step 2: Set Budget Amounts</CardTitle></CardHeader>
-            <CardContent className="space-y-4">
-              <p className="text-sm text-muted-foreground">
-                How much do you want to budget for each category per month?
-              </p>
-
-              <div className="space-y-2">
+          {/* Step 2: Budget amounts */}
+          {step === 2 && (
+            <div className="rounded-2xl ring-1 ring-border bg-card overflow-hidden">
+              <div className="p-5 border-b border-border">
+                <h2 className="text-lg font-semibold">Step 2: Set Budget Amounts</h2>
+                <p className="text-sm text-muted-foreground mt-1">
+                  How much do you want to budget for each category per month?
+                </p>
+              </div>
+              <div className="p-5 space-y-3">
                 {categories.map((cat, index) => (
-                  <div key={cat.name + cat.color} className="flex items-center gap-3">
-                    <div className="flex items-center gap-2 flex-1">
-                      <span className="w-3 h-3 rounded-full flex-shrink-0" style={{ backgroundColor: cat.color }} />
-                      <span className="text-sm">{cat.name || 'Unnamed'}</span>
+                  <div
+                    key={index}
+                    className="flex items-center gap-4 p-4 rounded-xl ring-1 ring-border"
+                  >
+                    <div className="flex items-center gap-3 flex-1 min-w-0">
+                      <span
+                        className="w-4 h-4 rounded-full flex-shrink-0"
+                        style={{ backgroundColor: cat.color }}
+                      />
+                      <div className="min-w-0">
+                        <p className="text-sm font-medium truncate">{cat.name || 'Unnamed'}</p>
+                        <p className="text-xs text-muted-foreground capitalize">{cat.masterCategory}</p>
+                      </div>
                     </div>
                     <CurrencyInput
                       value={cat.amount}
                       onChange={(v) => updateCategory(index, 'amount', v)}
                       currency={currency}
-                      className="w-44"
+                      className="w-40"
                     />
                   </div>
                 ))}
-              </div>
 
-              {totalAllocated > 0 && (
-                <div className="border-t pt-3 text-sm">
-                  <div className="flex justify-between font-medium">
-                    <span>Total Monthly Budget</span>
-                    <span>{formatCurrency(totalAllocated, currency)}</span>
+                {/* Total */}
+                {totalAllocated > 0 && (
+                  <div className="rounded-xl bg-primary/10 ring-1 ring-primary/20 p-4">
+                    <div className="flex items-center justify-between">
+                      <span className="text-sm font-medium">Total Monthly Budget</span>
+                      <span className="text-lg font-bold text-primary">
+                        {formatCurrency(totalAllocated, currency)}
+                      </span>
+                    </div>
                   </div>
-                  <p className="text-xs text-muted-foreground mt-1">
-                    Total is calculated from your category budgets.
-                  </p>
-                </div>
-              )}
-
-              <div className="flex gap-3">
-                <Button variant="outline" className="flex-1" onClick={() => setStep(1)}>← Back</Button>
-                <Button className="flex-1" onClick={() => setStep(3)}>Next →</Button>
+                )}
               </div>
-            </CardContent>
-          </Card>
-        )}
-
-        {/* Step 3: Name + Currency */}
-        {step === 3 && (
-          <Card>
-            <CardHeader><CardTitle>Step 3: Name Your Budget</CardTitle></CardHeader>
-            <CardContent className="space-y-4">
-              <div className="space-y-1">
-                <label className="text-sm font-medium">Budget Name</label>
-                <input
-                  className="w-full rounded-md border px-3 py-2 text-sm"
-                  value={budgetName}
-                  onChange={(e) => setBudgetName(e.target.value)}
-                  placeholder="My Budget"
-                />
-              </div>
-              <div className="space-y-1">
-                <label className="text-sm font-medium">Currency</label>
-                <select
-                  className="w-full rounded-md border px-3 py-2 text-sm"
-                  value={currency}
-                  onChange={(e) => setCurrency(e.target.value)}
+              <div className="p-5 border-t border-border flex gap-3">
+                <Button
+                  variant="outline"
+                  className="flex-1 h-12 rounded-xl"
+                  onClick={() => setStep(1)}
                 >
-                  {CURRENCY_OPTIONS.map((c) => (
-                    <option key={c.value} value={c.value}>{c.label}</option>
-                  ))}
-                </select>
+                  Back
+                </Button>
+                <Button className="flex-1 h-12 rounded-xl" onClick={() => setStep(3)}>
+                  Continue
+                </Button>
               </div>
-              <div className="space-y-1">
-                <label className="text-sm font-medium">Budget Start Day</label>
-                <select
-                  className="w-full rounded-md border px-3 py-2 text-sm"
-                  value={startDay}
-                  onChange={(e) => setStartDay(Number(e.target.value))}
-                >
-                  {Array.from({ length: 28 }, (_, i) => i + 1).map((day) => (
-                    <option key={day} value={day}>
-                      {day}{day === 1 ? 'st' : day === 2 ? 'nd' : day === 3 ? 'rd' : day === 21 || day === 22 || day === 23 ? (day === 21 ? 'st' : day === 22 ? 'nd' : 'rd') : 'th'}
-                    </option>
-                  ))}
-                </select>
-                <p className="text-xs text-muted-foreground">
-                  The day of the month when your budget period starts (e.g., 1st, 15th, 25th).
+            </div>
+          )}
+
+          {/* Step 3: Name + Currency */}
+          {step === 3 && (
+            <div className="rounded-2xl ring-1 ring-border bg-card overflow-hidden">
+              <div className="p-5 border-b border-border">
+                <h2 className="text-lg font-semibold">Step 3: Budget Settings</h2>
+                <p className="text-sm text-muted-foreground mt-1">
+                  Name your budget and choose your preferences.
                 </p>
               </div>
-              <div className="flex gap-3">
-                <Button variant="outline" className="flex-1" onClick={() => setStep(2)}>← Back</Button>
-                <Button className="flex-1" onClick={() => setStep(4)}>Next →</Button>
-              </div>
-            </CardContent>
-          </Card>
-        )}
-
-        {/* Step 4: Review */}
-        {step === 4 && (
-          <Card>
-            <CardHeader><CardTitle>Step 4: Review & Confirm</CardTitle></CardHeader>
-            <CardContent className="space-y-4">
-              <div className="space-y-3">
-                <div className="rounded-lg bg-muted p-3 space-y-1">
-                  <p className="text-sm font-medium">Budget: {budgetName}</p>
-                  <p className="text-sm text-muted-foreground">
-                    {currency} · {formatCurrency(totalAllocated, currency)} / month
-                  </p>
-                  <p className="text-xs text-muted-foreground">
-                    Starts on the {startDay}{startDay === 1 ? 'st' : startDay === 2 ? 'nd' : startDay === 3 ? 'rd' : 'th'} of each month
-                  </p>
-                </div>
-
+              <div className="p-5 space-y-5">
                 <div className="space-y-2">
-                  <p className="text-sm font-medium">Categories ({categories.filter((c) => c.name.trim()).length})</p>
-                  {categories.filter((c) => c.name.trim()).map((cat, i) => (
-                    <div key={i} className="flex items-center justify-between text-sm">
-                      <div className="flex items-center gap-2">
-                        <span className="w-3 h-3 rounded-full" style={{ backgroundColor: cat.color }} />
-                        <span>{cat.name}</span>
-                        <span className="text-xs text-muted-foreground">({cat.masterCategory})</span>
+                  <label className="text-sm font-medium">Budget Name</label>
+                  <input
+                    className="w-full h-12 px-4 rounded-xl bg-muted/50 ring-1 ring-border text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all"
+                    value={budgetName}
+                    onChange={(e) => setBudgetName(e.target.value)}
+                    placeholder="My Budget"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <label className="text-sm font-medium">Currency</label>
+                  <select
+                    className="w-full h-12 px-4 rounded-xl bg-muted/50 ring-1 ring-border text-sm focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all appearance-none cursor-pointer"
+                    value={currency}
+                    onChange={(e) => setCurrency(e.target.value)}
+                  >
+                    {CURRENCY_OPTIONS.map((c) => (
+                      <option key={c.value} value={c.value}>
+                        {c.label}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+                <div className="space-y-2">
+                  <label className="text-sm font-medium">Budget Start Day</label>
+                  <select
+                    className="w-full h-12 px-4 rounded-xl bg-muted/50 ring-1 ring-border text-sm focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all appearance-none cursor-pointer"
+                    value={startDay}
+                    onChange={(e) => setStartDay(Number(e.target.value))}
+                  >
+                    {Array.from({ length: 28 }, (_, i) => i + 1).map((day) => (
+                      <option key={day} value={day}>
+                        {day}{getOrdinalSuffix(day)} of each month
+                      </option>
+                    ))}
+                  </select>
+                  <p className="text-xs text-muted-foreground">
+                    The day when your monthly budget period starts.
+                  </p>
+                </div>
+              </div>
+              <div className="p-5 border-t border-border flex gap-3">
+                <Button
+                  variant="outline"
+                  className="flex-1 h-12 rounded-xl"
+                  onClick={() => setStep(2)}
+                >
+                  Back
+                </Button>
+                <Button className="flex-1 h-12 rounded-xl" onClick={() => setStep(4)}>
+                  Continue
+                </Button>
+              </div>
+            </div>
+          )}
+
+          {/* Step 4: Review */}
+          {step === 4 && (
+            <div className="rounded-2xl ring-1 ring-border bg-card overflow-hidden">
+              <div className="p-5 border-b border-border">
+                <h2 className="text-lg font-semibold">Step 4: Review & Confirm</h2>
+                <p className="text-sm text-muted-foreground mt-1">
+                  {"Here's your budget summary. Ready to get started?"}
+                </p>
+              </div>
+              <div className="p-5 space-y-5">
+                {/* Summary Card - Receipt Style */}
+                <div className="rounded-xl bg-muted/30 ring-1 ring-border p-5 space-y-4">
+                  {/* Budget Info */}
+                  <div className="text-center pb-4 border-b border-dashed border-border">
+                    <p className="text-xs text-muted-foreground uppercase tracking-wider">Budget</p>
+                    <p className="text-xl font-bold mt-1">{budgetName}</p>
+                    <p className="text-sm text-muted-foreground mt-1">
+                      {currency} · Starts on the {startDay}{getOrdinalSuffix(startDay)}
+                    </p>
+                  </div>
+
+                  {/* Categories */}
+                  <div className="space-y-2">
+                    <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+                      Categories ({categories.filter((c) => c.name.trim()).length})
+                    </p>
+                    {categories.filter((c) => c.name.trim()).map((cat, i) => (
+                      <div key={i} className="flex items-center justify-between py-2">
+                        <div className="flex items-center gap-3">
+                          <span
+                            className="w-3 h-3 rounded-full"
+                            style={{ backgroundColor: cat.color }}
+                          />
+                          <span className="text-sm">{cat.name}</span>
+                          <span className="text-xs text-muted-foreground capitalize">
+                            ({cat.masterCategory})
+                          </span>
+                        </div>
+                        {cat.amount > 0 && (
+                          <span className="text-sm font-medium">
+                            {formatCurrency(cat.amount, currency)}
+                          </span>
+                        )}
                       </div>
-                      {cat.amount > 0 && (
-                        <span className="text-muted-foreground">{formatCurrency(cat.amount, currency)}</span>
-                      )}
+                    ))}
+                  </div>
+
+                  {/* Total */}
+                  <div className="pt-4 border-t border-dashed border-border">
+                    <div className="flex items-center justify-between">
+                      <span className="font-semibold">Total Monthly</span>
+                      <span className="text-xl font-bold text-primary">
+                        {formatCurrency(totalAllocated, currency)}
+                      </span>
                     </div>
-                  ))}
+                  </div>
                 </div>
 
-                <p className="text-xs text-muted-foreground">
+                <p className="text-xs text-muted-foreground text-center">
                   This budget will be applied to the current month automatically.
                 </p>
               </div>
-
-              <div className="flex gap-3">
-                <Button variant="outline" className="flex-1" onClick={() => setStep(3)}>← Back</Button>
-                <Button className="flex-1" onClick={handleComplete} disabled={isSubmitting}>
+              <div className="p-5 border-t border-border flex gap-3">
+                <Button
+                  variant="outline"
+                  className="flex-1 h-12 rounded-xl"
+                  onClick={() => setStep(3)}
+                >
+                  Back
+                </Button>
+                <Button
+                  className="flex-1 h-12 rounded-xl"
+                  onClick={handleComplete}
+                  disabled={isSubmitting}
+                >
                   {isSubmitting ? 'Setting up...' : 'Complete Setup'}
                 </Button>
               </div>
-            </CardContent>
-          </Card>
-        )}
+            </div>
+          )}
+        </div>
       </div>
     </main>
   );
