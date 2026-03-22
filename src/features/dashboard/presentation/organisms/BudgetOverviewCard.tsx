@@ -1,8 +1,6 @@
 import { TrendingUp, TrendingDown, AlertTriangle } from 'lucide-react';
 import { formatCurrency } from '@/shared/core/utils/formatCurrency';
 
-const formatIDR = (amount: number) => formatCurrency(amount, 'IDR');
-
 interface BudgetOverviewCardProps {
   totalMonthlyBudget: number;
   totalSpent: number;
@@ -60,7 +58,7 @@ export function BudgetOverviewCard({
     <div className={`rounded-2xl p-5 ring-1 ${config.bg} ${config.border}`}>
       {/* Health Status Badge */}
       <div className="flex items-center justify-between mb-4">
-        <h2 className="text-sm font-medium text-zinc-400">Budget Overview</h2>
+        <h2 className="text-sm font-medium text-zinc-300">Budget Overview</h2>
         <div className={`flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium ${config.text} ${config.bg}`}>
           <Icon className="w-3.5 h-3.5" />
           <span>{config.label}</span>
@@ -69,9 +67,9 @@ export function BudgetOverviewCard({
 
       {/* Hero Remaining Amount */}
       <div className="mb-5">
-        <p className="text-xs text-zinc-400 mb-1">Remaining</p>
+        <p className="text-xs text-zinc-300 mb-1">Remaining</p>
         <p className={`text-3xl md:text-4xl font-bold tracking-tight ${totalRemaining < 0 ? 'text-red-400' : 'text-white'}`}>
-          {formatIDR(totalRemaining)}
+          {formatCurrency(totalRemaining)}
         </p>
       </div>
 
@@ -83,18 +81,18 @@ export function BudgetOverviewCard({
             style={{ width: `${percentage}%` }}
           />
         </div>
-        <p className="text-xs text-zinc-500 mt-1.5 text-right">{percentage}% spent</p>
+        <p className="text-xs text-zinc-300 mt-1.5 text-right">{percentage}% spent</p>
       </div>
 
       {/* Budget & Spent Row */}
       <div className="grid grid-cols-2 gap-4 pt-4 border-t border-white/10">
         <div>
-          <p className="text-xs text-zinc-400 mb-0.5">Total Budget</p>
-          <p className="text-base font-semibold text-white">{formatIDR(totalMonthlyBudget)}</p>
+          <p className="text-xs text-zinc-300 mb-0.5">Total Budget</p>
+          <p className="text-base font-semibold text-white">{formatCurrency(totalMonthlyBudget)}</p>
         </div>
         <div className="text-right">
-          <p className="text-xs text-zinc-400 mb-0.5">Total Spent</p>
-          <p className="text-base font-semibold text-red-400">{formatIDR(totalSpent)}</p>
+          <p className="text-xs text-zinc-300 mb-0.5">Total Spent</p>
+          <p className="text-base font-semibold text-red-400">{formatCurrency(totalSpent)}</p>
         </div>
       </div>
     </div>
