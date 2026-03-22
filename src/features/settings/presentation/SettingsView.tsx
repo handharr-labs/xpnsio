@@ -59,7 +59,7 @@ export function SettingsView() {
             </p>
             <Button
               variant="outline"
-              className="w-full text-red-600 hover:text-red-700"
+              className="w-full text-red-400 hover:text-red-300 border-red-500/30 hover:bg-red-500/10"
               onClick={handleSignOut}
               disabled={isSigningOut}
             >
@@ -69,9 +69,9 @@ export function SettingsView() {
         </Card>
 
         {/* Danger Zone */}
-        <Card className="border-red-200">
+        <Card className="border-red-500/30">
           <CardHeader>
-            <CardTitle className="text-red-600">Danger Zone</CardTitle>
+            <CardTitle className="text-red-400">Danger Zone</CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
             {!showDeleteConfirm ? (
@@ -89,7 +89,7 @@ export function SettingsView() {
               </>
             ) : (
               <div className="space-y-4">
-                <p className="text-sm text-red-600 font-medium">
+                <p className="text-sm text-red-400 font-medium">
                   Warning: This will permanently delete your account and all data including:
                 </p>
                 <ul className="text-sm text-muted-foreground list-disc list-inside space-y-1">
