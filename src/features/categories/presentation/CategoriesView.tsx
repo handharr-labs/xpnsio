@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { Plus, Layers } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useCategoriesViewModel } from './useCategoriesViewModel';
 import { CategoryFormDialog } from './organisms/CategoryFormDialog';
@@ -91,46 +92,71 @@ export function CategoriesView() {
   };
 
   return (
-    <main className="min-h-screen p-6">
-      <div className="max-w-3xl mx-auto space-y-6">
-        <div className="flex items-center justify-between">
-          <h1 className="text-2xl font-bold">Categories</h1>
-          <Button onClick={openCreate}>+ Add Category</Button>
+    <main className="min-h-screen bg-background">
+      {/* Content Container - PWA safe area padding */}
+      <div className="px-4 pt-4 pb-[calc(5rem+env(safe-area-inset-bottom))] md:px-6 md:pt-6 md:pb-6">
+        <div className="max-w-3xl mx-auto space-y-6">
+          {/* Header */}
+          <header className="flex items-center justify-between min-h-[44px]">
+            <h1 className="text-xl md:text-2xl font-bold tracking-tight">Categories</h1>
+            <Button onClick={openCreate} className="h-11 rounded-xl gap-2">
+              <Plus className="w-4 h-4" />
+              <span className="hidden sm:inline">Add Category</span>
+            </Button>
+          </header>
+
+          {/* Error State */}
+          {error && (
+            <div className="rounded-xl bg-red-500/10 ring-1 ring-red-500/20 p-4 text-sm text-red-700 dark:text-red-400">
+              {error}
+            </div>
+          )}
+
+          {/* Loading State */}
+          {isLoading ? (
+            <div className="space-y-4">
+              {[1, 2, 3].map((i) => (
+                <div key={i} className="h-32 rounded-xl bg-muted animate-pulse" />
+              ))}
+            </div>
+          ) : categories.length === 0 ? (
+            /* Empty State */
+            <div className="rounded-2xl ring-1 ring-border border-dashed p-12 text-center space-y-4">
+              <div className="w-16 h-16 rounded-full bg-muted mx-auto flex items-center justify-center">
+                <Layers className="w-7 h-7 text-muted-foreground" />
+              </div>
+              <div className="space-y-2">
+                <p className="text-lg font-semibold">No categories yet</p>
+                <p className="text-muted-foreground text-sm max-w-sm mx-auto">
+                  Create categories to organize your spending and track budgets more effectively.
+                </p>
+              </div>
+              <Button onClick={openCreate} size="lg" className="mt-2">
+                Create Your First Category
+              </Button>
+            </div>
+          ) : (
+            /* Category Groups */
+            <div className="space-y-6">
+              {(['daily', 'weekly', 'monthly'] as const).map((group) => {
+                const items = grouped[group];
+                if (items.length === 0) return null;
+                return (
+                  <CategoryGroupSection
+                    key={group}
+                    masterLabel={MASTER_LABELS[group]}
+                    categories={items}
+                    onEdit={openEdit}
+                    onDelete={handleDelete}
+                  />
+                );
+              })}
+            </div>
+          )}
         </div>
-
-        {error && (
-          <div className="rounded-md bg-red-50 border border-red-200 p-3 text-sm text-red-700">
-            {error}
-          </div>
-        )}
-
-        {isLoading ? (
-          <p className="text-muted-foreground">Loading categories...</p>
-        ) : (
-          <div className="space-y-6">
-            {(['daily', 'weekly', 'monthly'] as const).map((group) => {
-              const items = grouped[group];
-              if (items.length === 0) return null;
-              return (
-                <CategoryGroupSection
-                  key={group}
-                  masterLabel={MASTER_LABELS[group]}
-                  categories={items}
-                  onEdit={openEdit}
-                  onDelete={handleDelete}
-                />
-              );
-            })}
-
-            {categories.length === 0 && (
-              <p className="text-center text-muted-foreground py-12">
-                No categories yet. Create your first one!
-              </p>
-            )}
-          </div>
-        )}
       </div>
 
+      {/* Dialog */}
       {showDialog && (
         <CategoryFormDialog
           isEdit={editingCategory !== null}

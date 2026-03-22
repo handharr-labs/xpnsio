@@ -48,15 +48,15 @@ export class BudgetProgressServiceImpl implements BudgetProgressService {
   }
 
   getProgressColor(percent: number): string {
-    if (percent >= 100) return 'bg-red-500';
-    if (percent >= 90) return 'bg-yellow-500';
-    return 'bg-green-500';
+    if (percent >= 100) return 'bg-red-400';
+    if (percent >= 90) return 'bg-yellow-400';
+    return 'bg-emerald-400';
   }
 
   getProgressTextColor(percent: number): string {
-    if (percent >= 100) return 'text-red-600';
-    if (percent >= 90) return 'text-yellow-600';
-    return 'text-green-600';
+    if (percent >= 100) return 'text-red-600 dark:text-red-300';
+    if (percent >= 90) return 'text-yellow-600 dark:text-yellow-300';
+    return 'text-emerald-600 dark:text-emerald-300';
   }
 
   getRemainingText(remaining: number, isOverrun: boolean): string {

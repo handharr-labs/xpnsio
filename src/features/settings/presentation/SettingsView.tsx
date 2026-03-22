@@ -2,6 +2,8 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { useTheme } from 'next-themes';
+import { Sun, Moon } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { useDI } from '@/shared/di/DIContext';
@@ -42,12 +44,39 @@ export function SettingsView() {
     }
   };
 
+  const { theme, setTheme } = useTheme();
   const canDelete = deleteConfirmText === 'DELETE';
 
   return (
     <main className="min-h-screen p-6">
       <div className="max-w-lg mx-auto space-y-6">
         <h1 className="text-2xl font-bold">Settings</h1>
+
+        {/* Appearance */}
+        <Card>
+          <CardHeader>
+            <CardTitle>Appearance</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium">Theme</p>
+                <p className="text-xs text-muted-foreground">Choose between light and dark mode</p>
+              </div>
+              <button
+                type="button"
+                onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
+                className="flex items-center gap-2 px-4 py-2 rounded-xl ring-1 ring-border bg-muted/50 hover:bg-muted text-sm font-medium transition-colors min-h-[44px]"
+              >
+                {theme === 'dark' ? (
+                  <><Sun className="w-4 h-4" /> Light</>
+                ) : (
+                  <><Moon className="w-4 h-4" /> Dark</>
+                )}
+              </button>
+            </div>
+          </CardContent>
+        </Card>
 
         <Card>
           <CardHeader>
@@ -59,7 +88,7 @@ export function SettingsView() {
             </p>
             <Button
               variant="outline"
-              className="w-full text-red-600 hover:text-red-700"
+              className="w-full text-red-400 hover:text-red-300 border-red-500/30 hover:bg-red-500/10"
               onClick={handleSignOut}
               disabled={isSigningOut}
             >
@@ -69,9 +98,9 @@ export function SettingsView() {
         </Card>
 
         {/* Danger Zone */}
-        <Card className="border-red-200">
+        <Card className="border-red-500/30">
           <CardHeader>
-            <CardTitle className="text-red-600">Danger Zone</CardTitle>
+            <CardTitle className="text-red-400">Danger Zone</CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
             {!showDeleteConfirm ? (
@@ -89,7 +118,7 @@ export function SettingsView() {
               </>
             ) : (
               <div className="space-y-4">
-                <p className="text-sm text-red-600 font-medium">
+                <p className="text-sm text-red-400 font-medium">
                   Warning: This will permanently delete your account and all data including:
                 </p>
                 <ul className="text-sm text-muted-foreground list-disc list-inside space-y-1">
