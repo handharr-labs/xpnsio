@@ -12,6 +12,12 @@ export function formatCurrency(amount: number, currency: string = 'IDR'): string
 }
 
 export function formatCompactCurrency(amount: number, currency: string = 'IDR'): string {
-  const locale = LOCALES[currency] ?? 'en-US';
-  return new Intl.NumberFormat(locale, { notation: 'compact', maximumFractionDigits: 1 }).format(amount);
+  const abs = Math.abs(amount);
+  const sign = amount < 0 ? '-' : '';
+  let value: string;
+  if (abs >= 1_000_000_000) value = `${(abs / 1_000_000_000).toFixed(1).replace(/\.0$/, '')}B`;
+  else if (abs >= 1_000_000) value = `${(abs / 1_000_000).toFixed(1).replace(/\.0$/, '')}M`;
+  else if (abs >= 1_000) value = `${(abs / 1_000).toFixed(1).replace(/\.0$/, '')}K`;
+  else value = abs.toString();
+  return `${sign}${value}`;
 }
