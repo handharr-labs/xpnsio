@@ -250,7 +250,7 @@ export function TransactionDetailView({ id }: { id: string }) {
               {/* Category - Chip Selector */}
               <div className="space-y-3">
                 <label className="text-sm font-medium text-muted-foreground">Category</label>
-                <div className="flex flex-wrap gap-2">
+                <div className="flex flex-wrap gap-2 p-1 -m-1">
                   <button
                     type="button"
                     onClick={() => setCategoryId('')}
