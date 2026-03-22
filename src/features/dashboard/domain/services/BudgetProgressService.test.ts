@@ -35,20 +35,20 @@ describe('BudgetProgressService', () => {
 
   describe('getProgressColor', () => {
     it('should return red for 100% or above', () => {
-      expect(service.getProgressColor(100)).toBe('bg-red-500');
-      expect(service.getProgressColor(150)).toBe('bg-red-500');
+      expect(service.getProgressColor(100)).toBe('bg-red-400');
+      expect(service.getProgressColor(150)).toBe('bg-red-400');
     });
 
     it('should return yellow for 90-99%', () => {
-      expect(service.getProgressColor(90)).toBe('bg-yellow-500');
-      expect(service.getProgressColor(95)).toBe('bg-yellow-500');
-      expect(service.getProgressColor(99)).toBe('bg-yellow-500');
+      expect(service.getProgressColor(90)).toBe('bg-yellow-400');
+      expect(service.getProgressColor(95)).toBe('bg-yellow-400');
+      expect(service.getProgressColor(99)).toBe('bg-yellow-400');
     });
 
     it('should return green for below 90%', () => {
-      expect(service.getProgressColor(0)).toBe('bg-green-500');
-      expect(service.getProgressColor(50)).toBe('bg-green-500');
-      expect(service.getProgressColor(89)).toBe('bg-green-500');
+      expect(service.getProgressColor(0)).toBe('bg-emerald-400');
+      expect(service.getProgressColor(50)).toBe('bg-emerald-400');
+      expect(service.getProgressColor(89)).toBe('bg-emerald-400');
     });
   });
 
@@ -94,7 +94,7 @@ describe('BudgetProgressService', () => {
       expect(result.percent).toBe(50);
       expect(result.remaining).toBe(50);
       expect(result.isOverrun).toBe(false);
-      expect(result.colorClass).toBe('bg-green-500');
+      expect(result.colorClass).toBe('bg-emerald-400');
       expect(result.textClass).toBe('text-emerald-400');
       expect(result.displayText).toBe('50 left');
     });
@@ -105,7 +105,7 @@ describe('BudgetProgressService', () => {
       expect(result.percent).toBe(90);
       expect(result.remaining).toBe(10);
       expect(result.isOverrun).toBe(false);
-      expect(result.colorClass).toBe('bg-yellow-500');
+      expect(result.colorClass).toBe('bg-yellow-400');
       expect(result.textClass).toBe('text-yellow-400');
       expect(result.displayText).toBe('10 left');
     });
@@ -116,7 +116,7 @@ describe('BudgetProgressService', () => {
       expect(result.percent).toBe(120);
       expect(result.remaining).toBe(-20);
       expect(result.isOverrun).toBe(true);
-      expect(result.colorClass).toBe('bg-red-500');
+      expect(result.colorClass).toBe('bg-red-400');
       expect(result.textClass).toBe('text-red-400');
       expect(result.displayText).toBe('Over by 20');
     });
@@ -127,7 +127,7 @@ describe('BudgetProgressService', () => {
       expect(result.percent).toBe(100);
       expect(result.remaining).toBe(0);
       expect(result.isOverrun).toBe(false);
-      expect(result.colorClass).toBe('bg-red-500');
+      expect(result.colorClass).toBe('bg-red-400');
       expect(result.textClass).toBe('text-red-400');
       expect(result.displayText).toBe('0 left');
     });
@@ -138,7 +138,7 @@ describe('BudgetProgressService', () => {
       expect(result.percent).toBe(100);
       expect(result.remaining).toBe(-500);
       expect(result.isOverrun).toBe(true);
-      expect(result.colorClass).toBe('bg-red-500');
+      expect(result.colorClass).toBe('bg-red-400');
       expect(result.textClass).toBe('text-red-400');
       expect(result.displayText).toBe('Over by 500');
     });
