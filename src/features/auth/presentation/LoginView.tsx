@@ -87,7 +87,7 @@ export function LoginView() {
               <button
                 onClick={handleGoogleSignIn}
                 disabled={isLoading}
-                className="w-full flex items-center justify-center gap-3 h-14 px-6 rounded-xl bg-white text-zinc-900 font-medium text-base hover:bg-zinc-100 active:scale-[0.98] transition-all disabled:opacity-50 disabled:cursor-not-allowed min-h-[56px]"
+                className="w-full flex items-center justify-center gap-3 h-14 px-6 rounded-xl bg-zinc-100 text-zinc-900 font-medium text-base hover:bg-zinc-200 active:scale-[0.98] transition-all disabled:opacity-50 disabled:cursor-not-allowed min-h-[56px]"
               >
                 <GoogleIcon />
                 {isLoading ? 'Signing in...' : 'Continue with Google'}
