@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Inter, Geist_Mono } from "next/font/google";
 import { QueryClientProvider } from "@/shared/presentation/providers/QueryClientProvider";
+import { ThemeProvider } from "@/shared/presentation/providers/ThemeProvider";
 import "./globals.css";
 
 const inter = Inter({
@@ -31,13 +32,15 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className="dark">
+    <html lang="en" suppressHydrationWarning>
       <body
-        className={`${inter.variable} ${geistMono.variable} antialiased bg-zinc-950`}
+        className={`${inter.variable} ${geistMono.variable} antialiased`}
       >
-        <QueryClientProvider>
-          {children}
-        </QueryClientProvider>
+        <ThemeProvider>
+          <QueryClientProvider>
+            {children}
+          </QueryClientProvider>
+        </ThemeProvider>
       </body>
     </html>
   );

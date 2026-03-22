@@ -2,6 +2,8 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { useTheme } from 'next-themes';
+import { Sun, Moon } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { useDI } from '@/shared/di/DIContext';
@@ -42,12 +44,39 @@ export function SettingsView() {
     }
   };
 
+  const { theme, setTheme } = useTheme();
   const canDelete = deleteConfirmText === 'DELETE';
 
   return (
     <main className="min-h-screen p-6">
       <div className="max-w-lg mx-auto space-y-6">
         <h1 className="text-2xl font-bold">Settings</h1>
+
+        {/* Appearance */}
+        <Card>
+          <CardHeader>
+            <CardTitle>Appearance</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium">Theme</p>
+                <p className="text-xs text-muted-foreground">Choose between light and dark mode</p>
+              </div>
+              <button
+                type="button"
+                onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
+                className="flex items-center gap-2 px-4 py-2 rounded-xl ring-1 ring-border bg-muted/50 hover:bg-muted text-sm font-medium transition-colors min-h-[44px]"
+              >
+                {theme === 'dark' ? (
+                  <><Sun className="w-4 h-4" /> Light</>
+                ) : (
+                  <><Moon className="w-4 h-4" /> Dark</>
+                )}
+              </button>
+            </div>
+          </CardContent>
+        </Card>
 
         <Card>
           <CardHeader>
