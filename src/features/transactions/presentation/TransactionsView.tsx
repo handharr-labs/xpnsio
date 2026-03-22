@@ -90,13 +90,13 @@ export function TransactionsView() {
         <div className="max-w-3xl mx-auto space-y-4">
           {/* Header */}
           <header className="flex items-center justify-between min-h-[44px]">
-            <h1 className="text-xl md:text-2xl font-bold tracking-tight text-white">Transactions</h1>
+            <h1 className="text-xl md:text-2xl font-bold tracking-tight">Transactions</h1>
             <button
               onClick={() => setShowFilters(!showFilters)}
               className={`flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium transition-colors min-h-[44px] ${
                 showFilters || hasActiveFilters
                   ? 'bg-primary text-primary-foreground'
-                  : 'bg-zinc-800 hover:bg-zinc-700 text-zinc-400'
+                  : 'bg-muted hover:bg-muted/80 text-muted-foreground'
               }`}
             >
               <SlidersHorizontal className="w-4 h-4" />
@@ -109,20 +109,20 @@ export function TransactionsView() {
 
           {/* Search Bar - Prominent */}
           <div className="relative">
-            <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-zinc-400" />
+            <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
             <input
               type="search"
               placeholder="Search transactions..."
-              className="w-full h-12 pl-12 pr-4 rounded-xl bg-zinc-900/50 ring-1 ring-white/10 text-sm text-white placeholder:text-zinc-500 focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all"
+              className="w-full h-12 pl-12 pr-4 rounded-xl bg-muted/50 ring-1 ring-border text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all"
               value={localFilters.description}
               onChange={(e) => handleFiltersChange({ description: e.target.value })}
             />
             {localFilters.description && (
               <button
                 onClick={() => handleFiltersChange({ description: '' })}
-                className="absolute right-4 top-1/2 -translate-y-1/2 p-1 rounded-full hover:bg-zinc-800"
+                className="absolute right-4 top-1/2 -translate-y-1/2 p-1 rounded-full hover:bg-muted"
               >
-                <X className="w-4 h-4 text-zinc-400" />
+                <X className="w-4 h-4 text-muted-foreground" />
               </button>
             )}
           </div>

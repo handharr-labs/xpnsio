@@ -28,28 +28,28 @@ export function TransactionFilterPanel({
   const hasFilters = filters.startDate || filters.endDate || filters.categoryId || filters.type;
 
   return (
-    <div className="rounded-xl ring-1 ring-white/10 bg-zinc-900/50 p-4 space-y-4">
+    <div className="rounded-xl ring-1 ring-border bg-card p-4 space-y-4">
       {/* Date Range */}
       <div className="space-y-2">
-        <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-zinc-400">
+        <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
           <Calendar className="w-3.5 h-3.5" />
           <span>Date Range</span>
         </div>
         <div className="grid grid-cols-2 gap-3">
           <div className="space-y-1">
-            <label className="text-xs text-zinc-400">From</label>
+            <label className="text-xs text-muted-foreground">From</label>
             <input
               type="date"
-              className="w-full h-11 rounded-lg bg-zinc-800/50 ring-1 ring-white/10 px-3 text-sm text-white focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all"
+              className="w-full h-11 rounded-lg bg-muted/50 ring-1 ring-border px-3 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all"
               value={filters.startDate}
               onChange={(e) => onFiltersChange({ startDate: e.target.value })}
             />
           </div>
           <div className="space-y-1">
-            <label className="text-xs text-zinc-400">To</label>
+            <label className="text-xs text-muted-foreground">To</label>
             <input
               type="date"
-              className="w-full h-11 rounded-lg bg-zinc-800/50 ring-1 ring-white/10 px-3 text-sm text-white focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all"
+              className="w-full h-11 rounded-lg bg-muted/50 ring-1 ring-border px-3 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all"
               value={filters.endDate}
               onChange={(e) => onFiltersChange({ endDate: e.target.value })}
             />
@@ -60,12 +60,12 @@ export function TransactionFilterPanel({
       {/* Category & Type */}
       <div className="grid grid-cols-2 gap-3">
         <div className="space-y-2">
-          <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-zinc-400">
+          <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
             <Tag className="w-3.5 h-3.5" />
             <span>Category</span>
           </div>
           <select
-            className="w-full h-11 rounded-lg bg-zinc-800/50 ring-1 ring-white/10 px-3 text-sm text-white focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all appearance-none cursor-pointer"
+            className="w-full h-11 rounded-lg bg-muted/50 ring-1 ring-border px-3 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all appearance-none cursor-pointer"
             value={filters.categoryId}
             onChange={(e) => onFiltersChange({ categoryId: e.target.value })}
           >
@@ -78,12 +78,12 @@ export function TransactionFilterPanel({
           </select>
         </div>
         <div className="space-y-2">
-          <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-zinc-400">
+          <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
             <ArrowDownUp className="w-3.5 h-3.5" />
             <span>Type</span>
           </div>
           <select
-            className="w-full h-11 rounded-lg bg-zinc-800/50 ring-1 ring-white/10 px-3 text-sm text-white focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all appearance-none cursor-pointer"
+            className="w-full h-11 rounded-lg bg-muted/50 ring-1 ring-border px-3 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all appearance-none cursor-pointer"
             value={filters.type}
             onChange={(e) =>
               onFiltersChange({ type: e.target.value as '' | 'income' | 'expense' })
