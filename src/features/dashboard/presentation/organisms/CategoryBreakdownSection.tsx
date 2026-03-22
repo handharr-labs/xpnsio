@@ -1,16 +1,19 @@
 import { Card, CardContent } from '@/components/ui/card';
+import { ChevronRight } from 'lucide-react';
 import type { CategoryBudgetInfo } from '@/features/dashboard/domain/use-cases/dashboard/GetDashboardDataUseCase';
 
 const formatIDR = (amount: number) =>
-  new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR' }).format(amount);
+  new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 }).format(amount);
+
+const formatCompact = (amount: number) =>
+  new Intl.NumberFormat('id-ID', { notation: 'compact', maximumFractionDigits: 1 }).format(amount);
 
 const formatWeekRange = (weekStartStr: string | undefined): string => {
   if (!weekStartStr) return '';
   const start = new Date(weekStartStr);
   const end = new Date(weekStartStr);
   end.setDate(end.getDate() + 6);
-  const fmt = (d: Date) =>
-    d.toLocaleDateString('en-GB', { day: 'numeric', month: 'short' });
+  const fmt = (d: Date) => d.toLocaleDateString('en-GB', { day: 'numeric', month: 'short' });
   return `${fmt(start)} – ${fmt(end)}`;
 };
 
@@ -24,105 +27,112 @@ interface CategoryBreakdownSectionProps {
   categories: CategoryBudgetInfo[];
 }
 
-function ProgressBar({ percent, colorClass }: { percent: number; colorClass: string }) {
+interface ProgressBarProps {
+  percent: number;
+  colorClass: string;
+  height?: 'sm' | 'md';
+}
+
+function ProgressBar({ percent, colorClass, height = 'sm' }: ProgressBarProps) {
   return (
-    <div className="w-full bg-muted rounded-full h-1.5">
+    <div className={`w-full bg-muted rounded-full overflow-hidden ${height === 'md' ? 'h-2' : 'h-1.5'}`}>
       <div
-        className={`h-1.5 rounded-full ${colorClass}`}
+        className={`h-full rounded-full transition-all duration-300 ${colorClass}`}
         style={{ width: `${Math.min(percent, 100)}%` }}
       />
     </div>
   );
 }
 
+interface StatusBadgeProps {
+  isOverrun: boolean;
+  remaining: number;
+  textClass: string;
+}
+
+function StatusBadge({ isOverrun, remaining, textClass }: StatusBadgeProps) {
+  return (
+    <span className={`text-xs font-medium ${textClass}`}>
+      {isOverrun ? `−${formatCompact(Math.abs(remaining))}` : `${formatCompact(remaining)} left`}
+    </span>
+  );
+}
+
+interface PeriodRowProps {
+  label: string;
+  spent: number;
+  budget: number;
+  percent: number;
+  colorClass: string;
+  textClass: string;
+  isOverrun: boolean;
+  remaining: number;
+  subtitle?: string;
+}
+
+function PeriodRow({ label, spent, budget, percent, colorClass, textClass, isOverrun, remaining, subtitle }: PeriodRowProps) {
+  return (
+    <div className="space-y-2">
+      <div className="flex items-center justify-between">
+        <div>
+          <span className="text-xs font-medium text-foreground">{label}</span>
+          {subtitle && <span className="text-xs text-muted-foreground ml-1.5">{subtitle}</span>}
+        </div>
+        <StatusBadge isOverrun={isOverrun} remaining={remaining} textClass={textClass} />
+      </div>
+      <ProgressBar percent={percent} colorClass={colorClass} height="md" />
+      <div className="flex justify-between text-xs text-muted-foreground">
+        <span>{formatCompact(spent)} / {formatCompact(budget)}</span>
+        <span>{percent}%</span>
+      </div>
+    </div>
+  );
+}
+
 function DailyCategoryCard({ c }: { c: CategoryBudgetInfo }) {
   const dailyProgress = c.dailyProgress!;
-  const weeklyProgress = c.weeklyProgress!;
+  const todayProgress = c.todayProgress!;
   const monthlyProgress = c.monthlyProgress!;
-  const weekNumber = Math.ceil((c.periodDaysElapsed ?? 0) / 7);
-  const accumulated = c.accumulatedBudgetToDate!;
 
   return (
-    <Card size="sm">
-      <CardContent className="pt-3">
-        <div className="flex items-center justify-between mb-1 gap-2">
-          <span className="text-sm font-medium">{c.categoryName}</span>
-          <div className="flex gap-1.5">
-            <span className="text-xs bg-muted px-2 py-0.5 rounded-full text-muted-foreground whitespace-nowrap">
-              {formatIDR(c.dailyBudget!)}/day
-            </span>
-            <span className="text-xs bg-muted px-2 py-0.5 rounded-full text-muted-foreground whitespace-nowrap">
-              {formatIDR(c.dailyBudget! * 7)}/week
+    <Card size="sm" className="hover:ring-foreground/20 transition-all cursor-pointer group">
+      <CardContent className="pt-3 space-y-4">
+        {/* Header */}
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <span className="text-sm font-semibold">{c.categoryName}</span>
+            <span className="text-xs text-muted-foreground bg-muted px-2 py-0.5 rounded-full">
+              {formatCompact(c.dailyBudget!)}/day
             </span>
           </div>
+          <ChevronRight className="w-4 h-4 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity" />
         </div>
-        <div className="divide-y divide-border">
-          {/* Daily */}
-          <div className="space-y-1 pb-3">
-            <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-2">Daily</p>
-            <p className="text-xs text-muted-foreground">
-              Daily: {formatIDR(c.totalSpent)} / {formatIDR(accumulated)} ({c.periodDaysElapsed} days)
-            </p>
-            <div className="flex justify-between text-xs text-muted-foreground">
-              <span>Pacing</span>
-              <span>{dailyProgress.percent}%</span>
-            </div>
+
+        {/* Today - Primary Focus */}
+        <div className="p-3 rounded-lg bg-muted/50 space-y-2">
+          <div className="flex items-center justify-between">
+            <span className="text-xs font-medium uppercase tracking-wide text-muted-foreground">Today</span>
+            <StatusBadge isOverrun={todayProgress.isOverrun} remaining={c.availableToday! - c.spentToday!} textClass={todayProgress.textClass} />
+          </div>
+          <ProgressBar percent={todayProgress.percent} colorClass={todayProgress.colorClass} height="md" />
+          <p className="text-xs text-muted-foreground">
+            {formatIDR(c.spentToday!)} of {formatIDR(c.availableToday!)}
+          </p>
+        </div>
+
+        {/* Pacing & Monthly - Compact Grid */}
+        <div className="grid grid-cols-2 gap-4 pt-2 border-t border-border/50">
+          <div className="space-y-1.5">
+            <p className="text-xs text-muted-foreground">Pacing ({c.periodDaysElapsed}d)</p>
             <ProgressBar percent={dailyProgress.percent} colorClass={dailyProgress.colorClass} />
-            <div className="flex justify-between text-xs text-muted-foreground pt-1">
-              <span>Today</span>
-              <span>{c.todayProgress!.percent}%</span>
-            </div>
-            <p className="text-xs text-muted-foreground">
-              {formatIDR(c.spentToday!)} / {formatIDR(c.availableToday!)} (incl. rollover)
-            </p>
-            <p className={`text-xs font-medium ${c.todayProgress!.textClass}`}>
-              {c.todayProgress!.isOverrun
-                ? `Over by ${formatIDR(Math.abs(c.availableToday! - c.spentToday!))}`
-                : `${formatIDR(c.availableToday! - c.spentToday!)} left`}
-            </p>
-            <ProgressBar percent={c.todayProgress!.percent} colorClass={c.todayProgress!.colorClass} />
+            <p className={`text-xs font-medium ${dailyProgress.textClass}`}>{dailyProgress.percent}%</p>
           </div>
-          {/* Weekly */}
-          <div className="space-y-1 py-3">
-            <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-2">Weekly</p>
-            <p className="text-xs text-muted-foreground">
-              Weekly: {formatIDR(c.totalSpent)} / {formatIDR(c.accumulatedWeeklyBudget!)} (Week {weekNumber} · {formatWeekRange(c.weekStartStr)})
-            </p>
-            <div className="flex justify-between text-xs text-muted-foreground">
-              <span>Pacing</span>
-              <span>{weeklyProgress.percent}%</span>
-            </div>
-            <ProgressBar percent={weeklyProgress.percent} colorClass={weeklyProgress.colorClass} />
-            <div className="flex justify-between text-xs text-muted-foreground pt-1">
-              <span>This Week</span>
-              <span>{c.thisWeekProgress!.percent}%</span>
-            </div>
-            <p className="text-xs text-muted-foreground">
-              {formatIDR(c.spentThisWeek!)} / {formatIDR(c.availableThisWeek!)} (incl. rollover)
-            </p>
-            <p className={`text-xs font-medium ${c.thisWeekProgress!.textClass}`}>
-              {c.thisWeekProgress!.isOverrun
-                ? `Over by ${formatIDR(Math.abs(c.availableThisWeek! - c.spentThisWeek!))}`
-                : `${formatIDR(c.availableThisWeek! - c.spentThisWeek!)} left`}
-            </p>
-            <ProgressBar percent={c.thisWeekProgress!.percent} colorClass={c.thisWeekProgress!.colorClass} />
-          </div>
-          {/* Monthly */}
-          <div className="space-y-1 pt-3">
-            <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-2">Monthly</p>
-            <p className="text-xs text-muted-foreground">
-              Monthly: {formatIDR(c.totalSpent)} / {formatIDR(c.monthlyBudget)}
-            </p>
-            <p className={`text-xs font-medium ${monthlyProgress.textClass}`}>
-              {monthlyProgress.isOverrun
-                ? `Over by ${formatIDR(Math.abs(monthlyProgress.remaining))}`
-                : `${formatIDR(monthlyProgress.remaining)} left`}
-            </p>
-            <div className="flex justify-between text-xs text-muted-foreground">
-              <span>Progress</span>
-              <span>{monthlyProgress.percent}%</span>
-            </div>
+          <div className="space-y-1.5">
+            <p className="text-xs text-muted-foreground">Monthly</p>
             <ProgressBar percent={monthlyProgress.percent} colorClass={monthlyProgress.colorClass} />
+            <p className={`text-xs font-medium ${monthlyProgress.textClass}`}>
+              {formatCompact(monthlyProgress.remaining)} left
+            </p>
           </div>
         </div>
       </CardContent>
@@ -132,63 +142,51 @@ function DailyCategoryCard({ c }: { c: CategoryBudgetInfo }) {
 
 function WeeklyCategoryCard({ c }: { c: CategoryBudgetInfo }) {
   const weeklyProgress = c.weeklyProgress!;
-  const monthlyProgress = c.monthlyProgress!;
   const thisWeekProgress = c.thisWeekProgress!;
-  const accumulated = c.accumulatedWeeklyBudget!;
+  const monthlyProgress = c.monthlyProgress!;
 
   return (
-    <Card size="sm">
-      <CardContent className="pt-3">
-        <div className="flex items-center justify-between mb-1 gap-2">
-          <span className="text-sm font-medium">{c.categoryName}</span>
-          <div className="flex gap-1.5">
-            <span className="text-xs bg-muted px-2 py-0.5 rounded-full text-muted-foreground whitespace-nowrap">
-              {formatIDR(c.weeklyBudget!)}/week
+    <Card size="sm" className="hover:ring-foreground/20 transition-all cursor-pointer group">
+      <CardContent className="pt-3 space-y-4">
+        {/* Header */}
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <span className="text-sm font-semibold">{c.categoryName}</span>
+            <span className="text-xs text-muted-foreground bg-muted px-2 py-0.5 rounded-full">
+              {formatCompact(c.weeklyBudget!)}/wk
             </span>
           </div>
+          <ChevronRight className="w-4 h-4 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity" />
         </div>
-        <div className="divide-y divide-border">
-          {/* Weekly */}
-          <div className="space-y-1 pb-3">
-            <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-2">Weekly</p>
-            <p className="text-xs text-muted-foreground">
-              Weekly: {formatIDR(c.totalSpent)} / {formatIDR(accumulated)} (Week {c.periodWeeksElapsed} · {formatWeekRange(c.weekStartStr)})
-            </p>
-            <div className="flex justify-between text-xs text-muted-foreground">
-              <span>Pacing</span>
-              <span>{weeklyProgress.percent}%</span>
-            </div>
-            <ProgressBar percent={weeklyProgress.percent} colorClass={weeklyProgress.colorClass} />
-            <div className="flex justify-between text-xs text-muted-foreground pt-1">
-              <span>This Week</span>
-              <span>{thisWeekProgress.percent}%</span>
-            </div>
-            <p className="text-xs text-muted-foreground">
-              {formatIDR(c.spentThisWeek!)} / {formatIDR(c.availableThisWeek!)} (incl. rollover)
-            </p>
-            <p className={`text-xs font-medium ${thisWeekProgress.textClass}`}>
-              {thisWeekProgress.isOverrun
-                ? `Over by ${formatIDR(Math.abs(c.availableThisWeek! - c.spentThisWeek!))}`
-                : `${formatIDR(c.availableThisWeek! - c.spentThisWeek!)} left`}
-            </p>
-            <ProgressBar percent={thisWeekProgress.percent} colorClass={thisWeekProgress.colorClass} />
+
+        {/* This Week - Primary Focus */}
+        <div className="p-3 rounded-lg bg-muted/50 space-y-2">
+          <div className="flex items-center justify-between">
+            <span className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
+              This Week
+              <span className="font-normal ml-1">({formatWeekRange(c.weekStartStr)})</span>
+            </span>
+            <StatusBadge isOverrun={thisWeekProgress.isOverrun} remaining={c.availableThisWeek! - c.spentThisWeek!} textClass={thisWeekProgress.textClass} />
           </div>
-          {/* Monthly */}
-          <div className="space-y-1 pt-3">
-            <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-2">Monthly</p>
-            <p className="text-xs text-muted-foreground">
-              Monthly: {formatIDR(c.totalSpent)} / {formatIDR(c.monthlyBudget)}
-            </p>
-            <p className={`text-xs font-medium ${monthlyProgress.textClass}`}>
-              {monthlyProgress.isOverrun
-                ? `Over by ${formatIDR(Math.abs(monthlyProgress.remaining))}`
-                : `${formatIDR(monthlyProgress.remaining)} left`}
-            </p>
-            <div className="flex justify-between text-xs text-muted-foreground">
-              <span>Progress</span>
-              <span>{monthlyProgress.percent}%</span>
-            </div>
+          <ProgressBar percent={thisWeekProgress.percent} colorClass={thisWeekProgress.colorClass} height="md" />
+          <p className="text-xs text-muted-foreground">
+            {formatIDR(c.spentThisWeek!)} of {formatIDR(c.availableThisWeek!)}
+          </p>
+        </div>
+
+        {/* Pacing & Monthly - Compact Grid */}
+        <div className="grid grid-cols-2 gap-4 pt-2 border-t border-border/50">
+          <div className="space-y-1.5">
+            <p className="text-xs text-muted-foreground">Pacing (Week {c.periodWeeksElapsed})</p>
+            <ProgressBar percent={weeklyProgress.percent} colorClass={weeklyProgress.colorClass} />
+            <p className={`text-xs font-medium ${weeklyProgress.textClass}`}>{weeklyProgress.percent}%</p>
+          </div>
+          <div className="space-y-1.5">
+            <p className="text-xs text-muted-foreground">Monthly</p>
             <ProgressBar percent={monthlyProgress.percent} colorClass={monthlyProgress.colorClass} />
+            <p className={`text-xs font-medium ${monthlyProgress.textClass}`}>
+              {formatCompact(monthlyProgress.remaining)} left
+            </p>
           </div>
         </div>
       </CardContent>
@@ -197,27 +195,31 @@ function WeeklyCategoryCard({ c }: { c: CategoryBudgetInfo }) {
 }
 
 function MonthlyCategoryCard({ c }: { c: CategoryBudgetInfo }) {
+  const progress = c.monthlyProgress;
+  const percent = progress?.percent ?? 0;
+  const colorClass = progress?.colorClass ?? 'bg-emerald-500';
+  const textClass = progress?.textClass ?? 'text-emerald-600';
+  const isOverrun = progress?.isOverrun ?? false;
+  const remaining = progress?.remaining ?? c.remaining;
+
   return (
-    <Card size="sm">
-      <CardContent className="pt-3">
-        <div className="flex items-center justify-between mb-2">
-          <span className="text-sm font-medium">{c.categoryName}</span>
-          <div className="text-right">
-            <p className="text-xs text-muted-foreground">
-              {formatIDR(c.totalSpent)} / {formatIDR(c.monthlyBudget)}
-            </p>
-            <p className={`text-xs font-medium ${c.monthlyProgress?.textClass ?? 'text-green-600'}`}>
-              {(c.monthlyProgress?.isOverrun ?? false)
-                ? `Over by ${formatIDR(Math.abs(c.monthlyProgress?.remaining ?? c.remaining))}`
-                : `${formatIDR(c.monthlyProgress?.remaining ?? c.remaining)} left`}
-            </p>
-          </div>
+    <Card size="sm" className="hover:ring-foreground/20 transition-all cursor-pointer group">
+      <CardContent className="pt-3 space-y-3">
+        {/* Header */}
+        <div className="flex items-center justify-between">
+          <span className="text-sm font-semibold">{c.categoryName}</span>
+          <ChevronRight className="w-4 h-4 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity" />
         </div>
-        <div className="w-full bg-muted rounded-full h-1.5">
-          <div
-            className={`h-1.5 rounded-full ${c.monthlyProgress?.colorClass ?? 'bg-green-500'}`}
-            style={{ width: `${Math.min(c.monthlyProgress?.percent ?? 0, 100)}%` }}
-          />
+
+        {/* Progress */}
+        <ProgressBar percent={percent} colorClass={colorClass} height="md" />
+
+        {/* Stats Row */}
+        <div className="flex items-center justify-between">
+          <span className="text-xs text-muted-foreground">
+            {formatIDR(c.totalSpent)} / {formatIDR(c.monthlyBudget)}
+          </span>
+          <StatusBadge isOverrun={isOverrun} remaining={remaining} textClass={textClass} />
         </div>
       </CardContent>
     </Card>
@@ -228,17 +230,23 @@ export function CategoryBreakdownSection({ categories }: CategoryBreakdownSectio
   if (categories.length === 0) return null;
 
   return (
-    <div className="space-y-3">
-      <h2 className="text-base font-semibold">By Category</h2>
+    <section className="space-y-5">
+      <h2 className="text-lg font-semibold">Categories</h2>
+
       {(['daily', 'weekly', 'monthly'] as const).map((period) => {
         const items = categories.filter((c) => c.masterCategory === period);
         if (items.length === 0) return null;
+
         return (
-          <div key={period}>
-            <p className="text-xs font-medium text-muted-foreground uppercase mb-2">
-              {MASTER_LABELS[period]}
-            </p>
-            <div className="space-y-2">
+          <div key={period} className="space-y-3">
+            <div className="flex items-center gap-2">
+              <h3 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+                {MASTER_LABELS[period]}
+              </h3>
+              <div className="flex-1 h-px bg-border/50" />
+            </div>
+
+            <div className="grid gap-3 md:grid-cols-2">
               {items.map((c) => {
                 const isDaily =
                   c.masterCategory === 'daily' &&
@@ -257,6 +265,6 @@ export function CategoryBreakdownSection({ categories }: CategoryBreakdownSectio
           </div>
         );
       })}
-    </div>
+    </section>
   );
 }
