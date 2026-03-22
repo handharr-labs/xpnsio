@@ -1,6 +1,5 @@
 'use client';
 
-import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -12,42 +11,21 @@ import { BudgetOverviewCard } from './organisms/BudgetOverviewCard';
 import { CategoryBreakdownSection } from './organisms/CategoryBreakdownSection';
 import { RecentTransactionsSection } from './organisms/RecentTransactionsSection';
 
-const MONTH_NAMES = [
-  'January', 'February', 'March', 'April', 'May', 'June',
-  'July', 'August', 'September', 'October', 'November', 'December',
-];
-
 export function DashboardView() {
   const router = useRouter();
 
-  const now = new Date();
-  const [selectedPeriod, setSelectedPeriod] = useState({
-    year: now.getFullYear(),
-    month: now.getMonth() + 1,
-  });
-
-  const { dashboardData, isLoading, error, refresh } = useDashboardViewModel(
-    selectedPeriod.year,
-    selectedPeriod.month
-  );
+  const {
+    dashboardData,
+    isLoading,
+    error,
+    refresh,
+    monthLabel,
+    isCurrentMonth,
+    goToPrevMonth,
+    goToNextMonth,
+  } = useDashboardViewModel();
 
   const { containerRef, pullDistance, isRefreshing } = usePullToRefresh(refresh);
-
-  const isCurrentMonth =
-    selectedPeriod.year === now.getFullYear() &&
-    selectedPeriod.month === now.getMonth() + 1;
-
-  const monthLabel = `${MONTH_NAMES[selectedPeriod.month - 1]} ${selectedPeriod.year}`;
-
-  const goToPrevMonth = () => setSelectedPeriod(({ year, month }) => {
-    if (month === 1) return { year: year - 1, month: 12 };
-    return { year, month: month - 1 };
-  });
-
-  const goToNextMonth = () => setSelectedPeriod(({ year, month }) => {
-    if (month === 12) return { year: year + 1, month: 1 };
-    return { year, month: month + 1 };
-  });
 
   return (
     <main

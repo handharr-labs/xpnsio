@@ -1,21 +1,13 @@
 import { Card, CardContent } from '@/components/ui/card';
 import { ChevronRight } from 'lucide-react';
 import type { CategoryBudgetInfo } from '@/features/dashboard/domain/use-cases/dashboard/GetDashboardDataUseCase';
+import { formatCurrency } from '@/shared/core/utils/formatCurrency';
+import { formatWeekRange } from '@/shared/core/utils/formatWeekRange';
 
-const formatIDR = (amount: number) =>
-  new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 }).format(amount);
+const formatIDR = (amount: number) => formatCurrency(amount, 'IDR');
 
 const formatCompact = (amount: number) =>
   new Intl.NumberFormat('id-ID', { notation: 'compact', maximumFractionDigits: 1 }).format(amount);
-
-const formatWeekRange = (weekStartStr: string | undefined): string => {
-  if (!weekStartStr) return '';
-  const start = new Date(weekStartStr);
-  const end = new Date(weekStartStr);
-  end.setDate(end.getDate() + 6);
-  const fmt = (d: Date) => d.toLocaleDateString('en-GB', { day: 'numeric', month: 'short' });
-  return `${fmt(start)} – ${fmt(end)}`;
-};
 
 const MASTER_LABELS: Record<string, string> = {
   daily: 'Daily',
@@ -90,9 +82,11 @@ function PeriodRow({ label, spent, budget, percent, colorClass, textClass, isOve
 }
 
 function DailyCategoryCard({ c }: { c: CategoryBudgetInfo }) {
-  const dailyProgress = c.dailyProgress!;
-  const todayProgress = c.todayProgress!;
-  const monthlyProgress = c.monthlyProgress!;
+  const dailyProgress = c.dailyProgress;
+  const todayProgress = c.todayProgress;
+  const monthlyProgress = c.monthlyProgress;
+
+  if (!dailyProgress || !todayProgress || !monthlyProgress || c.dailyBudget == null || c.availableToday == null || c.spentToday == null) return null;
 
   return (
     <Card size="sm" className="hover:ring-foreground/20 transition-all cursor-pointer group">
@@ -102,7 +96,7 @@ function DailyCategoryCard({ c }: { c: CategoryBudgetInfo }) {
           <div className="flex items-center gap-2">
             <span className="text-sm font-semibold">{c.categoryName}</span>
             <span className="text-xs text-muted-foreground bg-muted px-2 py-0.5 rounded-full">
-              {formatCompact(c.dailyBudget!)}/day
+              {formatCompact(c.dailyBudget)}/day
             </span>
           </div>
           <ChevronRight className="w-4 h-4 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity" />
@@ -112,11 +106,11 @@ function DailyCategoryCard({ c }: { c: CategoryBudgetInfo }) {
         <div className="p-3 rounded-lg bg-muted/50 space-y-2">
           <div className="flex items-center justify-between">
             <span className="text-xs font-medium uppercase tracking-wide text-muted-foreground">Today</span>
-            <StatusBadge isOverrun={todayProgress.isOverrun} remaining={c.availableToday! - c.spentToday!} textClass={todayProgress.textClass} />
+            <StatusBadge isOverrun={todayProgress.isOverrun} remaining={c.availableToday - c.spentToday} textClass={todayProgress.textClass} />
           </div>
           <ProgressBar percent={todayProgress.percent} colorClass={todayProgress.colorClass} height="md" />
           <p className="text-xs text-muted-foreground">
-            {formatIDR(c.spentToday!)} of {formatIDR(c.availableToday!)}
+            {formatIDR(c.spentToday)} of {formatIDR(c.availableToday)}
           </p>
         </div>
 
@@ -141,9 +135,11 @@ function DailyCategoryCard({ c }: { c: CategoryBudgetInfo }) {
 }
 
 function WeeklyCategoryCard({ c }: { c: CategoryBudgetInfo }) {
-  const weeklyProgress = c.weeklyProgress!;
-  const thisWeekProgress = c.thisWeekProgress!;
-  const monthlyProgress = c.monthlyProgress!;
+  const weeklyProgress = c.weeklyProgress;
+  const thisWeekProgress = c.thisWeekProgress;
+  const monthlyProgress = c.monthlyProgress;
+
+  if (!weeklyProgress || !thisWeekProgress || !monthlyProgress || c.weeklyBudget == null || c.availableThisWeek == null || c.spentThisWeek == null) return null;
 
   return (
     <Card size="sm" className="hover:ring-foreground/20 transition-all cursor-pointer group">
@@ -153,7 +149,7 @@ function WeeklyCategoryCard({ c }: { c: CategoryBudgetInfo }) {
           <div className="flex items-center gap-2">
             <span className="text-sm font-semibold">{c.categoryName}</span>
             <span className="text-xs text-muted-foreground bg-muted px-2 py-0.5 rounded-full">
-              {formatCompact(c.weeklyBudget!)}/wk
+              {formatCompact(c.weeklyBudget)}/wk
             </span>
           </div>
           <ChevronRight className="w-4 h-4 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity" />
@@ -166,11 +162,11 @@ function WeeklyCategoryCard({ c }: { c: CategoryBudgetInfo }) {
               This Week
               <span className="font-normal ml-1">({formatWeekRange(c.weekStartStr)})</span>
             </span>
-            <StatusBadge isOverrun={thisWeekProgress.isOverrun} remaining={c.availableThisWeek! - c.spentThisWeek!} textClass={thisWeekProgress.textClass} />
+            <StatusBadge isOverrun={thisWeekProgress.isOverrun} remaining={c.availableThisWeek - c.spentThisWeek} textClass={thisWeekProgress.textClass} />
           </div>
           <ProgressBar percent={thisWeekProgress.percent} colorClass={thisWeekProgress.colorClass} height="md" />
           <p className="text-xs text-muted-foreground">
-            {formatIDR(c.spentThisWeek!)} of {formatIDR(c.availableThisWeek!)}
+            {formatIDR(c.spentThisWeek)} of {formatIDR(c.availableThisWeek)}
           </p>
         </div>
 

@@ -1,8 +1,8 @@
 import { ChevronRight } from 'lucide-react';
 import type { Transaction } from '@/features/transactions/domain/entities/Transaction';
+import { formatCurrency } from '@/shared/core/utils/formatCurrency';
 
-const formatIDR = (amount: number) =>
-  new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 }).format(amount);
+const formatIDR = (amount: number) => formatCurrency(amount, 'IDR');
 
 const formatDate = (dateStr: string) => {
   const date = new Date(dateStr);

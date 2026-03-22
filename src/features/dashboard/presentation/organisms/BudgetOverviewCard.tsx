@@ -1,7 +1,7 @@
 import { TrendingUp, TrendingDown, AlertTriangle } from 'lucide-react';
+import { formatCurrency } from '@/shared/core/utils/formatCurrency';
 
-const formatIDR = (amount: number) =>
-  new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 }).format(amount);
+const formatIDR = (amount: number) => formatCurrency(amount, 'IDR');
 
 interface BudgetOverviewCardProps {
   totalMonthlyBudget: number;
