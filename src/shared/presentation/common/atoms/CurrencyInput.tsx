@@ -75,14 +75,14 @@ export function CurrencyInput({
   return (
     <div className={`flex items-center border rounded-md ${className}`}>
       <span
-        className="px-3 py-2 bg-muted text-sm border-r text-muted-foreground font-medium min-w-[3.5rem] text-center flex-shrink-0"
+        className="self-stretch flex items-center justify-center px-3 bg-muted text-sm border-r text-muted-foreground font-medium min-w-[3.5rem] flex-shrink-0"
       >
         {currency}
       </span>
       <input
         type="text"
         inputMode="numeric"
-        className="flex-1 min-w-0 px-3 py-2 text-sm outline-none bg-background"
+        className="flex-1 min-w-0 px-3 h-full text-sm outline-none bg-transparent"
         value={display}
         placeholder={placeholder}
         required={required}
