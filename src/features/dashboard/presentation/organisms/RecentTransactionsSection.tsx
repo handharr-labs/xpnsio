@@ -19,7 +19,7 @@ export function RecentTransactionsSection({
   return (
     <section className="space-y-4">
       <div className="flex items-center justify-between">
-        <h2 className="text-lg font-semibold text-white">Recent Transactions</h2>
+        <h2 className="text-lg font-semibold">Recent Transactions</h2>
         <button
           className="flex items-center gap-1 text-sm font-medium text-primary hover:text-primary/80 transition-colors min-h-[44px] px-2 -mr-2"
           onClick={onViewAll}
@@ -29,12 +29,12 @@ export function RecentTransactionsSection({
         </button>
       </div>
 
-      <div className="rounded-xl ring-1 ring-white/10 bg-zinc-900/50 overflow-hidden divide-y divide-white/10">
+      <div className="rounded-xl ring-1 ring-border bg-card overflow-hidden divide-y divide-border">
         {transactions.map((tx) => (
           <button
             type="button"
             key={tx.id}
-            className="flex items-center gap-3 w-full p-4 text-left hover:bg-white/5 active:bg-white/10 transition-colors min-h-[56px]"
+            className="flex items-center gap-3 w-full p-4 text-left hover:bg-muted/50 active:bg-muted transition-colors min-h-[56px]"
             onClick={() => onSelect(tx.id)}
           >
             {/* Color Indicator */}
@@ -46,11 +46,11 @@ export function RecentTransactionsSection({
 
             {/* Content */}
             <div className="flex-1 min-w-0">
-              <p className="text-sm font-medium truncate text-white">
+              <p className="text-sm font-medium truncate">
                 {tx.categoryName ?? (tx.type === 'income' ? 'Income' : 'Expense')}
               </p>
               {tx.description && (
-                <p className="text-xs text-zinc-400 truncate">{tx.description}</p>
+                <p className="text-xs text-muted-foreground truncate">{tx.description}</p>
               )}
             </div>
 
@@ -58,16 +58,18 @@ export function RecentTransactionsSection({
             <div className="text-right shrink-0">
               <p
                 className={`text-sm font-semibold tabular-nums ${
-                  tx.type === 'income' ? 'text-emerald-300' : 'text-red-300'
+                  tx.type === 'income'
+                    ? 'text-emerald-600 dark:text-emerald-300'
+                    : 'text-red-600 dark:text-red-300'
                 }`}
               >
                 {tx.type === 'income' ? '+' : '-'}{formatCurrency(tx.amount, 'IDR')}
               </p>
-              <p className="text-xs text-zinc-500">{formatRelativeDate(tx.date)}</p>
+              <p className="text-xs text-muted-foreground">{formatRelativeDate(tx.date)}</p>
             </div>
 
             {/* Chevron */}
-            <ChevronRight className="w-4 h-4 text-zinc-500 shrink-0" />
+            <ChevronRight className="w-4 h-4 text-muted-foreground shrink-0" />
           </button>
         ))}
       </div>

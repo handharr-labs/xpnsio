@@ -29,14 +29,14 @@ export function TransactionListSection({
         <section key={date} className="space-y-2">
           {/* Date Header */}
           <div className="flex items-center gap-3">
-            <h3 className="text-xs font-semibold uppercase tracking-wider text-zinc-400">
+            <h3 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
               {formatRelativeDate(date, 'long')}
             </h3>
-            <div className="flex-1 h-px bg-white/10" />
+            <div className="flex-1 h-px bg-border" />
           </div>
 
           {/* Transaction List */}
-          <div className="rounded-xl ring-1 ring-white/10 bg-zinc-900/50 overflow-hidden divide-y divide-white/10">
+          <div className="rounded-xl ring-1 ring-border bg-card overflow-hidden divide-y divide-border">
             {grouped[date].map((tx) => {
               const cat = tx.categoryId ? categoryMap.get(tx.categoryId) : null;
               const isIncome = tx.type === 'income';
@@ -45,7 +45,7 @@ export function TransactionListSection({
                 <button
                   type="button"
                   key={tx.id}
-                  className="flex items-center gap-3 w-full p-4 text-left hover:bg-white/5 active:bg-white/10 transition-colors min-h-[56px] group"
+                  className="flex items-center gap-3 w-full p-4 text-left hover:bg-muted/50 active:bg-muted transition-colors min-h-[56px] group"
                   onClick={() => onSelect(tx.id)}
                 >
                   {/* Color Indicator */}
@@ -55,7 +55,7 @@ export function TransactionListSection({
                     ) : (
                       <div
                         className={`w-4 h-4 rounded-full ${
-                          isIncome ? 'bg-emerald-500' : 'bg-red-500'
+                          isIncome ? 'bg-emerald-400' : 'bg-red-400'
                         }`}
                       />
                     )}
@@ -63,11 +63,11 @@ export function TransactionListSection({
 
                   {/* Content */}
                   <div className="flex-1 min-w-0">
-                    <p className="text-sm font-medium truncate text-white">
+                    <p className="text-sm font-medium truncate">
                       {cat?.name ?? (isIncome ? 'Income' : 'Expense')}
                     </p>
                     {tx.description && (
-                      <p className="text-xs text-zinc-400 truncate mt-0.5">
+                      <p className="text-xs text-muted-foreground truncate mt-0.5">
                         {tx.description}
                       </p>
                     )}
@@ -77,7 +77,7 @@ export function TransactionListSection({
                   <div className="flex-shrink-0 text-right">
                     <p
                       className={`text-sm font-semibold tabular-nums ${
-                        isIncome ? 'text-emerald-300' : 'text-red-300'
+                        isIncome ? 'text-emerald-600 dark:text-emerald-300' : 'text-red-600 dark:text-red-300'
                       }`}
                     >
                       {isIncome ? '+' : '-'}{formatCurrency(typeof tx.amount === 'string' ? parseFloat(tx.amount) : tx.amount, 'IDR')}
@@ -85,7 +85,7 @@ export function TransactionListSection({
                   </div>
 
                   {/* Chevron */}
-                  <ChevronRight className="w-4 h-4 text-zinc-500 flex-shrink-0 opacity-0 group-hover:opacity-100 transition-opacity" />
+                  <ChevronRight className="w-4 h-4 text-muted-foreground flex-shrink-0 opacity-0 group-hover:opacity-100 transition-opacity" />
                 </button>
               );
             })}
