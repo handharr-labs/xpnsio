@@ -1,5 +1,33 @@
 # Changelog
 
+## [2.0.0](https://github.com/handharr-labs/xpnsio/compare/v1.4.0...v2.0.0) (2026-03-22)
+
+### Features
+
+* **theme:** add dark/light mode toggle in Settings using `next-themes`; preference persists across sessions
+* **login:** update welcome copy to "Welcome to Xpnsio"; Google button styled dark for always-dark login screen
+* **currency:** replace locale-specific compact notation with universal K/M/B suffixes (`formatCompactCurrency`)
+
+### Bug Fixes
+
+* **currency-input:** fix vertical alignment of currency badge; add `overflow-hidden` for smooth rounded corners
+* **dashboard:** fix budget overview card text visibility — semantic tokens replace hardcoded zinc/white colors
+* **dashboard:** fix category breakdown progress/status text contrast on light mode (`text-*-600 dark:text-*-300`)
+* **dashboard:** align dot indicator color with amount text color in recent transactions section
+* **transactions:** fix search bar and filter button colors on light mode
+* **transactions/new:** fix all broken colors on light mode in new transaction screen
+* **settings:** fix danger zone and sign out button contrast on dark background
+* **transaction-detail:** fix delete button contrast
+
+### Refactors
+
+* **shared/utils:** extract `formatRelativeDate` and `formatFullDate` utils to `shared/core/utils/`
+* **shared/utils:** extract `getOrdinalSuffix` util to `shared/core/utils/formatOrdinal`
+* **categories/utils:** extract `getCategoryIcon` and `ICON_MAP` to `features/categories/presentation/utils/`
+* **theme:** migrate all hardcoded `zinc-*`/`white/*` colors to semantic Tailwind tokens for light mode support
+* **theme:** remove hardcoded `className="dark"` from root layout; `ThemeProvider` manages theme class on `<html>`
+* **login:** retain always-dark via `bg-zinc-950 dark` on login container (independent of global theme)
+
 ## [1.4.0](https://github.com/handharr-labs/xpnsio/compare/v1.3.2...v1.4.0) (2026-03-21)
 
 ### Refactors
