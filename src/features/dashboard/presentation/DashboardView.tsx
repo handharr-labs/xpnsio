@@ -30,7 +30,7 @@ export function DashboardView() {
   return (
     <main
       ref={containerRef as React.RefObject<HTMLElement>}
-      className="min-h-screen overscroll-none bg-zinc-950 dark"
+      className="min-h-screen overscroll-none"
     >
       {/* Pull to Refresh Indicator */}
       {(pullDistance > 0 || isRefreshing) && (

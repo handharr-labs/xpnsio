@@ -7,17 +7,8 @@ import { Button } from '@/components/ui/button';
 import { useTransactionDetailViewModel } from './useTransactionDetailViewModel';
 import { CurrencyInput } from '@/shared/presentation/common/atoms/CurrencyInput';
 import { formatCurrency } from '@/shared/core/utils/formatCurrency';
+import { formatFullDate } from '@/shared/core/utils/formatRelativeDate';
 import { ROUTES } from '@/shared/presentation/navigation/routes';
-
-const formatDateDisplay = (dateStr: string) => {
-  const date = new Date(dateStr);
-  return date.toLocaleDateString('en-GB', {
-    weekday: 'long',
-    day: 'numeric',
-    month: 'long',
-    year: 'numeric',
-  });
-};
 
 export function TransactionDetailView({ id }: { id: string }) {
   const router = useRouter();
@@ -84,7 +75,7 @@ export function TransactionDetailView({ id }: { id: string }) {
   // Loading State
   if (isLoading) {
     return (
-      <main className="min-h-screen bg-zinc-950 dark">
+      <main className="min-h-screen">
         <div className="px-4 pt-4 pb-8 md:px-6 md:pt-6">
           <div className="max-w-lg mx-auto space-y-6">
             <div className="h-11 w-32 rounded-xl bg-muted animate-pulse" />
@@ -99,7 +90,7 @@ export function TransactionDetailView({ id }: { id: string }) {
   // Not Found State
   if (!transaction) {
     return (
-      <main className="min-h-screen bg-zinc-950 dark">
+      <main className="min-h-screen">
         <div className="px-4 pt-4 pb-8 md:px-6 md:pt-6">
           <div className="max-w-lg mx-auto">
             <div className="rounded-2xl ring-1 ring-border p-12 text-center space-y-4">
@@ -125,7 +116,7 @@ export function TransactionDetailView({ id }: { id: string }) {
   const isIncome = transaction.type === 'income';
 
   return (
-    <main className="min-h-screen bg-zinc-950 dark">
+    <main className="min-h-screen">
       <div className="px-4 pt-4 pb-8 md:px-6 md:pt-6">
         <div className="max-w-lg mx-auto space-y-6">
           {/* Header */}
@@ -181,7 +172,7 @@ export function TransactionDetailView({ id }: { id: string }) {
                   </div>
                   <div>
                     <p className="text-xs text-muted-foreground">Date</p>
-                    <p className="text-sm font-medium">{formatDateDisplay(transaction.date)}</p>
+                    <p className="text-sm font-medium">{formatFullDate(transaction.date)}</p>
                   </div>
                 </div>
 

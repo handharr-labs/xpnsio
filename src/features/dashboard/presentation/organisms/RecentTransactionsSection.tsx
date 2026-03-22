@@ -1,20 +1,7 @@
 import { ChevronRight } from 'lucide-react';
 import type { Transaction } from '@/features/transactions/domain/entities/Transaction';
 import { formatCurrency } from '@/shared/core/utils/formatCurrency';
-
-const formatIDR = (amount: number) => formatCurrency(amount, 'IDR');
-
-const formatDate = (dateStr: string) => {
-  const date = new Date(dateStr);
-  const today = new Date();
-  const yesterday = new Date(today);
-  yesterday.setDate(yesterday.getDate() - 1);
-
-  if (dateStr === today.toISOString().split('T')[0]) return 'Today';
-  if (dateStr === yesterday.toISOString().split('T')[0]) return 'Yesterday';
-
-  return date.toLocaleDateString('en-GB', { day: 'numeric', month: 'short' });
-};
+import { formatRelativeDate } from '@/shared/core/utils/formatRelativeDate';
 
 interface RecentTransactionsSectionProps {
   transactions: Transaction[];
@@ -74,9 +61,9 @@ export function RecentTransactionsSection({
                   tx.type === 'income' ? 'text-emerald-400' : 'text-red-400'
                 }`}
               >
-                {tx.type === 'income' ? '+' : '-'}{formatIDR(tx.amount)}
+                {tx.type === 'income' ? '+' : '-'}{formatCurrency(tx.amount, 'IDR')}
               </p>
-              <p className="text-xs text-zinc-500">{formatDate(tx.date)}</p>
+              <p className="text-xs text-zinc-500">{formatRelativeDate(tx.date)}</p>
             </div>
 
             {/* Chevron */}

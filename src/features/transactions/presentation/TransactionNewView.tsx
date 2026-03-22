@@ -49,7 +49,7 @@ export function TransactionNewView() {
   const selectedCategory = categories.find((c) => c.id === categoryId);
 
   return (
-    <main className="min-h-screen bg-zinc-950 dark">
+    <main className="min-h-screen">
       <div className="px-4 pt-4 pb-8 md:px-6 md:pt-6">
         <div className="max-w-lg mx-auto">
           {/* Header */}

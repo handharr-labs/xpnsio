@@ -84,7 +84,7 @@ export function TransactionsView() {
   const hasActiveFilters = localFilters.startDate || localFilters.endDate || localFilters.categoryId || localFilters.type;
 
   return (
-    <main className="min-h-screen bg-zinc-950 dark">
+    <main className="min-h-screen">
       {/* Content Container - PWA safe area padding */}
       <div className="px-4 pt-4 pb-[calc(5rem+env(safe-area-inset-bottom))] md:px-6 md:pt-6 md:pb-6">
         <div className="max-w-3xl mx-auto space-y-4">

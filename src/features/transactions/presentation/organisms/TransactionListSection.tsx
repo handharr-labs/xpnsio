@@ -4,28 +4,7 @@ import { CategoryColorDot } from '@/shared/presentation/common/atoms/CategoryCol
 import type { Transaction } from '@/features/transactions/domain/entities/Transaction';
 import type { Category } from '@/features/categories/domain/entities/Category';
 import { formatCurrency } from '@/shared/core/utils/formatCurrency';
-
-const formatIDR = (amount: number | string) =>
-  formatCurrency(typeof amount === 'string' ? parseFloat(amount) : amount, 'IDR');
-
-const formatDateHeader = (dateStr: string) => {
-  const date = new Date(dateStr);
-  const today = new Date();
-  const yesterday = new Date(today);
-  yesterday.setDate(yesterday.getDate() - 1);
-
-  const todayStr = today.toISOString().split('T')[0];
-  const yesterdayStr = yesterday.toISOString().split('T')[0];
-
-  if (dateStr === todayStr) return 'Today';
-  if (dateStr === yesterdayStr) return 'Yesterday';
-
-  return date.toLocaleDateString('en-GB', {
-    weekday: 'long',
-    day: 'numeric',
-    month: 'short',
-  });
-};
+import { formatRelativeDate } from '@/shared/core/utils/formatRelativeDate';
 
 interface TransactionListSectionProps {
   dates: string[];
@@ -51,7 +30,7 @@ export function TransactionListSection({
           {/* Date Header */}
           <div className="flex items-center gap-3">
             <h3 className="text-xs font-semibold uppercase tracking-wider text-zinc-400">
-              {formatDateHeader(date)}
+              {formatRelativeDate(date, 'long')}
             </h3>
             <div className="flex-1 h-px bg-white/10" />
           </div>
@@ -101,7 +80,7 @@ export function TransactionListSection({
                         isIncome ? 'text-emerald-400' : 'text-red-400'
                       }`}
                     >
-                      {isIncome ? '+' : '-'}{formatIDR(tx.amount)}
+                      {isIncome ? '+' : '-'}{formatCurrency(typeof tx.amount === 'string' ? parseFloat(tx.amount) : tx.amount, 'IDR')}
                     </p>
                   </div>
 

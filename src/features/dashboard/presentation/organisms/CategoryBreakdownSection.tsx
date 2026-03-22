@@ -1,13 +1,10 @@
 import { Card, CardContent } from '@/components/ui/card';
 import { ChevronRight } from 'lucide-react';
 import type { CategoryBudgetInfo } from '@/features/dashboard/domain/use-cases/dashboard/GetDashboardDataUseCase';
-import { formatCurrency } from '@/shared/core/utils/formatCurrency';
+import { formatCurrency, formatCompactCurrency } from '@/shared/core/utils/formatCurrency';
 import { formatWeekRange } from '@/shared/core/utils/formatWeekRange';
 
-const formatIDR = (amount: number) => formatCurrency(amount, 'IDR');
-
-const formatCompact = (amount: number) =>
-  new Intl.NumberFormat('id-ID', { notation: 'compact', maximumFractionDigits: 1 }).format(amount);
+const formatCompact = (amount: number) => formatCompactCurrency(amount, 'IDR');
 
 const MASTER_LABELS: Record<string, string> = {
   daily: 'Daily',
@@ -110,7 +107,7 @@ function DailyCategoryCard({ c }: { c: CategoryBudgetInfo }) {
           </div>
           <ProgressBar percent={todayProgress.percent} colorClass={todayProgress.colorClass} height="md" />
           <p className="text-xs text-muted-foreground">
-            {formatIDR(c.spentToday)} of {formatIDR(c.availableToday)}
+            {formatCurrency(c.spentToday, 'IDR')} of {formatCurrency(c.availableToday, 'IDR')}
           </p>
         </div>
 
@@ -166,7 +163,7 @@ function WeeklyCategoryCard({ c }: { c: CategoryBudgetInfo }) {
           </div>
           <ProgressBar percent={thisWeekProgress.percent} colorClass={thisWeekProgress.colorClass} height="md" />
           <p className="text-xs text-muted-foreground">
-            {formatIDR(c.spentThisWeek)} of {formatIDR(c.availableThisWeek)}
+            {formatCurrency(c.spentThisWeek, 'IDR')} of {formatCurrency(c.availableThisWeek, 'IDR')}
           </p>
         </div>
 
@@ -213,7 +210,7 @@ function MonthlyCategoryCard({ c }: { c: CategoryBudgetInfo }) {
         {/* Stats Row */}
         <div className="flex items-center justify-between">
           <span className="text-xs text-muted-foreground">
-            {formatIDR(c.totalSpent)} / {formatIDR(c.monthlyBudget)}
+            {formatCurrency(c.totalSpent, 'IDR')} / {formatCurrency(c.monthlyBudget, 'IDR')}
           </span>
           <StatusBadge isOverrun={isOverrun} remaining={remaining} textClass={textClass} />
         </div>

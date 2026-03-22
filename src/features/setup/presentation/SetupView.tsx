@@ -8,6 +8,7 @@ import { useSetupViewModel } from './useSetupViewModel';
 import type { SetupCategory } from './useSetupViewModel';
 import { CurrencyInput } from '@/shared/presentation/common/atoms/CurrencyInput';
 import { formatCurrency } from '@/shared/core/utils/formatCurrency';
+import { getOrdinalSuffix } from '@/shared/core/utils/formatOrdinal';
 import { ROUTES } from '@/shared/presentation/navigation/routes';
 
 const CURRENCY_OPTIONS = [
@@ -70,16 +71,6 @@ export function SetupView() {
       router.push(ROUTES.dashboard);
     } catch {
       // error set by ViewModel
-    }
-  };
-
-  const getOrdinalSuffix = (day: number) => {
-    if (day >= 11 && day <= 13) return 'th';
-    switch (day % 10) {
-      case 1: return 'st';
-      case 2: return 'nd';
-      case 3: return 'rd';
-      default: return 'th';
     }
   };
 

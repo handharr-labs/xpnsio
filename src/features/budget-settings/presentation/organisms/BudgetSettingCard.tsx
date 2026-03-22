@@ -3,9 +3,6 @@ import { Button } from '@/components/ui/button';
 import type { BudgetSetting } from '@/features/budget-settings/domain/entities/BudgetSetting';
 import { formatCurrency } from '@/shared/core/utils/formatCurrency';
 
-const formatIDR = (amount: number | string) =>
-  formatCurrency(typeof amount === 'string' ? parseFloat(amount) : amount, 'IDR');
-
 interface BudgetSettingCardProps {
   setting: BudgetSetting;
   isApplying: boolean;
@@ -31,7 +28,7 @@ export function BudgetSettingCard({
         <div className="space-y-1">
           <h3 className="text-lg font-semibold tracking-tight">{setting.name}</h3>
           <p className="text-2xl font-bold text-primary">
-            {formatIDR(setting.totalMonthlyBudget)}
+            {formatCurrency(typeof setting.totalMonthlyBudget === 'string' ? parseFloat(setting.totalMonthlyBudget) : setting.totalMonthlyBudget, 'IDR')}
             <span className="text-sm font-normal text-muted-foreground">/month</span>
           </p>
         </div>

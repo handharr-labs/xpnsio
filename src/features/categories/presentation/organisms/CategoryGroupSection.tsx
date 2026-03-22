@@ -1,24 +1,8 @@
-import { Pencil, Trash2, UtensilsCrossed, Car, Home, ShoppingBag, Heart, BookOpen, Tv, Plane, Circle } from 'lucide-react';
+import { Pencil, Trash2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { CategoryColorDot } from '@/shared/presentation/common/atoms/CategoryColorDot';
 import type { Category } from '@/features/categories/domain/entities/Category';
-
-const ICON_MAP: Record<string, React.ComponentType<{ className?: string }>> = {
-  food: UtensilsCrossed,
-  car: Car,
-  home: Home,
-  shopping: ShoppingBag,
-  health: Heart,
-  education: BookOpen,
-  entertainment: Tv,
-  travel: Plane,
-  circle: Circle,
-  other: Circle,
-};
-
-function getCategoryIcon(iconName: string) {
-  return ICON_MAP[iconName] ?? Circle;
-}
+import { getCategoryIcon } from '@/features/categories/presentation/utils/getCategoryIcon';
 
 interface CategoryGroupSectionProps {
   masterLabel: string;
