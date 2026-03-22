@@ -73,7 +73,7 @@ export function CurrencyInput({
   };
 
   return (
-    <div className={`flex items-center border rounded-md ${className}`}>
+    <div className={`flex items-center border rounded-md overflow-hidden ${className}`}>
       <span
         className="self-stretch flex items-center justify-center px-3 bg-muted text-sm border-r text-muted-foreground font-medium min-w-[3.5rem] flex-shrink-0"
       >
