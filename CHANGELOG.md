@@ -1,5 +1,11 @@
 # Changelog
 
+## [2.0.1](https://github.com/handharr-labs/xpnsio/compare/v2.0.0...v2.0.1) (2026-03-22)
+
+### Bug Fixes
+
+* **budget-settings:** prevent keyboard dismissal on Android when typing — replace `type="number"` with `type="text" inputMode="numeric"` on starter day inputs; use stable `crypto.randomUUID()` keys for category list items instead of array index
+
 ## [2.0.0](https://github.com/handharr-labs/xpnsio/compare/v1.4.0...v2.0.0) (2026-03-22)
 
 ### Features
