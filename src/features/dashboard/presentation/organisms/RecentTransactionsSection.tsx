@@ -59,8 +59,8 @@ export function RecentTransactionsSection({
               <p
                 className={`text-sm font-semibold tabular-nums ${
                   tx.type === 'income'
-                    ? 'text-emerald-600 dark:text-emerald-300'
-                    : 'text-red-600 dark:text-red-300'
+                    ? 'text-emerald-600 dark:text-emerald-400'
+                    : 'text-red-600 dark:text-red-400'
                 }`}
               >
                 {tx.type === 'income' ? '+' : '-'}{formatCurrency(tx.amount, 'IDR')}
