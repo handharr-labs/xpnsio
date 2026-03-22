@@ -77,7 +77,7 @@ export function TransactionListSection({
                   <div className="flex-shrink-0 text-right">
                     <p
                       className={`text-sm font-semibold tabular-nums ${
-                        isIncome ? 'text-emerald-400' : 'text-red-400'
+                        isIncome ? 'text-emerald-300' : 'text-red-300'
                       }`}
                     >
                       {isIncome ? '+' : '-'}{formatCurrency(typeof tx.amount === 'string' ? parseFloat(tx.amount) : tx.amount, 'IDR')}

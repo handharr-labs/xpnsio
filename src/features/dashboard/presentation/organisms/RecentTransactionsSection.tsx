@@ -40,7 +40,7 @@ export function RecentTransactionsSection({
             {/* Color Indicator */}
             <div
               className={`w-2.5 h-2.5 rounded-full shrink-0 ${
-                tx.type === 'income' ? 'bg-emerald-500' : 'bg-red-500'
+                tx.type === 'income' ? 'bg-emerald-400' : 'bg-red-400'
               }`}
             />
 
@@ -58,7 +58,7 @@ export function RecentTransactionsSection({
             <div className="text-right shrink-0">
               <p
                 className={`text-sm font-semibold tabular-nums ${
-                  tx.type === 'income' ? 'text-emerald-400' : 'text-red-400'
+                  tx.type === 'income' ? 'text-emerald-300' : 'text-red-300'
                 }`}
               >
                 {tx.type === 'income' ? '+' : '-'}{formatCurrency(tx.amount, 'IDR')}
