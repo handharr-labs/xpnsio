@@ -191,7 +191,7 @@ function MonthlyCategoryCard({ c }: { c: CategoryBudgetInfo }) {
   const progress = c.monthlyProgress;
   const percent = progress?.percent ?? 0;
   const colorClass = progress?.colorClass ?? 'bg-emerald-500';
-  const textClass = progress?.textClass ?? 'text-emerald-600';
+  const textClass = progress?.textClass ?? 'text-emerald-400';
   const isOverrun = progress?.isOverrun ?? false;
   const remaining = progress?.remaining ?? c.remaining;
 
