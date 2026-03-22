@@ -41,7 +41,7 @@ export function BudgetSettingEditView({ id }: { id: string }) {
   const addItem = () => {
     updateItems([
       ...items,
-      { name: '', masterCategory: 'monthly', color: '#6366f1', icon: 'circle', monthlyAmount: 0 },
+      { id: crypto.randomUUID(), name: '', masterCategory: 'monthly', color: '#6366f1', icon: 'circle', monthlyAmount: 0 },
     ]);
   };
 
@@ -115,10 +115,10 @@ export function BudgetSettingEditView({ id }: { id: string }) {
               <div className="space-y-1">
                 <label className="text-sm font-medium">Budget Starts On Day</label>
                 <input
-                  type="number"
+                  type="text"
+                  inputMode="numeric"
+                  pattern="[0-9]*"
                   className="w-full rounded-md border px-3 py-2 text-sm"
-                  min={1}
-                  max={28}
                   value={starterDay}
                   onChange={(e) => updateStarterDay(Math.min(28, Math.max(1, parseInt(e.target.value, 10) || 1)))}
                 />
@@ -146,7 +146,7 @@ export function BudgetSettingEditView({ id }: { id: string }) {
               )}
 
               {items.map((item, index) => (
-                <div key={index} className="space-y-2 rounded-lg border p-3">
+                <div key={item.id ?? index} className="space-y-2 rounded-lg border p-3">
                   <div className="flex items-center gap-2">
                     <input
                       className="flex-1 rounded-md border px-3 py-2 text-sm"
