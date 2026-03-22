@@ -3,6 +3,7 @@
 import { useEffect, useState, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { Search, SlidersHorizontal, Plus, X } from 'lucide-react';
+import { Button } from '@/components/ui/button';
 import { useTransactionsViewModel } from './useTransactionsViewModel';
 import { getCategoriesAction } from '@/features/categories/presentation/actions/categories';
 import { ROUTES } from '@/shared/presentation/navigation/routes';
@@ -91,20 +92,17 @@ export function TransactionsView() {
           {/* Header */}
           <header className="flex items-center justify-between min-h-[44px]">
             <h1 className="text-xl md:text-2xl font-bold tracking-tight">Transactions</h1>
-            <button
+            <Button
               onClick={() => setShowFilters(!showFilters)}
-              className={`flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium transition-colors min-h-[44px] ${
-                showFilters || hasActiveFilters
-                  ? 'bg-primary text-primary-foreground'
-                  : 'bg-muted hover:bg-muted/80 text-muted-foreground'
-              }`}
+              variant={showFilters || hasActiveFilters ? 'default' : 'outline'}
+              className="h-11 rounded-xl gap-2"
             >
               <SlidersHorizontal className="w-4 h-4" />
               <span className="hidden sm:inline">Filters</span>
               {hasActiveFilters && !showFilters && (
-                <span className="w-2 h-2 rounded-full bg-primary-foreground" />
+                <span className="w-2 h-2 rounded-full bg-current opacity-70" />
               )}
-            </button>
+            </Button>
           </header>
 
           {/* Search Bar - Prominent */}
