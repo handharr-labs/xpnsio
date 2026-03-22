@@ -72,7 +72,7 @@ export function LoginView() {
             <div className="relative z-10 space-y-6">
               {/* Header */}
               <div className="text-center space-y-2">
-                <h2 className="text-2xl font-bold text-white">Welcome back</h2>
+                <h2 className="text-2xl font-bold text-white">Welcome to Xpnsio</h2>
                 <p className="text-zinc-400">Sign in to your account to continue</p>
               </div>
 
