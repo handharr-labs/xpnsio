@@ -1,5 +1,16 @@
 # Changelog
 
+## [2.0.2](https://github.com/handharr-labs/xpnsio/compare/v2.0.1...v2.0.2) (2026-03-23)
+
+### Features
+
+* **dashboard:** replace monthly grid with weekly grid in daily category card — shows "This Week" remaining budget instead of "Monthly" for a cleaner Today → Week → Month hierarchy
+
+### Bug Fixes
+
+* **transactions:** prevent date input from overflowing its container on mobile — add `overflow-hidden` to wrapper and `min-w-0` to input
+* **ui:** prevent iOS Safari from zooming on input focus — set `font-size: 16px` on all inputs for screens up to 1024px (phones and iPads)
+
 ## [2.0.1](https://github.com/handharr-labs/xpnsio/compare/v2.0.0...v2.0.1) (2026-03-22)
 
 ### Bug Fixes
