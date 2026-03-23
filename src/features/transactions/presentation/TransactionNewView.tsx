@@ -126,11 +126,11 @@ export function TransactionNewView() {
             {/* Date */}
             <div className="space-y-2">
               <label className="text-sm font-medium text-muted-foreground">Date</label>
-              <div className="relative">
+              <div className="relative overflow-hidden">
                 <Calendar className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground pointer-events-none" />
                 <input
                   type="date"
-                  className="w-full h-12 pl-12 pr-4 rounded-xl bg-muted/50 ring-1 ring-border text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all"
+                  className="w-full min-w-0 h-12 pl-12 pr-4 rounded-xl bg-muted/50 ring-1 ring-border text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all"
                   value={date}
                   onChange={(e) => setDate(e.target.value)}
                   required
