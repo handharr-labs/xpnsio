@@ -81,9 +81,9 @@ function PeriodRow({ label, spent, budget, percent, colorClass, textClass, isOve
 function DailyCategoryCard({ c }: { c: CategoryBudgetInfo }) {
   const dailyProgress = c.dailyProgress;
   const todayProgress = c.todayProgress;
-  const monthlyProgress = c.monthlyProgress;
+  const thisWeekProgress = c.thisWeekProgress;
 
-  if (!dailyProgress || !todayProgress || !monthlyProgress || c.dailyBudget == null || c.availableToday == null || c.spentToday == null) return null;
+  if (!dailyProgress || !todayProgress || !thisWeekProgress || c.dailyBudget == null || c.availableToday == null || c.spentToday == null) return null;
 
   return (
     <Card size="sm" className="hover:ring-foreground/20 transition-all cursor-pointer group">
@@ -111,7 +111,7 @@ function DailyCategoryCard({ c }: { c: CategoryBudgetInfo }) {
           </p>
         </div>
 
-        {/* Pacing & Monthly - Compact Grid */}
+        {/* Pacing & This Week - Compact Grid */}
         <div className="grid grid-cols-2 gap-4 pt-2 border-t border-border/50">
           <div className="space-y-1.5">
             <p className="text-xs text-muted-foreground">Pacing ({c.periodDaysElapsed}d)</p>
@@ -119,10 +119,10 @@ function DailyCategoryCard({ c }: { c: CategoryBudgetInfo }) {
             <p className={`text-xs font-medium ${dailyProgress.textClass}`}>{dailyProgress.percent}%</p>
           </div>
           <div className="space-y-1.5">
-            <p className="text-xs text-muted-foreground">Monthly</p>
-            <ProgressBar percent={monthlyProgress.percent} colorClass={monthlyProgress.colorClass} />
-            <p className={`text-xs font-medium ${monthlyProgress.textClass}`}>
-              {formatCompact(monthlyProgress.remaining)} left
+            <p className="text-xs text-muted-foreground">This Week</p>
+            <ProgressBar percent={thisWeekProgress.percent} colorClass={thisWeekProgress.colorClass} />
+            <p className={`text-xs font-medium ${thisWeekProgress.textClass}`}>
+              {formatCompact(thisWeekProgress.remaining)} left
             </p>
           </div>
         </div>

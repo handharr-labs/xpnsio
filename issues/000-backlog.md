@@ -2,6 +2,7 @@
 
 | # | Title | Status | Link |
 |---|-------|--------|------|
+| 051 | Replace monthly grid with weekly grid in daily category card | `pending` | [#51](https://github.com/handharr-labs/xpnsio/issues/51) |
 | 049 | fix: keyboard dismisses immediately when typing in budget setup on Android | `pending` | [#49](https://github.com/handharr-labs/xpnsio/issues/49) |
 | 045 | feature: UI revamp using v0.dev | `open` | [#45](https://github.com/handharr-labs/xpnsio/issues/45) |
 | 043 | fix(dashboard): daily card 'Over by' label shows green instead of red | `pending` | [#43](https://github.com/handharr-labs/xpnsio/issues/43) |
