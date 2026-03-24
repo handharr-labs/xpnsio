@@ -69,7 +69,7 @@ export function BudgetSettingCard({
           <Button
             variant="outline"
             onClick={() => onDelete(setting.id, setting.name)}
-            className="h-11 rounded-xl gap-2 text-red-600 hover:text-red-700 hover:bg-red-500/10 border-red-200 dark:border-red-500/30"
+            className="h-11 rounded-xl gap-2 text-red-600 dark:text-red-400 hover:text-red-700 dark:hover:text-red-300 hover:bg-red-500/10 border-red-200 dark:border-red-500/30"
           >
             <Trash2 className="w-4 h-4" />
           </Button>
