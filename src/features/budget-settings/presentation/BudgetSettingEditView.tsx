@@ -80,7 +80,7 @@ export function BudgetSettingEditView({ id }: { id: string }) {
 
         <form onSubmit={handleSubmit} className="space-y-6">
           {error && (
-            <div className="rounded-md bg-red-50 border border-red-200 p-3 text-sm text-red-700">
+            <div className="rounded-md bg-red-50 dark:bg-red-500/10 border border-red-200 dark:border-red-500/30 p-3 text-sm text-red-700 dark:text-red-400">
               {error}
             </div>
           )}
@@ -156,7 +156,7 @@ export function BudgetSettingEditView({ id }: { id: string }) {
                     />
                     <button
                       type="button"
-                      className="text-red-500 hover:text-red-700 text-lg font-bold px-2"
+                      className="text-red-500 dark:text-red-400 hover:text-red-700 dark:hover:text-red-300 text-lg font-bold px-2"
                       onClick={() => removeItem(index)}
                     >
                       ×

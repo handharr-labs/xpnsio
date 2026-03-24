@@ -2,6 +2,7 @@
 
 | # | Title | Status | Link |
 |---|-------|--------|------|
+| 053 | fix: replace emoji tab icons with proper icons and center mobile tab bar new transaction button | `pending` | [#53](https://github.com/handharr-labs/xpnsio/issues/53) |
 | 051 | Replace monthly grid with weekly grid in daily category card | `pending` | [#51](https://github.com/handharr-labs/xpnsio/issues/51) |
 | 049 | fix: keyboard dismisses immediately when typing in budget setup on Android | `pending` | [#49](https://github.com/handharr-labs/xpnsio/issues/49) |
 | 045 | feature: UI revamp using v0.dev | `open` | [#45](https://github.com/handharr-labs/xpnsio/issues/45) |
