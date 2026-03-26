@@ -3,26 +3,24 @@
  * Pure functions - no I/O, no async, no DOM dependencies.
  */
 
+export type BudgetStatus = 'on-track' | 'at-risk' | 'over';
+
 export interface BudgetProgressInput {
   spent: number;
   budget: number;
 }
 
 export interface BudgetProgressData {
-  readonly percent: number;           // 0-100+, using Math.floor
-  readonly remaining: number;         // Can be negative for overrun
-  readonly isOverrun: boolean;        // true if remaining < 0
-  readonly colorClass: string;        // Tailwind class: bg-green-500/yellow-500/red-500
-  readonly textClass: string;         // Tailwind class: text-green-600/yellow-600/red-600
-  readonly displayText: string;       // Formatted "X left" or "Over by X"
+  readonly percent: number;       // 0-100+, using Math.floor
+  readonly remaining: number;     // Can be negative for overrun
+  readonly isOverrun: boolean;    // true if remaining < 0
+  readonly status: BudgetStatus;  // semantic status: 'on-track' | 'at-risk' | 'over'
 }
 
 export interface BudgetProgressService {
   calculateProgress(input: BudgetProgressInput): BudgetProgressData;
   calculatePercent(spent: number, budget: number): number;
-  getProgressColor(percent: number): string;
-  getProgressTextColor(percent: number): string;
-  getRemainingText(remaining: number, isOverrun: boolean): string;
+  getProgressStatus(percent: number): BudgetStatus;
 }
 
 export class BudgetProgressServiceImpl implements BudgetProgressService {
@@ -36,9 +34,7 @@ export class BudgetProgressServiceImpl implements BudgetProgressService {
       percent,
       remaining,
       isOverrun,
-      colorClass: this.getProgressColor(percent),
-      textClass: this.getProgressTextColor(percent),
-      displayText: this.getRemainingText(remaining, isOverrun),
+      status: this.getProgressStatus(percent),
     };
   }
 
@@ -47,20 +43,9 @@ export class BudgetProgressServiceImpl implements BudgetProgressService {
     return Math.floor((spent / budget) * 100);
   }
 
-  getProgressColor(percent: number): string {
-    if (percent >= 100) return 'bg-red-400';
-    if (percent >= 90) return 'bg-yellow-400';
-    return 'bg-emerald-400';
-  }
-
-  getProgressTextColor(percent: number): string {
-    if (percent >= 100) return 'text-red-600 dark:text-red-300';
-    if (percent >= 90) return 'text-yellow-600 dark:text-yellow-300';
-    return 'text-emerald-600 dark:text-emerald-300';
-  }
-
-  getRemainingText(remaining: number, isOverrun: boolean): string {
-    const amount = Math.abs(remaining);
-    return isOverrun ? `Over by ${amount}` : `${amount} left`;
+  getProgressStatus(percent: number): BudgetStatus {
+    if (percent >= 100) return 'over';
+    if (percent >= 90) return 'at-risk';
+    return 'on-track';
   }
 }
