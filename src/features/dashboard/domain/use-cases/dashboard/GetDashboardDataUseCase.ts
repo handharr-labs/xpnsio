@@ -66,6 +66,10 @@ export class GetDashboardDataUseCaseImpl implements GetDashboardDataUseCase {
 
     const { periodStart, periodEnd, daysInPeriod } = this.computationService.getPeriodBounds(year, month, starterDay);
 
+    // When viewing a past period, clamp "today" to the last day of that period so
+    // daily/weekly progress refers to the period's end rather than the real today.
+    const effectiveToday = today > periodEnd ? periodEnd : today;
+
     // Fetch all expense transactions and category metadata
     const [allExpenseTransactions, allCategories] = await Promise.all([
       this.transactionRepository.getFiltered({
@@ -104,14 +108,14 @@ export class GetDashboardDataUseCaseImpl implements GetDashboardDataUseCase {
           monthlyBudget: budget.amount,
           daysInMonth: daysInPeriod,
           transactions: categoryTransactions.map((tx) => ({ date: tx.date, amount: tx.amount })),
-          today,
+          today: effectiveToday,
           monthStart: periodStart,
         };
         remaining = this.computationService.computeDailyRemaining(input);
         rolloverAmount = this.computationService.computeRolloverAmount(input);
         dailyBudget = budget.amount / daysInPeriod;
         const daysElapsed = Math.round(
-          (new Date(today).getTime() - new Date(periodStart).getTime()) / 86400000
+          (new Date(effectiveToday).getTime() - new Date(periodStart).getTime()) / 86400000
         ) + 1;
         accumulatedBudgetToDate = dailyBudget * daysElapsed;
 
@@ -132,7 +136,7 @@ export class GetDashboardDataUseCaseImpl implements GetDashboardDataUseCase {
         const { spentToday, availableToday } = this.computationService.computeTodayAvailable({
           accumulatedBudgetToDate,
           transactions: categoryTransactions.map((tx) => ({ date: tx.date, amount: tx.amount })),
-          today,
+          today: effectiveToday,
         });
         const todayProgress = this.progressService.calculateProgress({ spent: spentToday, budget: availableToday });
 
@@ -143,7 +147,7 @@ export class GetDashboardDataUseCaseImpl implements GetDashboardDataUseCase {
           accumulatedWeeklyBudget: dailyBudget * weekNumber * 7,
           transactions: categoryTransactions.map((tx) => ({ date: tx.date, amount: tx.amount })),
           weekStartStr,
-          today,
+          today: effectiveToday,
         });
         const thisWeekProgress = this.progressService.calculateProgress({ spent: spentThisWeek, budget: availableThisWeek });
 
@@ -174,7 +178,7 @@ export class GetDashboardDataUseCaseImpl implements GetDashboardDataUseCase {
       } else if (masterCategory === 'weekly') {
         const weeksInPeriod = daysInPeriod / 7;
         const weeksElapsed = Math.round(
-          (new Date(today).getTime() - new Date(periodStart).getTime()) / (86400000 * 7)
+          (new Date(effectiveToday).getTime() - new Date(periodStart).getTime()) / (86400000 * 7)
         ) + 1;
         weeklyBudget = budget.amount / weeksInPeriod;
         accumulatedWeeklyBudget = weeklyBudget * weeksElapsed;
@@ -182,7 +186,7 @@ export class GetDashboardDataUseCaseImpl implements GetDashboardDataUseCase {
           monthlyBudget: budget.amount,
           weeksInMonth: weeksInPeriod,
           transactions: categoryTransactions.map((tx) => ({ date: tx.date, amount: tx.amount })),
-          today,
+          today: effectiveToday,
           monthStart: periodStart,
         });
 
@@ -202,7 +206,7 @@ export class GetDashboardDataUseCaseImpl implements GetDashboardDataUseCase {
           accumulatedWeeklyBudget,
           transactions: categoryTransactions.map((tx) => ({ date: tx.date, amount: tx.amount })),
           weekStartStr,
-          today,
+          today: effectiveToday,
         });
         const thisWeekProgress = this.progressService.calculateProgress({ spent: spentThisWeek, budget: availableThisWeek });
 
