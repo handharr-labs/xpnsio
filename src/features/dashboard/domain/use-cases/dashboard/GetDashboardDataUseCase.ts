@@ -1,45 +1,13 @@
-import type { Transaction } from '@/features/transactions/domain/entities/Transaction';
 import type { BudgetRepository } from '@/features/budget-settings/domain/repositories/BudgetRepository';
 import type { BudgetSettingRepository } from '@/features/budget-settings/domain/repositories/BudgetSettingRepository';
 import type { TransactionRepository } from '@/features/transactions/domain/repositories/TransactionRepository';
 import type { CategoryRepository } from '@/features/categories/domain/repositories/CategoryRepository';
 import type { BudgetComputationService } from '@/features/budget-settings/domain/services/BudgetComputationService';
-import type { BudgetProgressService, BudgetProgressData } from '@/features/dashboard/domain/services/BudgetProgressService';
+import type { BudgetProgressService } from '@/features/dashboard/domain/services/BudgetProgressService';
+import type { CategoryBudgetInfo } from '@/features/dashboard/domain/entities/CategoryBudgetInfo';
+import type { DashboardData } from '@/features/dashboard/domain/entities/DashboardData';
 
-export interface CategoryBudgetInfo {
-  categoryId: string;
-  categoryName: string;
-  masterCategory: 'daily' | 'weekly' | 'monthly';
-  monthlyBudget: number;
-  totalSpent: number;
-  remaining: number;
-  rolloverAmount: number; // only meaningful for daily/weekly
-  dailyBudget?: number;             // monthlyBudget / daysInPeriod (daily only)
-  accumulatedBudgetToDate?: number; // dailyBudget × daysElapsed (daily only)
-  periodDaysElapsed?: number;       // days elapsed since period start (daily only)
-  weeklyBudget?: number;            // monthlyBudget / weeksInPeriod (weekly only)
-  accumulatedWeeklyBudget?: number; // weeklyBudget × weeksElapsed (weekly only)
-  periodWeeksElapsed?: number;      // weeks elapsed since period start (weekly only)
-  weekStartStr?: string;            // ISO date string of the current week's start (daily/weekly)
-  dailyProgress?: BudgetProgressData;
-  weeklyProgress?: BudgetProgressData;
-  monthlyProgress?: BudgetProgressData;
-  spentToday?: number;
-  availableToday?: number;
-  todayProgress?: BudgetProgressData;
-  spentThisWeek?: number;
-  availableThisWeek?: number;
-  thisWeekProgress?: BudgetProgressData;
-}
-
-export interface DashboardData {
-  totalMonthlyBudget: number;
-  totalSpent: number;
-  totalRemaining: number;
-  categories: CategoryBudgetInfo[];
-  recentTransactions: Transaction[];
-  hasActiveBudget: boolean;
-}
+export type { CategoryBudgetInfo, DashboardData };
 
 export interface GetDashboardDataParams {
   userId: string;
@@ -98,6 +66,10 @@ export class GetDashboardDataUseCaseImpl implements GetDashboardDataUseCase {
 
     const { periodStart, periodEnd, daysInPeriod } = this.computationService.getPeriodBounds(year, month, starterDay);
 
+    // When viewing a past period, clamp "today" to the last day of that period so
+    // daily/weekly progress refers to the period's end rather than the real today.
+    const effectiveToday = today > periodEnd ? periodEnd : today;
+
     // Fetch all expense transactions and category metadata
     const [allExpenseTransactions, allCategories] = await Promise.all([
       this.transactionRepository.getFiltered({
@@ -136,14 +108,14 @@ export class GetDashboardDataUseCaseImpl implements GetDashboardDataUseCase {
           monthlyBudget: budget.amount,
           daysInMonth: daysInPeriod,
           transactions: categoryTransactions.map((tx) => ({ date: tx.date, amount: tx.amount })),
-          today,
+          today: effectiveToday,
           monthStart: periodStart,
         };
         remaining = this.computationService.computeDailyRemaining(input);
         rolloverAmount = this.computationService.computeRolloverAmount(input);
         dailyBudget = budget.amount / daysInPeriod;
         const daysElapsed = Math.round(
-          (new Date(today).getTime() - new Date(periodStart).getTime()) / 86400000
+          (new Date(effectiveToday).getTime() - new Date(periodStart).getTime()) / 86400000
         ) + 1;
         accumulatedBudgetToDate = dailyBudget * daysElapsed;
 
@@ -164,7 +136,7 @@ export class GetDashboardDataUseCaseImpl implements GetDashboardDataUseCase {
         const { spentToday, availableToday } = this.computationService.computeTodayAvailable({
           accumulatedBudgetToDate,
           transactions: categoryTransactions.map((tx) => ({ date: tx.date, amount: tx.amount })),
-          today,
+          today: effectiveToday,
         });
         const todayProgress = this.progressService.calculateProgress({ spent: spentToday, budget: availableToday });
 
@@ -175,7 +147,7 @@ export class GetDashboardDataUseCaseImpl implements GetDashboardDataUseCase {
           accumulatedWeeklyBudget: dailyBudget * weekNumber * 7,
           transactions: categoryTransactions.map((tx) => ({ date: tx.date, amount: tx.amount })),
           weekStartStr,
-          today,
+          today: effectiveToday,
         });
         const thisWeekProgress = this.progressService.calculateProgress({ spent: spentThisWeek, budget: availableThisWeek });
 
@@ -206,7 +178,7 @@ export class GetDashboardDataUseCaseImpl implements GetDashboardDataUseCase {
       } else if (masterCategory === 'weekly') {
         const weeksInPeriod = daysInPeriod / 7;
         const weeksElapsed = Math.round(
-          (new Date(today).getTime() - new Date(periodStart).getTime()) / (86400000 * 7)
+          (new Date(effectiveToday).getTime() - new Date(periodStart).getTime()) / (86400000 * 7)
         ) + 1;
         weeklyBudget = budget.amount / weeksInPeriod;
         accumulatedWeeklyBudget = weeklyBudget * weeksElapsed;
@@ -214,7 +186,7 @@ export class GetDashboardDataUseCaseImpl implements GetDashboardDataUseCase {
           monthlyBudget: budget.amount,
           weeksInMonth: weeksInPeriod,
           transactions: categoryTransactions.map((tx) => ({ date: tx.date, amount: tx.amount })),
-          today,
+          today: effectiveToday,
           monthStart: periodStart,
         });
 
@@ -234,7 +206,7 @@ export class GetDashboardDataUseCaseImpl implements GetDashboardDataUseCase {
           accumulatedWeeklyBudget,
           transactions: categoryTransactions.map((tx) => ({ date: tx.date, amount: tx.amount })),
           weekStartStr,
-          today,
+          today: effectiveToday,
         });
         const thisWeekProgress = this.progressService.calculateProgress({ spent: spentThisWeek, budget: availableThisWeek });
 

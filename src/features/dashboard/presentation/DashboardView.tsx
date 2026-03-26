@@ -48,7 +48,7 @@ export function DashboardView() {
         <div className="max-w-3xl mx-auto space-y-6">
           {/* Header */}
           <header className="flex items-center justify-between min-h-[44px]">
-            <h1 className="text-xl md:text-2xl font-bold tracking-tight text-white">Dashboard</h1>
+            <h1 className="text-xl md:text-2xl font-bold tracking-tight text-foreground">Dashboard</h1>
             <MonthNavigator
               label={monthLabel}
               onPrev={goToPrevMonth}
@@ -107,7 +107,7 @@ export function DashboardView() {
                 totalSpent={dashboardData.totalSpent}
                 totalRemaining={dashboardData.totalRemaining}
               />
-              <CategoryBreakdownSection categories={dashboardData.categories} />
+              <CategoryBreakdownSection categories={dashboardData.categories} isCurrentPeriod={isCurrentMonth} />
               <RecentTransactionsSection
                 transactions={dashboardData.recentTransactions}
                 onViewAll={() => router.push(ROUTES.transactions)}

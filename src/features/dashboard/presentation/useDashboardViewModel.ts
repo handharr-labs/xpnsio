@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import { getDashboardDataAction } from '@/features/dashboard/presentation/actions/dashboard';
-import type { DashboardData } from '@/features/dashboard/domain/use-cases/dashboard/GetDashboardDataUseCase';
+import type { DashboardData } from '@/features/dashboard/domain/entities/DashboardData';
 
 export type DashboardViewData = DashboardData & { year: number; month: number };
 

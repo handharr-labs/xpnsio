@@ -33,70 +33,33 @@ describe('BudgetProgressService', () => {
     });
   });
 
-  describe('getProgressColor', () => {
-    it('should return red for 100% or above', () => {
-      expect(service.getProgressColor(100)).toBe('bg-red-400');
-      expect(service.getProgressColor(150)).toBe('bg-red-400');
+  describe('getProgressStatus', () => {
+    it('should return "over" for 100% or above', () => {
+      expect(service.getProgressStatus(100)).toBe('over');
+      expect(service.getProgressStatus(150)).toBe('over');
     });
 
-    it('should return yellow for 90-99%', () => {
-      expect(service.getProgressColor(90)).toBe('bg-yellow-400');
-      expect(service.getProgressColor(95)).toBe('bg-yellow-400');
-      expect(service.getProgressColor(99)).toBe('bg-yellow-400');
+    it('should return "at-risk" for 90-99%', () => {
+      expect(service.getProgressStatus(90)).toBe('at-risk');
+      expect(service.getProgressStatus(95)).toBe('at-risk');
+      expect(service.getProgressStatus(99)).toBe('at-risk');
     });
 
-    it('should return green for below 90%', () => {
-      expect(service.getProgressColor(0)).toBe('bg-emerald-400');
-      expect(service.getProgressColor(50)).toBe('bg-emerald-400');
-      expect(service.getProgressColor(89)).toBe('bg-emerald-400');
-    });
-  });
-
-  describe('getProgressTextColor', () => {
-    it('should return text-red-600 for 100% or above', () => {
-      expect(service.getProgressTextColor(100)).toBe('text-red-600 dark:text-red-300');
-      expect(service.getProgressTextColor(150)).toBe('text-red-600 dark:text-red-300');
-    });
-
-    it('should return text-yellow-600 for 90-99%', () => {
-      expect(service.getProgressTextColor(90)).toBe('text-yellow-600 dark:text-yellow-300');
-      expect(service.getProgressTextColor(95)).toBe('text-yellow-600 dark:text-yellow-300');
-      expect(service.getProgressTextColor(99)).toBe('text-yellow-600 dark:text-yellow-300');
-    });
-
-    it('should return text-green-600 for below 90%', () => {
-      expect(service.getProgressTextColor(0)).toBe('text-emerald-600 dark:text-emerald-300');
-      expect(service.getProgressTextColor(50)).toBe('text-emerald-600 dark:text-emerald-300');
-      expect(service.getProgressTextColor(89)).toBe('text-emerald-600 dark:text-emerald-300');
+    it('should return "on-track" for below 90%', () => {
+      expect(service.getProgressStatus(0)).toBe('on-track');
+      expect(service.getProgressStatus(50)).toBe('on-track');
+      expect(service.getProgressStatus(89)).toBe('on-track');
     });
   });
 
-  describe('getRemainingText', () => {
-    it('should return "X left" for positive remaining', () => {
-      expect(service.getRemainingText(100, false)).toBe('100 left');
-      expect(service.getRemainingText(50.5, false)).toBe('50.5 left');
-    });
-
-    it('should return "Over by X" for overrun', () => {
-      expect(service.getRemainingText(-10, true)).toBe('Over by 10');
-      expect(service.getRemainingText(-100.5, true)).toBe('Over by 100.5');
-    });
-
-    it('should return "X left" when remaining is 0', () => {
-      expect(service.getRemainingText(0, false)).toBe('0 left');
-    });
-  });
-
-  describe('calculateProgress', () => {
+describe('calculateProgress', () => {
     it('should return complete progress data for normal budget', () => {
       const result = service.calculateProgress({ spent: 50, budget: 100 });
 
       expect(result.percent).toBe(50);
       expect(result.remaining).toBe(50);
       expect(result.isOverrun).toBe(false);
-      expect(result.colorClass).toBe('bg-emerald-400');
-      expect(result.textClass).toBe('text-emerald-600 dark:text-emerald-300');
-      expect(result.displayText).toBe('50 left');
+      expect(result.status).toBe('on-track');
     });
 
     it('should return complete progress data for near-budget (90%)', () => {
@@ -105,9 +68,7 @@ describe('BudgetProgressService', () => {
       expect(result.percent).toBe(90);
       expect(result.remaining).toBe(10);
       expect(result.isOverrun).toBe(false);
-      expect(result.colorClass).toBe('bg-yellow-400');
-      expect(result.textClass).toBe('text-yellow-600 dark:text-yellow-300');
-      expect(result.displayText).toBe('10 left');
+      expect(result.status).toBe('at-risk');
     });
 
     it('should return complete progress data for over-budget', () => {
@@ -116,9 +77,7 @@ describe('BudgetProgressService', () => {
       expect(result.percent).toBe(120);
       expect(result.remaining).toBe(-20);
       expect(result.isOverrun).toBe(true);
-      expect(result.colorClass).toBe('bg-red-400');
-      expect(result.textClass).toBe('text-red-600 dark:text-red-300');
-      expect(result.displayText).toBe('Over by 20');
+      expect(result.status).toBe('over');
     });
 
     it('should return complete progress data for exactly at budget', () => {
@@ -127,9 +86,7 @@ describe('BudgetProgressService', () => {
       expect(result.percent).toBe(100);
       expect(result.remaining).toBe(0);
       expect(result.isOverrun).toBe(false);
-      expect(result.colorClass).toBe('bg-red-400');
-      expect(result.textClass).toBe('text-red-600 dark:text-red-300');
-      expect(result.displayText).toBe('0 left');
+      expect(result.status).toBe('over');
     });
 
     it('should return complete progress data for zero budget with spending', () => {
@@ -138,9 +95,7 @@ describe('BudgetProgressService', () => {
       expect(result.percent).toBe(100);
       expect(result.remaining).toBe(-500);
       expect(result.isOverrun).toBe(true);
-      expect(result.colorClass).toBe('bg-red-400');
-      expect(result.textClass).toBe('text-red-600 dark:text-red-300');
-      expect(result.displayText).toBe('Over by 500');
+      expect(result.status).toBe('over');
     });
   });
 });
