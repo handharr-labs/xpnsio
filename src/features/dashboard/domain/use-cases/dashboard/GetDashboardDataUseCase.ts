@@ -1,45 +1,13 @@
-import type { Transaction } from '@/features/transactions/domain/entities/Transaction';
 import type { BudgetRepository } from '@/features/budget-settings/domain/repositories/BudgetRepository';
 import type { BudgetSettingRepository } from '@/features/budget-settings/domain/repositories/BudgetSettingRepository';
 import type { TransactionRepository } from '@/features/transactions/domain/repositories/TransactionRepository';
 import type { CategoryRepository } from '@/features/categories/domain/repositories/CategoryRepository';
 import type { BudgetComputationService } from '@/features/budget-settings/domain/services/BudgetComputationService';
-import type { BudgetProgressService, BudgetProgressData } from '@/features/dashboard/domain/services/BudgetProgressService';
+import type { BudgetProgressService } from '@/features/dashboard/domain/services/BudgetProgressService';
+import type { CategoryBudgetInfo } from '@/features/dashboard/domain/entities/CategoryBudgetInfo';
+import type { DashboardData } from '@/features/dashboard/domain/entities/DashboardData';
 
-export interface CategoryBudgetInfo {
-  categoryId: string;
-  categoryName: string;
-  masterCategory: 'daily' | 'weekly' | 'monthly';
-  monthlyBudget: number;
-  totalSpent: number;
-  remaining: number;
-  rolloverAmount: number; // only meaningful for daily/weekly
-  dailyBudget?: number;             // monthlyBudget / daysInPeriod (daily only)
-  accumulatedBudgetToDate?: number; // dailyBudget × daysElapsed (daily only)
-  periodDaysElapsed?: number;       // days elapsed since period start (daily only)
-  weeklyBudget?: number;            // monthlyBudget / weeksInPeriod (weekly only)
-  accumulatedWeeklyBudget?: number; // weeklyBudget × weeksElapsed (weekly only)
-  periodWeeksElapsed?: number;      // weeks elapsed since period start (weekly only)
-  weekStartStr?: string;            // ISO date string of the current week's start (daily/weekly)
-  dailyProgress?: BudgetProgressData;
-  weeklyProgress?: BudgetProgressData;
-  monthlyProgress?: BudgetProgressData;
-  spentToday?: number;
-  availableToday?: number;
-  todayProgress?: BudgetProgressData;
-  spentThisWeek?: number;
-  availableThisWeek?: number;
-  thisWeekProgress?: BudgetProgressData;
-}
-
-export interface DashboardData {
-  totalMonthlyBudget: number;
-  totalSpent: number;
-  totalRemaining: number;
-  categories: CategoryBudgetInfo[];
-  recentTransactions: Transaction[];
-  hasActiveBudget: boolean;
-}
+export type { CategoryBudgetInfo, DashboardData };
 
 export interface GetDashboardDataParams {
   userId: string;
