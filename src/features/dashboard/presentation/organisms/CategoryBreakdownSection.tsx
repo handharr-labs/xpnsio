@@ -29,6 +29,7 @@ const STATUS_TEXT: Record<BudgetStatus, string> = {
 
 interface CategoryBreakdownSectionProps {
   categories: CategoryBudgetInfo[];
+  isCurrentPeriod: boolean;
 }
 
 interface ProgressBarProps {
@@ -62,7 +63,7 @@ function StatusBadge({ label, status }: StatusBadgeProps) {
 }
 
 
-function DailyCategoryCard({ c }: { c: CategoryBudgetInfo }) {
+function DailyCategoryCard({ c, isCurrentPeriod }: { c: CategoryBudgetInfo; isCurrentPeriod: boolean }) {
   const dailyProgress = c.dailyProgress;
   const todayProgress = c.todayProgress;
   const thisWeekProgress = c.thisWeekProgress;
@@ -86,7 +87,7 @@ function DailyCategoryCard({ c }: { c: CategoryBudgetInfo }) {
         {/* Today - Primary Focus */}
         <div className="p-3 rounded-lg bg-muted/50 space-y-2">
           <div className="flex items-center justify-between">
-            <span className="text-xs font-medium uppercase tracking-wide text-muted-foreground">Today</span>
+            <span className="text-xs font-medium uppercase tracking-wide text-muted-foreground">{isCurrentPeriod ? 'Today' : 'Last Day'}</span>
             <StatusBadge label={formatBudgetLabel(todayProgress.remaining, todayProgress.isOverrun)} status={todayProgress.status} />
           </div>
           <ProgressBar percent={todayProgress.percent} status={todayProgress.status} height="md" />
@@ -202,7 +203,7 @@ function MonthlyCategoryCard({ c }: { c: CategoryBudgetInfo }) {
   );
 }
 
-export function CategoryBreakdownSection({ categories }: CategoryBreakdownSectionProps) {
+export function CategoryBreakdownSection({ categories, isCurrentPeriod }: CategoryBreakdownSectionProps) {
   if (categories.length === 0) return null;
 
   return (
@@ -233,7 +234,7 @@ export function CategoryBreakdownSection({ categories }: CategoryBreakdownSectio
                   c.weeklyBudget != null &&
                   c.accumulatedWeeklyBudget != null;
 
-                if (isDaily) return <DailyCategoryCard key={c.categoryId} c={c} />;
+                if (isDaily) return <DailyCategoryCard key={c.categoryId} c={c} isCurrentPeriod={isCurrentPeriod} />;
                 if (isWeekly) return <WeeklyCategoryCard key={c.categoryId} c={c} />;
                 return <MonthlyCategoryCard key={c.categoryId} c={c} />;
               })}

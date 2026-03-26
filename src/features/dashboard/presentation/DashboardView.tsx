@@ -107,7 +107,7 @@ export function DashboardView() {
                 totalSpent={dashboardData.totalSpent}
                 totalRemaining={dashboardData.totalRemaining}
               />
-              <CategoryBreakdownSection categories={dashboardData.categories} />
+              <CategoryBreakdownSection categories={dashboardData.categories} isCurrentPeriod={isCurrentMonth} />
               <RecentTransactionsSection
                 transactions={dashboardData.recentTransactions}
                 onViewAll={() => router.push(ROUTES.transactions)}
