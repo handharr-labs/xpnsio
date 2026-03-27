@@ -8,4 +8,5 @@ export interface DashboardData {
   categories: CategoryBudgetInfo[];
   recentTransactions: Transaction[];
   hasActiveBudget: boolean;
+  periodEnd: string;
 }
