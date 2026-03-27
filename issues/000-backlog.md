@@ -2,6 +2,8 @@
 
 | # | Title | Status | Link |
 |---|-------|--------|------|
+| 058 | fix(dashboard): correct weekly budget display and period-end handling for past periods | `pending` | [#58](https://github.com/handharr-labs/xpnsio/issues/58) |
+| 057 | feat(dashboard): auto-advance to next period when budget period has ended | `pending` | [#57](https://github.com/handharr-labs/xpnsio/issues/57) |
 | 055 | Fix negative amount label display in daily spending card | `pending` | [#55](https://github.com/handharr-labs/xpnsio/issues/55) |
 | 053 | fix: replace emoji tab icons with proper icons and center mobile tab bar new transaction button | `pending` | [#53](https://github.com/handharr-labs/xpnsio/issues/53) |
 | 051 | Replace monthly grid with weekly grid in daily category card | `pending` | [#51](https://github.com/handharr-labs/xpnsio/issues/51) |
