@@ -104,7 +104,7 @@ function DailyCategoryCard({ c, isCurrentPeriod }: { c: CategoryBudgetInfo; isCu
             <p className={`text-xs font-medium ${STATUS_TEXT[dailyProgress.status]}`}>{dailyProgress.percent}%</p>
           </div>
           <div className="space-y-1.5">
-            <p className="text-xs text-muted-foreground">This Week</p>
+            <p className="text-xs text-muted-foreground">{isCurrentPeriod ? 'This Week' : 'Last Week'}</p>
             <ProgressBar percent={thisWeekProgress.percent} status={thisWeekProgress.status} />
             <p className={`text-xs font-medium ${STATUS_TEXT[thisWeekProgress.status]}`}>
               {formatBudgetLabel(thisWeekProgress.remaining, thisWeekProgress.isOverrun)}
@@ -116,7 +116,7 @@ function DailyCategoryCard({ c, isCurrentPeriod }: { c: CategoryBudgetInfo; isCu
   );
 }
 
-function WeeklyCategoryCard({ c }: { c: CategoryBudgetInfo }) {
+function WeeklyCategoryCard({ c, isCurrentPeriod }: { c: CategoryBudgetInfo; isCurrentPeriod: boolean }) {
   const weeklyProgress = c.weeklyProgress;
   const thisWeekProgress = c.thisWeekProgress;
   const monthlyProgress = c.monthlyProgress;
@@ -141,7 +141,7 @@ function WeeklyCategoryCard({ c }: { c: CategoryBudgetInfo }) {
         <div className="p-3 rounded-lg bg-muted/50 space-y-2">
           <div className="flex items-center justify-between">
             <span className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
-              This Week
+              {isCurrentPeriod ? 'This Week' : 'Last Week'}
               <span className="font-normal ml-1">({formatWeekRange(c.weekStartStr)})</span>
             </span>
             <StatusBadge label={formatBudgetLabel(thisWeekProgress.remaining, thisWeekProgress.isOverrun)} status={thisWeekProgress.status} />
@@ -235,7 +235,7 @@ export function CategoryBreakdownSection({ categories, isCurrentPeriod }: Catego
                   c.accumulatedWeeklyBudget != null;
 
                 if (isDaily) return <DailyCategoryCard key={c.categoryId} c={c} isCurrentPeriod={isCurrentPeriod} />;
-                if (isWeekly) return <WeeklyCategoryCard key={c.categoryId} c={c} />;
+                if (isWeekly) return <WeeklyCategoryCard key={c.categoryId} c={c} isCurrentPeriod={isCurrentPeriod} />;
                 return <MonthlyCategoryCard key={c.categoryId} c={c} />;
               })}
             </div>
