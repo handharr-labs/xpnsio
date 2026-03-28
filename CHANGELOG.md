@@ -1,5 +1,14 @@
 # Changelog
 
+## [2.1.0](https://github.com/handharr-labs/xpnsio/compare/v2.0.2...v2.1.0) (2026-03-27)
+
+### Bug Fixes
+
+* **dashboard:** treat period-end date as exclusive — starter date (e.g. the 27th) now belongs to the next budget period, so the dashboard auto-advances to the correct period on first load instead of staying on the ending period
+* **dashboard:** fix inflated "This Week" budget for past periods — replaced cumulative rollover formula with a standalone last-7-days window against a single weekly budget; also caps `accumulatedWeeklyBudget` at the total period budget for weekly categories
+* **dashboard:** show "Last Week" and "Last Day" labels on past-period category cards — weekly card now receives `isCurrentPeriod` and toggles between "This Week" / "Last Week" (mirrors the existing "Today" / "Last Day" pattern on the daily card)
+* **dashboard:** eliminate red-to-green flash when returning from new transaction — stale load responses are discarded via a monotonic load ID, fixing a React StrictMode double-invoke race that briefly rendered the previous period's data
+
 ## [2.0.2](https://github.com/handharr-labs/xpnsio/compare/v2.0.1...v2.0.2) (2026-03-23)
 
 ### Features
