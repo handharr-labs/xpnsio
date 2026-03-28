@@ -5,7 +5,7 @@ import { ThemeProvider } from "@/shared/presentation/providers/ThemeProvider";
 import "./globals.css";
 
 const inter = Inter({
-  variable: "--font-sans",
+  variable: "--font-nunito",
   subsets: ["latin"],
 });
 
@@ -32,10 +32,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" suppressHydrationWarning>
-      <body
-        className={`${inter.variable} ${geistMono.variable} antialiased`}
-      >
+    <html lang="en" suppressHydrationWarning className={`${inter.variable} ${geistMono.variable}`}>
+      <body className="antialiased">
         <ThemeProvider>
           <QueryClientProvider>
             {children}

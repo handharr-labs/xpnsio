@@ -2,6 +2,7 @@
 
 | # | Title | Status | Link |
 |---|-------|--------|------|
+| 060 | Update branding and login page UI | `pending` | [#60](https://github.com/handharr-labs/xpnsio/issues/60) |
 | 058 | fix(dashboard): correct weekly budget display and period-end handling for past periods | `pending` | [#58](https://github.com/handharr-labs/xpnsio/issues/58) |
 | 057 | feat(dashboard): auto-advance to next period when budget period has ended | `pending` | [#57](https://github.com/handharr-labs/xpnsio/issues/57) |
 | 055 | Fix negative amount label display in daily spending card | `pending` | [#55](https://github.com/handharr-labs/xpnsio/issues/55) |

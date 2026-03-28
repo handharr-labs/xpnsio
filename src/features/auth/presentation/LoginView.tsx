@@ -14,19 +14,19 @@ export function LoginView() {
         <div className="absolute inset-0 bg-gradient-to-br from-primary/20 via-transparent to-transparent" />
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-primary/10 rounded-full blur-3xl" />
         
-        <div className="relative z-10 text-center space-y-8 max-w-md">
-          <Image src="/logo.png" alt="Xpnsio" width={220} height={220} priority className="mx-auto" />
-          <div className="space-y-4">
+        <div className="relative z-10 text-center max-w-md">
+          <Image src="/logo-primary-trimmed.png" alt="Xpnsio" width={360} height={120} priority className="mx-auto mb-10" />
+          <div className="space-y-2">
             <h1 className="text-4xl font-bold tracking-tight text-white">
-              Take Control of Your Finances
+              Know exactly what you can spend.
             </h1>
             <p className="text-xl text-zinc-400">
-              Know how much budget you have left.
+              Set a budget. Track it daily.
             </p>
           </div>
-          
+
           {/* Feature highlights */}
-          <div className="grid gap-4 text-left">
+          <div className="grid gap-4 text-left mt-10">
             <div className="flex items-center gap-3 p-4 rounded-xl bg-white/5 ring-1 ring-white/10">
               <div className="w-10 h-10 rounded-lg bg-emerald-500/20 flex items-center justify-center">
                 <svg className="w-5 h-5 text-emerald-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -34,8 +34,8 @@ export function LoginView() {
                 </svg>
               </div>
               <div>
-                <p className="text-sm font-medium text-white">Smart Budget Tracking</p>
-                <p className="text-xs text-zinc-500">Daily, weekly, or monthly budgets</p>
+                <p className="text-sm font-medium text-white">Budget Tracking</p>
+                <p className="text-xs text-zinc-500">Set daily, weekly, or monthly limits</p>
               </div>
             </div>
             <div className="flex items-center gap-3 p-4 rounded-xl bg-white/5 ring-1 ring-white/10">
@@ -45,8 +45,8 @@ export function LoginView() {
                 </svg>
               </div>
               <div>
-                <p className="text-sm font-medium text-white">Clear Insights</p>
-                <p className="text-xs text-zinc-500">See where your money goes</p>
+                <p className="text-sm font-medium text-white">Spending Insights</p>
+                <p className="text-xs text-zinc-500">See exactly where your money goes</p>
               </div>
             </div>
           </div>
@@ -57,8 +57,8 @@ export function LoginView() {
       <div className="flex-1 flex flex-col items-center justify-center p-6 lg:p-12">
         <div className="w-full max-w-sm space-y-8">
           {/* Mobile Logo */}
-          <div className="lg:hidden text-center space-y-4">
-            <Image src="/logo.png" alt="Xpnsio" width={220} height={220} priority className="mx-auto" />
+          <div className="lg:hidden text-center space-y-2">
+            <Image src="/logo-primary-trimmed.png" alt="Xpnsio" width={360} height={120} priority className="mx-auto mb-6" />
             <p className="text-lg text-zinc-400">
               Know how much budget you have left.
             </p>
