@@ -33,27 +33,7 @@ export class GetDashboardDataUseCaseImpl implements GetDashboardDataUseCase {
   async execute(params: GetDashboardDataParams): Promise<DashboardData> {
     const { userId, year, month, today } = params;
 
-    // Auto-carry + sync logic: apply (or re-apply) setting when budgets are missing or stale
-    let budgets = await this.budgetRepository.getByMonth(userId, year, month);
-    const lastApp = await this.budgetRepository.getLastApplication(userId);
-    if (lastApp) {
-      const setting = await this.budgetSettingRepository.getById(lastApp.budgetSettingId);
-      if (setting && budgets.length !== setting.items.length) {
-        const items = setting.items.map((item) => ({
-          categoryId: item.categoryId,
-          monthlyAmount: String(item.monthlyAmount),
-        }));
-        await this.budgetRepository.applyBudgetSetting(
-          userId,
-          lastApp.budgetSettingId,
-          items,
-          year,
-          month
-        );
-        budgets = await this.budgetRepository.getByMonth(userId, year, month);
-      }
-    }
-
+    const budgets = await this.budgetRepository.getByMonth(userId, year, month);
     const hasActiveBudget = budgets.length > 0;
 
     // Resolve starterDay from the applied budget setting for this month
