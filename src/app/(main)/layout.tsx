@@ -1,5 +1,3 @@
-'use client';
-
 import { DIProvider } from '@/shared/di/DIContext';
 import { BottomNav } from '@/shared/presentation/common/organisms/BottomNav';
 import type { ReactNode } from 'react';
