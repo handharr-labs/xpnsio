@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import {
-  getTransactionsAction,
+  getTransactionByIdAction,
   updateTransactionAction,
   deleteTransactionAction,
 } from '@/features/transactions/presentation/actions/transactions';
@@ -20,13 +20,10 @@ export function useTransactionDetailViewModel(id: string) {
 
   useEffect(() => {
     Promise.all([
-      getTransactionsAction({}),
+      getTransactionByIdAction({ id }),
       getCategoriesAction({}),
     ]).then(([txResult, catResult]) => {
-      if (txResult?.data) {
-        const found = txResult.data.find((t) => t.id === id) ?? null;
-        setTransaction(found);
-      }
+      if (txResult?.data !== undefined) setTransaction(txResult.data);
       if (catResult?.data) setCategories(catResult.data);
       setIsLoading(false);
     });
