@@ -2,6 +2,7 @@
 
 | # | Title | Status | Link |
 |---|-------|--------|------|
+| 064 | fix: architecture violations - entity immutability, usecase bypasses, and layer boundary breaches | `pending` | [#64](https://github.com/handharr-labs/xpnsio/issues/64) |
 | 062 | Fix PWA session not persisting after app kill by adding missing middleware.ts | `pending` | [#62](https://github.com/handharr-labs/xpnsio/issues/62) |
 | 060 | Update branding and login page UI | `pending` | [#60](https://github.com/handharr-labs/xpnsio/issues/60) |
 | 058 | fix(dashboard): correct weekly budget display and period-end handling for past periods | `pending` | [#58](https://github.com/handharr-labs/xpnsio/issues/58) |

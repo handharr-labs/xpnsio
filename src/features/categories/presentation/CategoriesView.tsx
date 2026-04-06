@@ -28,6 +28,7 @@ export function CategoriesView() {
 
   const [showDialog, setShowDialog] = useState(false);
   const [editingCategory, setEditingCategory] = useState<Category | null>(null);
+  const [deletingCategory, setDeletingCategory] = useState<Category | null>(null);
   const [form, setForm] = useState<CategoryFormState>(DEFAULT_FORM);
   const [isSaving, setIsSaving] = useState(false);
   const [formError, setFormError] = useState<string | null>(null);
@@ -80,9 +81,14 @@ export function CategoriesView() {
     }
   };
 
-  const handleDelete = async (cat: Category) => {
-    if (!confirm(`Delete "${cat.name}"? This cannot be undone.`)) return;
-    await deleteCategory(cat.id);
+  const handleDelete = (cat: Category) => {
+    setDeletingCategory(cat);
+  };
+
+  const handleDeleteConfirm = async () => {
+    if (!deletingCategory) return;
+    await deleteCategory(deletingCategory.id);
+    setDeletingCategory(null);
   };
 
   const grouped = {
@@ -109,6 +115,29 @@ export function CategoriesView() {
           {error && (
             <div className="rounded-xl bg-red-500/10 ring-1 ring-red-500/20 p-4 text-sm text-red-700 dark:text-red-400">
               {error}
+            </div>
+          )}
+
+          {/* Delete Confirmation Banner */}
+          {deletingCategory && (
+            <div className="rounded-xl bg-yellow-500/10 ring-1 ring-yellow-500/20 p-4 text-sm space-y-3">
+              <p className="text-yellow-700 dark:text-yellow-400">
+                Delete &ldquo;{deletingCategory.name}&rdquo;? This cannot be undone.
+              </p>
+              <div className="flex gap-2">
+                <button
+                  onClick={handleDeleteConfirm}
+                  className="px-3 py-1.5 rounded-lg bg-red-600 text-white text-xs font-medium hover:bg-red-700"
+                >
+                  Delete
+                </button>
+                <button
+                  onClick={() => setDeletingCategory(null)}
+                  className="px-3 py-1.5 rounded-lg bg-muted text-foreground text-xs font-medium hover:bg-muted/80"
+                >
+                  Cancel
+                </button>
+              </div>
             </div>
           )}
 
