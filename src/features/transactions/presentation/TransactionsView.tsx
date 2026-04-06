@@ -1,15 +1,13 @@
 'use client';
 
-import { useEffect, useState, useRef } from 'react';
+import { useState, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { Search, SlidersHorizontal, Plus, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useTransactionsViewModel } from './useTransactionsViewModel';
-import { getCategoriesAction } from '@/features/categories/presentation/actions/categories';
 import { ROUTES } from '@/shared/presentation/navigation/routes';
 import { TransactionFilterPanel } from './organisms/TransactionFilterPanel';
 import { TransactionListSection } from './organisms/TransactionListSection';
-import type { Category } from '@/features/categories/domain/entities/Category';
 import type { Transaction } from '@/features/transactions/domain/entities/Transaction';
 import type { TransactionFilters } from './organisms/TransactionFilterPanel';
 
@@ -23,20 +21,13 @@ const EMPTY_FILTERS: TransactionFilters = {
 
 export function TransactionsView() {
   const router = useRouter();
-  const { transactions, isLoading, error, hasMore, applyFilters, loadMore } =
+  const { transactions, categories, isLoading, error, hasMore, applyFilters, loadMore } =
     useTransactionsViewModel();
 
-  const [categories, setCategories] = useState<Category[]>([]);
   const [localFilters, setLocalFilters] = useState<TransactionFilters>(EMPTY_FILTERS);
   const [showFilters, setShowFilters] = useState(false);
 
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-
-  useEffect(() => {
-    getCategoriesAction({}).then((result) => {
-      if (result?.data) setCategories(result.data);
-    });
-  }, []);
 
   const handleApplyFilters = () => {
     applyFilters({

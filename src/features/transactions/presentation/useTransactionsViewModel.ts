@@ -7,7 +7,9 @@ import {
   updateTransactionAction,
   deleteTransactionAction,
 } from '@/features/transactions/presentation/actions/transactions';
+import { getCategoriesAction } from '@/features/categories/presentation/actions/categories';
 import type { Transaction } from '@/features/transactions/domain/entities/Transaction';
+import type { Category } from '@/features/categories/domain/entities/Category';
 
 const PAGE_SIZE = 20;
 
@@ -21,10 +23,17 @@ export type TransactionFilters = {
 
 export function useTransactionsViewModel() {
   const [transactions, setTransactions] = useState<Transaction[]>([]);
+  const [categories, setCategories] = useState<Category[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [filters, setFilters] = useState<TransactionFilters>({});
   const [hasMore, setHasMore] = useState(false);
+
+  useEffect(() => {
+    getCategoriesAction({}).then((result) => {
+      if (result?.data) setCategories(result.data);
+    });
+  }, []);
 
   const load = useCallback(async (currentFilters: TransactionFilters = {}) => {
     setIsLoading(true);
@@ -117,6 +126,7 @@ export function useTransactionsViewModel() {
 
   return {
     transactions,
+    categories,
     isLoading,
     error,
     filters,
