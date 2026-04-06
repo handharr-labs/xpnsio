@@ -2,11 +2,11 @@ import type { Transaction } from '@/features/transactions/domain/entities/Transa
 import type { CategoryBudgetInfo } from './CategoryBudgetInfo';
 
 export interface DashboardData {
-  totalMonthlyBudget: number;
-  totalSpent: number;
-  totalRemaining: number;
-  categories: CategoryBudgetInfo[];
-  recentTransactions: Transaction[];
-  hasActiveBudget: boolean;
-  periodEnd: string;
+  readonly totalMonthlyBudget: number;
+  readonly totalSpent: number;
+  readonly totalRemaining: number;
+  readonly categories: CategoryBudgetInfo[];
+  readonly recentTransactions: Transaction[];
+  readonly hasActiveBudget: boolean;
+  readonly periodEnd: string;
 }
