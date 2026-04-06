@@ -5,7 +5,7 @@ export interface AuthUserRecord {
   avatarUrl: string | null;
 }
 
-export interface AuthDataSource {
+export interface AuthDbDataSource {
   signInWithGoogle(): Promise<void>;
   signOut(): Promise<void>;
   getCurrentUser(): Promise<AuthUserRecord | null>;

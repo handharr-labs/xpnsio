@@ -1,5 +1,5 @@
 import type { User } from '@/features/auth/domain/entities/User';
-import type { AuthUserRecord } from '@/features/auth/data/data-sources/auth/AuthDataSource';
+import type { AuthUserRecord } from '@/features/auth/data/data-sources/auth/AuthDbDataSource';
 
 export interface UserMapper {
   toDomain(record: AuthUserRecord): User;

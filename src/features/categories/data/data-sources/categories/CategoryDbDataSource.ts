@@ -8,7 +8,7 @@ export interface CategoryRecord {
   createdAt: Date;
 }
 
-export interface CategoryDataSource {
+export interface CategoryDbDataSource {
   getByUser(userId: string): Promise<CategoryRecord[]>;
   getById(id: string): Promise<CategoryRecord | null>;
   create(data: {

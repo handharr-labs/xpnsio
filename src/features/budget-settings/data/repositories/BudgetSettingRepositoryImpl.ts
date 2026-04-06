@@ -1,12 +1,12 @@
 import type { BudgetSettingRepository } from '@/features/budget-settings/domain/repositories/BudgetSettingRepository';
 import type { BudgetSetting } from '@/features/budget-settings/domain/entities/BudgetSetting';
-import type { BudgetSettingDataSource } from '@/features/budget-settings/data/data-sources/budget-settings/BudgetSettingDataSource';
+import type { BudgetSettingDbDataSource } from '@/features/budget-settings/data/data-sources/budget-settings/BudgetSettingDbDataSource';
 import { BudgetSettingMapperImpl, type BudgetSettingMapper } from '@/features/budget-settings/data/mappers/BudgetSettingMapper';
 import { DomainError } from '@/shared/domain/errors/DomainError';
 
 export class BudgetSettingRepositoryImpl implements BudgetSettingRepository {
   constructor(
-    private readonly dataSource: BudgetSettingDataSource,
+    private readonly dataSource: BudgetSettingDbDataSource,
     private readonly mapper: BudgetSettingMapper = new BudgetSettingMapperImpl()
   ) {}
 
@@ -66,7 +66,7 @@ export class BudgetSettingRepositoryImpl implements BudgetSettingRepository {
     }
   ): Promise<BudgetSetting> {
     try {
-      const settingData: Parameters<BudgetSettingDataSource['update']>[1] = {};
+      const settingData: Parameters<BudgetSettingDbDataSource['update']>[1] = {};
       if (data.name !== undefined) settingData.name = data.name;
       if (data.totalMonthlyBudget !== undefined) {
         settingData.totalMonthlyBudget = String(data.totalMonthlyBudget);

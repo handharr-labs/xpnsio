@@ -5,7 +5,7 @@ import type {
 import type {
   BudgetSettingRecord,
   BudgetSettingItemRecord,
-} from '@/features/budget-settings/data/data-sources/budget-settings/BudgetSettingDataSource';
+} from '@/features/budget-settings/data/data-sources/budget-settings/BudgetSettingDbDataSource';
 
 export interface BudgetSettingMapper {
   toDomain(record: BudgetSettingRecord): DomainBudgetSetting;

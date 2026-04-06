@@ -5,7 +5,7 @@ import type {
 import type {
   BudgetRecord,
   MonthlyBudgetApplicationRecord,
-} from '@/features/budget-settings/data/data-sources/budgets/BudgetDataSource';
+} from '@/features/budget-settings/data/data-sources/budgets/BudgetDbDataSource';
 
 export interface BudgetMapper {
   toDomain(record: BudgetRecord): DomainBudget;

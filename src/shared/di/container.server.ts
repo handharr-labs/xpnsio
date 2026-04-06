@@ -3,10 +3,10 @@ import 'server-only';
 // Server-side DI container — singletons via Node.js module cache.
 
 // --- Data Sources ---
-import { CategoryDataSourceImpl } from '@/features/categories/data/data-sources/categories/CategoryDataSourceImpl';
-import { TransactionDataSourceImpl } from '@/features/transactions/data/data-sources/transactions/TransactionDataSourceImpl';
-import { BudgetSettingDataSourceImpl } from '@/features/budget-settings/data/data-sources/budget-settings/BudgetSettingDataSourceImpl';
-import { BudgetDataSourceImpl } from '@/features/budget-settings/data/data-sources/budgets/BudgetDataSourceImpl';
+import { CategoryDbDataSourceImpl } from '@/features/categories/data/data-sources/categories/CategoryDbDataSourceImpl';
+import { TransactionDbDataSourceImpl } from '@/features/transactions/data/data-sources/transactions/TransactionDbDataSourceImpl';
+import { BudgetSettingDbDataSourceImpl } from '@/features/budget-settings/data/data-sources/budget-settings/BudgetSettingDbDataSourceImpl';
+import { BudgetDbDataSourceImpl } from '@/features/budget-settings/data/data-sources/budgets/BudgetDbDataSourceImpl';
 
 // --- Repositories ---
 import { CategoryRepositoryImpl } from '@/features/categories/data/repositories/CategoryRepositoryImpl';
@@ -69,10 +69,10 @@ import type { SyncBudgetForPeriodUseCase } from '@/features/dashboard/domain/use
 // --- Singleton instances (module-level, private) ---
 
 // Data sources
-const categoryDataSource = new CategoryDataSourceImpl();
-const transactionDataSource = new TransactionDataSourceImpl();
-const budgetSettingDataSource = new BudgetSettingDataSourceImpl();
-const budgetDataSource = new BudgetDataSourceImpl();
+const categoryDataSource = new CategoryDbDataSourceImpl();
+const transactionDataSource = new TransactionDbDataSourceImpl();
+const budgetSettingDataSource = new BudgetSettingDbDataSourceImpl();
+const budgetDataSource = new BudgetDbDataSourceImpl();
 
 // Repositories
 const categoryRepository = new CategoryRepositoryImpl(categoryDataSource);

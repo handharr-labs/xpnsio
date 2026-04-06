@@ -1,12 +1,12 @@
 import type { BudgetRepository } from '@/features/budget-settings/domain/repositories/BudgetRepository';
 import type { Budget, MonthlyBudgetApplication } from '@/features/budget-settings/domain/entities/Budget';
-import type { BudgetDataSource } from '@/features/budget-settings/data/data-sources/budgets/BudgetDataSource';
+import type { BudgetDbDataSource } from '@/features/budget-settings/data/data-sources/budgets/BudgetDbDataSource';
 import { BudgetMapperImpl, type BudgetMapper } from '@/features/budget-settings/data/mappers/BudgetMapper';
 import { DomainError } from '@/shared/domain/errors/DomainError';
 
 export class BudgetRepositoryImpl implements BudgetRepository {
   constructor(
-    private readonly budgetDataSource: BudgetDataSource,
+    private readonly budgetDataSource: BudgetDbDataSource,
     private readonly mapper: BudgetMapper = new BudgetMapperImpl()
   ) {}
 

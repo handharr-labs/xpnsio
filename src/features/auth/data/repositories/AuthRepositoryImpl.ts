@@ -1,12 +1,12 @@
 import type { AuthRepository } from '@/features/auth/domain/repositories/AuthRepository';
 import type { User } from '@/features/auth/domain/entities/User';
-import type { AuthDataSource } from '@/features/auth/data/data-sources/auth/AuthDataSource';
+import type { AuthDbDataSource } from '@/features/auth/data/data-sources/auth/AuthDbDataSource';
 import { UserMapperImpl, type UserMapper } from '@/features/auth/data/mappers/UserMapper';
 import { DomainError } from '@/shared/domain/errors/DomainError';
 
 export class AuthRepositoryImpl implements AuthRepository {
   constructor(
-    private readonly dataSource: AuthDataSource,
+    private readonly dataSource: AuthDbDataSource,
     private readonly mapper: UserMapper = new UserMapperImpl()
   ) {}
 

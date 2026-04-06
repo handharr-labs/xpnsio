@@ -2,13 +2,13 @@ import { and, desc, eq, sql } from 'drizzle-orm';
 import { db } from '@/lib/db';
 import { budgets, monthlyBudgetApplications } from '@/lib/schema';
 import type {
-  BudgetDataSource,
+  BudgetDbDataSource,
   BudgetRecord,
   MonthlyBudgetApplicationRecord,
-} from './BudgetDataSource';
+} from './BudgetDbDataSource';
 import type { NewBudget, NewMonthlyBudgetApplication } from '@/lib/schema';
 
-export class BudgetDataSourceImpl implements BudgetDataSource {
+export class BudgetDbDataSourceImpl implements BudgetDbDataSource {
   async getByMonth(userId: string, year: number, month: number): Promise<BudgetRecord[]> {
     return db
       .select()
