@@ -1,27 +1,27 @@
-import type { BudgetProgressData } from '@/features/dashboard/domain/services/BudgetProgressService';
+import type { BudgetProgressData } from '@/features/dashboard/domain/entities/BudgetProgressData';
 
 export interface CategoryBudgetInfo {
-  categoryId: string;
-  categoryName: string;
-  masterCategory: 'daily' | 'weekly' | 'monthly';
-  monthlyBudget: number;
-  totalSpent: number;
-  remaining: number;
-  rolloverAmount: number;               // only meaningful for daily/weekly
-  dailyBudget?: number;                 // monthlyBudget / daysInPeriod (daily only)
-  accumulatedBudgetToDate?: number;     // dailyBudget × daysElapsed (daily only)
-  periodDaysElapsed?: number;           // days elapsed since period start (daily only)
-  weeklyBudget?: number;                // monthlyBudget / weeksInPeriod (weekly only)
-  accumulatedWeeklyBudget?: number;     // weeklyBudget × weeksElapsed (weekly only)
-  periodWeeksElapsed?: number;          // weeks elapsed since period start (weekly only)
-  weekStartStr?: string;                // ISO date string of the current week's start (daily/weekly)
-  dailyProgress?: BudgetProgressData;
-  weeklyProgress?: BudgetProgressData;
-  monthlyProgress?: BudgetProgressData;
-  spentToday?: number;
-  availableToday?: number;
-  todayProgress?: BudgetProgressData;
-  spentThisWeek?: number;
-  availableThisWeek?: number;
-  thisWeekProgress?: BudgetProgressData;
+  readonly categoryId: string;
+  readonly categoryName: string;
+  readonly masterCategory: 'daily' | 'weekly' | 'monthly';
+  readonly monthlyBudget: number;
+  readonly totalSpent: number;
+  readonly remaining: number;
+  readonly rolloverAmount: number;               // only meaningful for daily/weekly
+  readonly dailyBudget?: number;                 // monthlyBudget / daysInPeriod (daily only)
+  readonly accumulatedBudgetToDate?: number;     // dailyBudget × daysElapsed (daily only)
+  readonly periodDaysElapsed?: number;           // days elapsed since period start (daily only)
+  readonly weeklyBudget?: number;                // monthlyBudget / weeksInPeriod (weekly only)
+  readonly accumulatedWeeklyBudget?: number;     // weeklyBudget × weeksElapsed (weekly only)
+  readonly periodWeeksElapsed?: number;          // weeks elapsed since period start (weekly only)
+  readonly weekStartStr?: string;                // ISO date string of the current week's start (daily/weekly)
+  readonly dailyProgress?: BudgetProgressData;
+  readonly weeklyProgress?: BudgetProgressData;
+  readonly monthlyProgress?: BudgetProgressData;
+  readonly spentToday?: number;
+  readonly availableToday?: number;
+  readonly todayProgress?: BudgetProgressData;
+  readonly spentThisWeek?: number;
+  readonly availableThisWeek?: number;
+  readonly thisWeekProgress?: BudgetProgressData;
 }

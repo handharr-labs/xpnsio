@@ -25,6 +25,7 @@ export function TransactionDetailView({ id }: { id: string }) {
   } = useTransactionDetailViewModel(id);
 
   const [isEditing, setIsEditing] = useState(false);
+  const [isConfirmingDelete, setIsConfirmingDelete] = useState(false);
   const [amount, setAmount] = useState(0);
   const [categoryId, setCategoryId] = useState('');
   const [description, setDescription] = useState('');
@@ -63,7 +64,6 @@ export function TransactionDetailView({ id }: { id: string }) {
   };
 
   const handleDelete = async () => {
-    if (!confirm('Delete this transaction? This cannot be undone.')) return;
     try {
       await deleteTransaction();
       router.push(ROUTES.transactions);
@@ -211,24 +211,49 @@ export function TransactionDetailView({ id }: { id: string }) {
               </div>
 
               {/* Actions */}
-              <div className="flex gap-3">
-                <Button
-                  variant="outline"
-                  className="flex-1 h-12 rounded-xl gap-2"
-                  onClick={handleEdit}
-                >
-                  <Pencil className="w-4 h-4" />
-                  Edit
-                </Button>
-                <Button
-                  variant="outline"
-                  className="h-12 rounded-xl gap-2 text-red-400 hover:text-red-300 hover:bg-red-500/10 border-red-500/30"
-                  onClick={handleDelete}
-                >
-                  <Trash2 className="w-4 h-4" />
-                  Delete
-                </Button>
-              </div>
+              {isConfirmingDelete ? (
+                <div className="rounded-xl bg-red-500/10 ring-1 ring-red-500/20 p-4 space-y-3">
+                  <p className="text-sm text-red-700 dark:text-red-400 font-medium">
+                    Delete this transaction? This cannot be undone.
+                  </p>
+                  <div className="flex gap-3">
+                    <Button
+                      variant="outline"
+                      className="flex-1 h-11 rounded-xl"
+                      onClick={() => setIsConfirmingDelete(false)}
+                      disabled={isSubmitting}
+                    >
+                      Cancel
+                    </Button>
+                    <Button
+                      className="flex-1 h-11 rounded-xl bg-red-600 hover:bg-red-700 text-white"
+                      onClick={handleDelete}
+                      disabled={isSubmitting}
+                    >
+                      {isSubmitting ? 'Deleting...' : 'Delete'}
+                    </Button>
+                  </div>
+                </div>
+              ) : (
+                <div className="flex gap-3">
+                  <Button
+                    variant="outline"
+                    className="flex-1 h-12 rounded-xl gap-2"
+                    onClick={handleEdit}
+                  >
+                    <Pencil className="w-4 h-4" />
+                    Edit
+                  </Button>
+                  <Button
+                    variant="outline"
+                    className="h-12 rounded-xl gap-2 text-red-400 hover:text-red-300 hover:bg-red-500/10 border-red-500/30"
+                    onClick={() => setIsConfirmingDelete(true)}
+                  >
+                    <Trash2 className="w-4 h-4" />
+                    Delete
+                  </Button>
+                </div>
+              )}
             </div>
           ) : (
             /* Edit Mode */

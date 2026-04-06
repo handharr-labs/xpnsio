@@ -2,7 +2,7 @@
 
 import { z } from 'zod';
 import { authActionClient } from '@/lib/safe-action';
-import { supabaseAdmin } from '@/lib/auth';
+import { createServerContainer } from '@/shared/di/container.server';
 
 /**
  * Delete user account and all associated data.
@@ -20,12 +20,7 @@ import { supabaseAdmin } from '@/lib/auth';
 export const deleteAccountAction = authActionClient
   .schema(z.object({}))
   .action(async ({ ctx: { user } }) => {
-    // Delete user from Supabase auth - this will cascade to all related data
-    const { error } = await supabaseAdmin.auth.admin.deleteUser(user.id);
-
-    if (error) {
-      throw new Error(`Failed to delete account: ${error.message}`);
-    }
-
+    const container = createServerContainer();
+    await container.deleteAccountUseCase.execute(user.id);
     return { success: true };
   });

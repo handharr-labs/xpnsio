@@ -14,19 +14,23 @@ export function BudgetSettingsView() {
     useBudgetSettingsViewModel();
 
   const [applyingId, setApplyingId] = useState<string | null>(null);
+  const [applySuccessId, setApplySuccessId] = useState<string | null>(null);
   const [actionError, setActionError] = useState<string | null>(null);
+  const [deletingId, setDeletingId] = useState<string | null>(null);
 
   const handleApply = async (id: string) => {
     const now = new Date();
     setApplyingId(id);
     setActionError(null);
+    setApplySuccessId(null);
     try {
       await applyBudgetSetting({
         budgetSettingId: id,
         year: now.getFullYear(),
         month: now.getMonth() + 1,
       });
-      alert('Budget applied to current month!');
+      setApplySuccessId(id);
+      setTimeout(() => setApplySuccessId(null), 3000);
     } catch (err) {
       setActionError(err instanceof Error ? err.message : 'Failed to apply');
     } finally {
@@ -34,12 +38,14 @@ export function BudgetSettingsView() {
     }
   };
 
-  const handleDelete = async (id: string, name: string) => {
-    if (!confirm(`Delete "${name}"? This cannot be undone.`)) return;
+  const handleDeleteConfirm = async () => {
+    if (!deletingId) return;
     try {
-      await deleteBudgetSetting(id);
+      await deleteBudgetSetting(deletingId);
     } catch {
       // error handled by hook
+    } finally {
+      setDeletingId(null);
     }
   };
 
@@ -64,6 +70,36 @@ export function BudgetSettingsView() {
           {(error || actionError) && (
             <div className="rounded-xl bg-red-500/10 ring-1 ring-red-500/20 p-4 text-sm text-red-700 dark:text-red-400">
               {error ?? actionError}
+            </div>
+          )}
+
+          {/* Apply Success Banner */}
+          {applySuccessId && (
+            <div className="rounded-xl bg-green-500/10 ring-1 ring-green-500/20 p-4 text-sm text-green-700 dark:text-green-400">
+              Budget applied to current month!
+            </div>
+          )}
+
+          {/* Delete Confirmation Banner */}
+          {deletingId && (
+            <div className="rounded-xl bg-yellow-500/10 ring-1 ring-yellow-500/20 p-4 text-sm space-y-3">
+              <p className="text-yellow-700 dark:text-yellow-400">
+                Delete &ldquo;{budgetSettings.find((s) => s.id === deletingId)?.name}&rdquo;? This cannot be undone.
+              </p>
+              <div className="flex gap-2">
+                <button
+                  onClick={handleDeleteConfirm}
+                  className="px-3 py-1.5 rounded-lg bg-red-600 text-white text-xs font-medium hover:bg-red-700"
+                >
+                  Delete
+                </button>
+                <button
+                  onClick={() => setDeletingId(null)}
+                  className="px-3 py-1.5 rounded-lg bg-muted text-foreground text-xs font-medium hover:bg-muted/80"
+                >
+                  Cancel
+                </button>
+              </div>
             </div>
           )}
 
@@ -104,7 +140,7 @@ export function BudgetSettingsView() {
                   isApplying={applyingId === setting.id}
                   onApply={handleApply}
                   onEdit={(id) => router.push(ROUTES.budgetSettingEdit(id))}
-                  onDelete={handleDelete}
+                  onDelete={(id) => setDeletingId(id)}   
                 />
               ))}
             </div>

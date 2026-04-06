@@ -4,6 +4,13 @@ import { z } from 'zod';
 import { authActionClient } from '@/lib/safe-action';
 import { createServerContainer } from '@/shared/di/container.server';
 
+export const getTransactionByIdAction = authActionClient
+  .schema(z.object({ id: z.string().uuid() }))
+  .action(async ({ parsedInput }) => {
+    const container = createServerContainer();
+    return container.getTransactionByIdUseCase.execute(parsedInput.id);
+  });
+
 export const getTransactionsAction = authActionClient
   .schema(
     z.object({

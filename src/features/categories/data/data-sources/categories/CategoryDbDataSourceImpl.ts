@@ -1,10 +1,10 @@
 import { eq, count } from 'drizzle-orm';
 import { db } from '@/lib/db';
 import { categories, transactions } from '@/lib/schema';
-import type { CategoryDataSource, CategoryRecord } from './CategoryDataSource';
+import type { CategoryDbDataSource, CategoryRecord } from './CategoryDbDataSource';
 import type { NewCategory } from '@/lib/schema';
 
-export class CategoryDataSourceImpl implements CategoryDataSource {
+export class CategoryDbDataSourceImpl implements CategoryDbDataSource {
   async getByUser(userId: string): Promise<CategoryRecord[]> {
     return db
       .select()

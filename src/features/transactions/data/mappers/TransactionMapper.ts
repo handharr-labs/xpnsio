@@ -1,5 +1,5 @@
 import type { Transaction as DomainTransaction } from '@/features/transactions/domain/entities/Transaction';
-import type { TransactionRecord } from '@/features/transactions/data/data-sources/transactions/TransactionDataSource';
+import type { TransactionRecord } from '@/features/transactions/data/data-sources/transactions/TransactionDbDataSource';
 
 export interface TransactionMapper {
   toDomain(record: TransactionRecord): DomainTransaction;

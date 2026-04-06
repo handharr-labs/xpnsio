@@ -1,12 +1,12 @@
 import type { TransactionRepository, TransactionFilter } from '@/features/transactions/domain/repositories/TransactionRepository';
 import type { Transaction } from '@/features/transactions/domain/entities/Transaction';
-import type { TransactionDataSource } from '@/features/transactions/data/data-sources/transactions/TransactionDataSource';
+import type { TransactionDbDataSource } from '@/features/transactions/data/data-sources/transactions/TransactionDbDataSource';
 import { TransactionMapperImpl, type TransactionMapper } from '@/features/transactions/data/mappers/TransactionMapper';
 import { DomainError } from '@/shared/domain/errors/DomainError';
 
 export class TransactionRepositoryImpl implements TransactionRepository {
   constructor(
-    private readonly dataSource: TransactionDataSource,
+    private readonly dataSource: TransactionDbDataSource,
     private readonly mapper: TransactionMapper = new TransactionMapperImpl()
   ) {}
 
@@ -49,7 +49,7 @@ export class TransactionRepositoryImpl implements TransactionRepository {
     data: Partial<Pick<Transaction, 'amount' | 'categoryId' | 'description' | 'date' | 'type'>>
   ): Promise<Transaction> {
     try {
-      const updateData: Parameters<TransactionDataSource['update']>[1] = {};
+      const updateData: Parameters<TransactionDbDataSource['update']>[1] = {};
       if (data.amount !== undefined) updateData.amount = String(data.amount);
       if (data.categoryId !== undefined) updateData.categoryId = data.categoryId;
       if (data.description !== undefined) updateData.description = data.description;

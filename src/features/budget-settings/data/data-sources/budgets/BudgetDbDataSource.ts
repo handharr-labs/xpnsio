@@ -16,7 +16,7 @@ export interface MonthlyBudgetApplicationRecord {
   year: number;
 }
 
-export interface BudgetDataSource {
+export interface BudgetDbDataSource {
   getByMonth(userId: string, year: number, month: number): Promise<BudgetRecord[]>;
   upsertMany(budgets: Array<{
     userId: string;

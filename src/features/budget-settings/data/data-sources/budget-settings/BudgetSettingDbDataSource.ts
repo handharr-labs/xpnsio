@@ -18,7 +18,7 @@ export interface BudgetSettingRecord {
   items: BudgetSettingItemRecord[];
 }
 
-export interface BudgetSettingDataSource {
+export interface BudgetSettingDbDataSource {
   getByUser(userId: string): Promise<BudgetSettingRecord[]>;
   getById(id: string): Promise<BudgetSettingRecord | null>;
   create(

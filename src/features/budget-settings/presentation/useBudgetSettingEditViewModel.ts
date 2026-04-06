@@ -3,10 +3,13 @@
 import { useState, useEffect } from 'react';
 import { getCategoriesAction } from '@/features/categories/presentation/actions/categories';
 import {
+  getBudgetSettingByIdAction,
+  updateBudgetSettingAction,
+} from '@/features/budget-settings/presentation/actions/budget-settings';
+import {
   createCategoryAction,
   updateCategoryAction,
 } from '@/features/categories/presentation/actions/categories';
-import { useBudgetSettingsViewModel } from './useBudgetSettingsViewModel';
 import type { Category } from '@/features/categories/domain/entities/Category';
 
 export type EditableCategoryItem = {
@@ -19,44 +22,43 @@ export type EditableCategoryItem = {
 };
 
 export function useBudgetSettingEditViewModel(budgetSettingId: string) {
-  const { budgetSettings, isLoading, updateBudgetSetting } = useBudgetSettingsViewModel();
-
   const [name, setName] = useState('');
   const [currency, setCurrency] = useState('IDR');
   const [starterDay, setStarterDay] = useState(1);
   const [items, setItems] = useState<EditableCategoryItem[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [initialized, setInitialized] = useState(false);
 
   useEffect(() => {
-    if (!isLoading && !initialized) {
-      const setting = budgetSettings.find((s) => s.id === budgetSettingId);
+    Promise.all([
+      getBudgetSettingByIdAction({ id: budgetSettingId }),
+      getCategoriesAction({}),
+    ]).then(([settingResult, catResult]) => {
+      const setting = settingResult?.data ?? null;
+      const allCategories: Category[] = catResult?.data ?? [];
+
       if (setting) {
         setName(setting.name);
         setCurrency(setting.currency ?? 'IDR');
         setStarterDay(setting.starterDay ?? 1);
-
-        getCategoriesAction({}).then((catResult) => {
-          const allCategories: Category[] = catResult?.data ?? [];
-          setItems(
-            setting.items.map((item) => {
-              const cat = allCategories.find((c) => c.id === item.categoryId);
-              return {
-                id: item.categoryId,
-                name: cat?.name ?? item.categoryName,
-                masterCategory: cat?.masterCategory ?? item.masterCategory ?? 'monthly',
-                color: cat?.color ?? '#6366f1',
-                icon: cat?.icon ?? 'circle',
-                monthlyAmount: item.monthlyAmount,
-              };
-            })
-          );
-          setInitialized(true);
-        });
+        setItems(
+          setting.items.map((item) => {
+            const cat = allCategories.find((c) => c.id === item.categoryId);
+            return {
+              id: item.categoryId,
+              name: cat?.name ?? item.categoryName,
+              masterCategory: cat?.masterCategory ?? item.masterCategory ?? 'monthly',
+              color: cat?.color ?? '#6366f1',
+              icon: cat?.icon ?? 'circle',
+              monthlyAmount: item.monthlyAmount,
+            };
+          })
+        );
       }
-    }
-  }, [budgetSettings, isLoading, budgetSettingId, initialized]);
+      setIsLoading(false);
+    });
+  }, [budgetSettingId]);
 
   const saveWithCategories = async (saveItems: EditableCategoryItem[]) => {
     setError(null);
@@ -90,7 +92,7 @@ export function useBudgetSettingEditViewModel(budgetSettingId: string) {
       const filteredItems = savedCategories.filter((c) => c.monthlyAmount > 0);
       const totalMonthlyBudget = filteredItems.reduce((s, c) => s + c.monthlyAmount, 0);
 
-      await updateBudgetSetting({
+      await updateBudgetSettingAction({
         id: budgetSettingId,
         name,
         totalMonthlyBudget,
@@ -107,6 +109,21 @@ export function useBudgetSettingEditViewModel(budgetSettingId: string) {
     }
   };
 
+  const addItem = () => {
+    setItems((prev) => [
+      ...prev,
+      { id: crypto.randomUUID(), name: '', masterCategory: 'monthly', color: '#6366f1', icon: 'circle', monthlyAmount: 0 },
+    ]);
+  };
+
+  const removeItem = (index: number) => {
+    setItems((prev) => prev.filter((_, i) => i !== index));
+  };
+
+  const updateItem = (index: number, field: keyof EditableCategoryItem, value: string | number) => {
+    setItems((prev) => prev.map((item, i) => (i === index ? { ...item, [field]: value } : item)));
+  };
+
   return {
     name,
     updateName: (v: string) => setName(v),
@@ -115,8 +132,10 @@ export function useBudgetSettingEditViewModel(budgetSettingId: string) {
     starterDay,
     updateStarterDay: (v: number) => setStarterDay(v),
     items,
-    updateItems: (v: EditableCategoryItem[]) => setItems(v),
-    isLoading: isLoading && !initialized,
+    addItem,
+    removeItem,
+    updateItem,
+    isLoading,
     isSubmitting,
     error,
     saveWithCategories,

@@ -1,10 +1,10 @@
 import { and, eq, gte, lte, ilike, sql, sum } from 'drizzle-orm';
 import { db } from '@/lib/db';
 import { transactions, categories } from '@/lib/schema';
-import type { TransactionDataSource, TransactionRecord, TransactionFilterParams } from './TransactionDataSource';
+import type { TransactionDbDataSource, TransactionRecord, TransactionFilterParams } from './TransactionDbDataSource';
 import type { NewTransaction } from '@/lib/schema';
 
-export class TransactionDataSourceImpl implements TransactionDataSource {
+export class TransactionDbDataSourceImpl implements TransactionDbDataSource {
   async getFiltered(params: TransactionFilterParams): Promise<TransactionRecord[]> {
     const conditions = [eq(transactions.userId, params.userId)];
 

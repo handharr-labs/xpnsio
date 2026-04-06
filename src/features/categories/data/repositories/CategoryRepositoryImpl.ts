@@ -1,12 +1,12 @@
 import type { CategoryRepository } from '@/features/categories/domain/repositories/CategoryRepository';
 import type { Category } from '@/features/categories/domain/entities/Category';
-import type { CategoryDataSource } from '@/features/categories/data/data-sources/categories/CategoryDataSource';
+import type { CategoryDbDataSource } from '@/features/categories/data/data-sources/categories/CategoryDbDataSource';
 import { CategoryMapperImpl, type CategoryMapper } from '@/features/categories/data/mappers/CategoryMapper';
 import { DomainError } from '@/shared/domain/errors/DomainError';
 
 export class CategoryRepositoryImpl implements CategoryRepository {
   constructor(
-    private readonly dataSource: CategoryDataSource,
+    private readonly dataSource: CategoryDbDataSource,
     private readonly mapper: CategoryMapper = new CategoryMapperImpl()
   ) {}
 

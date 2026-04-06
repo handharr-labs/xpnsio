@@ -3,18 +3,12 @@
  * Pure functions - no I/O, no async, no DOM dependencies.
  */
 
-export type BudgetStatus = 'on-track' | 'at-risk' | 'over';
+export type { BudgetStatus, BudgetProgressData } from '@/features/dashboard/domain/entities/BudgetProgressData';
+import type { BudgetStatus, BudgetProgressData } from '@/features/dashboard/domain/entities/BudgetProgressData';
 
 export interface BudgetProgressInput {
   spent: number;
   budget: number;
-}
-
-export interface BudgetProgressData {
-  readonly percent: number;       // 0-100+, using Math.floor
-  readonly remaining: number;     // Can be negative for overrun
-  readonly isOverrun: boolean;    // true if remaining < 0
-  readonly status: BudgetStatus;  // semantic status: 'on-track' | 'at-risk' | 'over'
 }
 
 export interface BudgetProgressService {

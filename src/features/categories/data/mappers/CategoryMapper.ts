@@ -1,5 +1,5 @@
 import type { Category as DomainCategory } from '@/features/categories/domain/entities/Category';
-import type { CategoryRecord } from '@/features/categories/data/data-sources/categories/CategoryDataSource';
+import type { CategoryRecord } from '@/features/categories/data/data-sources/categories/CategoryDbDataSource';
 
 export interface CategoryMapper {
   toDomain(record: CategoryRecord): DomainCategory;

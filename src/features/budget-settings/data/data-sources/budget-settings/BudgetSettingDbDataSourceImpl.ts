@@ -2,13 +2,13 @@ import { eq } from 'drizzle-orm';
 import { db } from '@/lib/db';
 import { budgetSettings, budgetSettingItems, categories } from '@/lib/schema';
 import type {
-  BudgetSettingDataSource,
+  BudgetSettingDbDataSource,
   BudgetSettingRecord,
   BudgetSettingItemRecord,
-} from './BudgetSettingDataSource';
+} from './BudgetSettingDbDataSource';
 import type { NewBudgetSetting, NewBudgetSettingItem } from '@/lib/schema';
 
-export class BudgetSettingDataSourceImpl implements BudgetSettingDataSource {
+export class BudgetSettingDbDataSourceImpl implements BudgetSettingDbDataSource {
   async getByUser(userId: string): Promise<BudgetSettingRecord[]> {
     const settings = await db
       .select()

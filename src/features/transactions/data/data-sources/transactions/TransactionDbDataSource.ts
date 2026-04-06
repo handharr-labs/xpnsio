@@ -22,7 +22,7 @@ export interface TransactionFilterParams {
   offset?: number;
 }
 
-export interface TransactionDataSource {
+export interface TransactionDbDataSource {
   getFiltered(params: TransactionFilterParams): Promise<TransactionRecord[]>;
   getById(id: string): Promise<TransactionRecord | null>;
   create(data: {
