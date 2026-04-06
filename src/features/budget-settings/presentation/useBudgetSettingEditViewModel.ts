@@ -109,6 +109,21 @@ export function useBudgetSettingEditViewModel(budgetSettingId: string) {
     }
   };
 
+  const addItem = () => {
+    setItems((prev) => [
+      ...prev,
+      { id: crypto.randomUUID(), name: '', masterCategory: 'monthly', color: '#6366f1', icon: 'circle', monthlyAmount: 0 },
+    ]);
+  };
+
+  const removeItem = (index: number) => {
+    setItems((prev) => prev.filter((_, i) => i !== index));
+  };
+
+  const updateItem = (index: number, field: keyof EditableCategoryItem, value: string | number) => {
+    setItems((prev) => prev.map((item, i) => (i === index ? { ...item, [field]: value } : item)));
+  };
+
   return {
     name,
     updateName: (v: string) => setName(v),
@@ -117,7 +132,9 @@ export function useBudgetSettingEditViewModel(budgetSettingId: string) {
     starterDay,
     updateStarterDay: (v: number) => setStarterDay(v),
     items,
-    updateItems: (v: EditableCategoryItem[]) => setItems(v),
+    addItem,
+    removeItem,
+    updateItem,
     isLoading,
     isSubmitting,
     error,

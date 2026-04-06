@@ -1,5 +1,6 @@
 'use client';
 
+import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -31,28 +32,16 @@ export function BudgetSettingEditView({ id }: { id: string }) {
     starterDay,
     updateStarterDay,
     items,
-    updateItems,
+    addItem,
+    removeItem,
+    updateItem,
     isLoading,
     isSubmitting,
     error,
     saveWithCategories,
   } = useBudgetSettingEditViewModel(id);
 
-  const addItem = () => {
-    updateItems([
-      ...items,
-      { id: crypto.randomUUID(), name: '', masterCategory: 'monthly', color: '#6366f1', icon: 'circle', monthlyAmount: 0 },
-    ]);
-  };
-
-  const updateItem = (index: number, field: keyof EditableCategoryItem, value: string | number) => {
-    updateItems(items.map((item, i) => (i === index ? { ...item, [field]: value } : item)));
-  };
-
-  const removeItem = (index: number) => {
-    if (!confirm('Remove this category from the budget setting?')) return;
-    updateItems(items.filter((_, i) => i !== index));
-  };
+  const [removingIndex, setRemovingIndex] = useState<number | null>(null);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -147,6 +136,25 @@ export function BudgetSettingEditView({ id }: { id: string }) {
 
               {items.map((item, index) => (
                 <div key={item.id ?? index} className="space-y-2 rounded-lg border p-3">
+                  {removingIndex === index ? (
+                    <div className="flex items-center gap-2 rounded-md bg-red-500/10 ring-1 ring-red-500/20 px-3 py-2">
+                      <span className="flex-1 text-sm text-red-700 dark:text-red-400">Remove this category?</span>
+                      <button
+                        type="button"
+                        className="text-xs font-medium text-red-600 dark:text-red-400 hover:underline px-2"
+                        onClick={() => { removeItem(index); setRemovingIndex(null); }}
+                      >
+                        Remove
+                      </button>
+                      <button
+                        type="button"
+                        className="text-xs font-medium text-muted-foreground hover:underline px-2"
+                        onClick={() => setRemovingIndex(null)}
+                      >
+                        Cancel
+                      </button>
+                    </div>
+                  ) : null}
                   <div className="flex items-center gap-2">
                     <input
                       className="flex-1 rounded-md border px-3 py-2 text-sm"
@@ -157,7 +165,7 @@ export function BudgetSettingEditView({ id }: { id: string }) {
                     <button
                       type="button"
                       className="text-red-500 dark:text-red-400 hover:text-red-700 dark:hover:text-red-300 text-lg font-bold px-2"
-                      onClick={() => removeItem(index)}
+                      onClick={() => setRemovingIndex(index)}
                     >
                       ×
                     </button>
