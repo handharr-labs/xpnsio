@@ -80,7 +80,7 @@ export function TransactionListSection({
                         isIncome ? 'text-emerald-400' : 'text-red-400'
                       }`}
                     >
-                      {isIncome ? '+' : '-'}{formatCurrency(typeof tx.amount === 'string' ? parseFloat(tx.amount) : tx.amount, 'IDR')}
+                      {isIncome ? '+' : '-'}{formatCurrency(tx.amount, 'IDR')}
                     </p>
                   </div>
 
