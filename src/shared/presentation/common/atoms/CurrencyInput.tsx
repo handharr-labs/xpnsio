@@ -1,19 +1,11 @@
 'use client';
 
 import { useState, useRef, useEffect } from 'react';
-
-const LOCALES: Record<string, string> = {
-  IDR: 'id-ID',
-  USD: 'en-US',
-  SGD: 'en-SG',
-  MYR: 'ms-MY',
-  EUR: 'de-DE',
-};
+import { getLocale } from '@/shared/core/utils/formatCurrency';
 
 function formatAmount(value: number, currency: string): string {
   if (value === 0) return '';
-  const locale = LOCALES[currency] ?? 'en-US';
-  return value.toLocaleString(locale);
+  return value.toLocaleString(getLocale(currency));
 }
 
 function parseAmount(raw: string): number {

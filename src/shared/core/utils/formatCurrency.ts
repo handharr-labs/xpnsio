@@ -6,8 +6,12 @@ const LOCALES: Record<string, string> = {
   EUR: 'de-DE',
 };
 
+export function getLocale(currency: string): string {
+  return LOCALES[currency] ?? 'en-US';
+}
+
 export function formatCurrency(amount: number, currency: string = 'IDR'): string {
-  const locale = LOCALES[currency] ?? 'en-US';
+  const locale = getLocale(currency);
   return new Intl.NumberFormat(locale, { style: 'currency', currency }).format(amount);
 }
 
