@@ -1,4 +1,4 @@
-import type { BudgetProgressData } from '@/features/dashboard/domain/services/BudgetProgressService';
+import type { BudgetProgressData } from '@/features/dashboard/domain/entities/BudgetProgressData';
 
 export interface CategoryBudgetInfo {
   readonly categoryId: string;
