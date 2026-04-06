@@ -4,6 +4,13 @@ import { z } from 'zod';
 import { authActionClient } from '@/lib/safe-action';
 import { createServerContainer } from '@/shared/di/container.server';
 
+export const getBudgetSettingByIdAction = authActionClient
+  .schema(z.object({ id: z.string().uuid() }))
+  .action(async ({ parsedInput }) => {
+    const container = createServerContainer();
+    return container.getBudgetSettingByIdUseCase.execute(parsedInput.id);
+  });
+
 export const getBudgetSettingsAction = authActionClient
   .schema(z.object({}))
   .action(async ({ ctx: { user } }) => {
