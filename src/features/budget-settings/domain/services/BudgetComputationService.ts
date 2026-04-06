@@ -43,6 +43,17 @@ export interface BudgetComputationService {
     periodEnd: string;     // YYYY-MM-DD
     daysInPeriod: number;
   };
+  /**
+   * Compute the ISO date string of a week's start.
+   * - For past periods: the start of the last 7-day window ending at effectiveToday.
+   * - For current periods: the start of the nth week (1-based) within the period.
+   */
+  getWeekStart(params: {
+    isPastPeriod: boolean;
+    effectiveToday: string;
+    periodStart: string;
+    weekNumber: number; // 1-based, only used when isPastPeriod=false
+  }): string;
   computeTodayAvailable(input: ComputeTodayAvailableInput): { spentToday: number; availableToday: number };
   computeThisWeekAvailable(input: ComputeThisWeekAvailableInput): { spentThisWeek: number; availableThisWeek: number };
 }
@@ -180,6 +191,22 @@ export class BudgetComputationServiceImpl implements BudgetComputationService {
     const periodEnd = `${year}-${cm}-${String(starterDay).padStart(2, '0')}`;
     const diff = (new Date(periodEnd).getTime() - new Date(periodStart).getTime()) / 86400000;
     return { periodStart, periodEnd, daysInPeriod: Math.round(diff) + 1 };
+  }
+
+  getWeekStart({ isPastPeriod, effectiveToday, periodStart, weekNumber }: {
+    isPastPeriod: boolean;
+    effectiveToday: string;
+    periodStart: string;
+    weekNumber: number;
+  }): string {
+    if (isPastPeriod) {
+      const d = new Date(effectiveToday);
+      d.setDate(d.getDate() - 6);
+      return this.formatDate(d);
+    }
+    const d = new Date(periodStart);
+    d.setDate(d.getDate() + (weekNumber - 1) * 7);
+    return this.formatDate(d);
   }
 
   computeTodayAvailable(input: ComputeTodayAvailableInput): { spentToday: number; availableToday: number } {

@@ -131,19 +131,20 @@ export class GetDashboardDataUseCaseImpl implements GetDashboardDataUseCase {
         let spentThisWeek: number;
         let availableThisWeek: number;
 
+        weekStartStr = this.computationService.getWeekStart({
+          isPastPeriod,
+          effectiveToday,
+          periodStart,
+          weekNumber,
+        });
+
         if (isPastPeriod) {
-          const ws = new Date(effectiveToday);
-          ws.setDate(ws.getDate() - 6);
-          weekStartStr = ws.toISOString().split('T')[0];
           spentThisWeek = categoryTransactions
             .filter((tx) => tx.date >= weekStartStr && tx.date <= effectiveToday)
             .reduce((sum, tx) => sum + tx.amount, 0);
           const weekBudget = dailyBudget * 7;
           availableThisWeek = Math.max(weekBudget - spentThisWeek, 0);
         } else {
-          const currentWeekStart = new Date(periodStart);
-          currentWeekStart.setDate(currentWeekStart.getDate() + (weekNumber - 1) * 7);
-          weekStartStr = currentWeekStart.toISOString().split('T')[0];
           const weekResult = this.computationService.computeThisWeekAvailable({
             accumulatedWeeklyBudget: dailyBudget * weekNumber * 7,
             transactions: categoryTransactions.map((tx) => ({ date: tx.date, amount: tx.amount })),
@@ -212,18 +213,19 @@ export class GetDashboardDataUseCaseImpl implements GetDashboardDataUseCase {
         let spentThisWeek: number;
         let availableThisWeek: number;
 
+        weekStartStr = this.computationService.getWeekStart({
+          isPastPeriod: isPastPeriodWeekly,
+          effectiveToday,
+          periodStart,
+          weekNumber: weeksElapsed,
+        });
+
         if (isPastPeriodWeekly) {
-          const ws = new Date(effectiveToday);
-          ws.setDate(ws.getDate() - 6);
-          weekStartStr = ws.toISOString().split('T')[0];
           spentThisWeek = categoryTransactions
             .filter((tx) => tx.date >= weekStartStr && tx.date <= effectiveToday)
             .reduce((sum, tx) => sum + tx.amount, 0);
           availableThisWeek = Math.max(weeklyBudget - spentThisWeek, 0);
         } else {
-          const weekStart = new Date(periodStart);
-          weekStart.setDate(weekStart.getDate() + (weeksElapsed - 1) * 7);
-          weekStartStr = weekStart.toISOString().split('T')[0];
           const weekResult = this.computationService.computeThisWeekAvailable({
             accumulatedWeeklyBudget,
             transactions: categoryTransactions.map((tx) => ({ date: tx.date, amount: tx.amount })),
