@@ -2,8 +2,8 @@ import { Card, CardContent } from '@/components/ui/card';
 import { ChevronRight } from 'lucide-react';
 import type { CategoryBudgetInfo } from '@/features/dashboard/domain/entities/CategoryBudgetInfo';
 import type { BudgetStatus } from '@/features/dashboard/domain/services/BudgetProgressService';
-import { formatCurrency, formatCompactCurrency } from '@/shared/core/utils/formatCurrency';
-import { formatWeekRange } from '@/shared/core/utils/formatWeekRange';
+import { formatCurrency, formatCompactCurrency } from '@/shared/presentation/utils/formatCurrency';
+import { formatWeekRange } from '@/shared/presentation/utils/formatWeekRange';
 
 const formatCompact = (amount: number) => formatCompactCurrency(amount, 'IDR');
 const formatBudgetLabel = (remaining: number, isOverrun: boolean) =>
@@ -28,7 +28,7 @@ const STATUS_TEXT: Record<BudgetStatus, string> = {
 };
 
 interface CategoryBreakdownSectionProps {
-  categories: CategoryBudgetInfo[];
+  categories: ReadonlyArray<CategoryBudgetInfo>;
   isCurrentPeriod: boolean;
 }
 

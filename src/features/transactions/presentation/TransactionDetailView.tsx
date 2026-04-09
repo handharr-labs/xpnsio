@@ -6,8 +6,8 @@ import { ArrowLeft, Calendar, Tag, FileText, Pencil, Trash2, Check } from 'lucid
 import { Button } from '@/components/ui/button';
 import { useTransactionDetailViewModel } from './useTransactionDetailViewModel';
 import { CurrencyInput } from '@/shared/presentation/common/atoms/CurrencyInput';
-import { formatCurrency } from '@/shared/core/utils/formatCurrency';
-import { formatFullDate } from '@/shared/core/utils/formatRelativeDate';
+import { formatCurrency } from '@/shared/presentation/utils/formatCurrency';
+import { formatFullDate } from '@/shared/presentation/utils/formatRelativeDate';
 import { ROUTES } from '@/shared/presentation/navigation/routes';
 
 export function TransactionDetailView({ id }: { id: string }) {

@@ -3,13 +3,14 @@ import { ChevronRight } from 'lucide-react';
 import { CategoryColorDot } from '@/shared/presentation/common/atoms/CategoryColorDot';
 import type { Transaction } from '@/features/transactions/domain/entities/Transaction';
 import type { Category } from '@/features/categories/domain/entities/Category';
-import { formatCurrency } from '@/shared/core/utils/formatCurrency';
-import { formatRelativeDate } from '@/shared/core/utils/formatRelativeDate';
+import { formatCurrency } from '@/shared/presentation/utils/formatCurrency';
+import { formatRelativeDate } from '@/shared/presentation/utils/formatRelativeDate';
 
 interface TransactionListSectionProps {
   dates: string[];
   grouped: Record<string, Transaction[]>;
   categoryMap: Map<string, Category>;
+  currency: string;
   hasMore: boolean;
   onLoadMore: () => void;
   onSelect: (id: string) => void;
@@ -19,6 +20,7 @@ export function TransactionListSection({
   dates,
   grouped,
   categoryMap,
+  currency,
   hasMore,
   onLoadMore,
   onSelect,
@@ -80,7 +82,7 @@ export function TransactionListSection({
                         isIncome ? 'text-emerald-400' : 'text-red-400'
                       }`}
                     >
-                      {isIncome ? '+' : '-'}{formatCurrency(tx.amount, 'IDR')}
+                      {isIncome ? '+' : '-'}{formatCurrency(tx.amount, currency)}
                     </p>
                   </div>
 

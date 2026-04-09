@@ -1,23 +1,22 @@
 import { TrendingUp, TrendingDown, AlertTriangle } from 'lucide-react';
-import { formatCurrency } from '@/shared/core/utils/formatCurrency';
+import { formatCurrency } from '@/shared/presentation/utils/formatCurrency';
+import type { BudgetStatus } from '@/features/dashboard/domain/entities/BudgetProgressData';
 
 interface BudgetOverviewCardProps {
   totalMonthlyBudget: number;
   totalSpent: number;
   totalRemaining: number;
+  budgetStatus: BudgetStatus;
 }
 
-type BudgetHealth = 'on-track' | 'at-risk' | 'over';
-
-function getBudgetHealth(spent: number, budget: number): BudgetHealth {
-  if (budget === 0) return 'on-track';
-  const percentage = (spent / budget) * 100;
-  if (percentage > 100) return 'over';
-  if (percentage > 80) return 'at-risk';
-  return 'on-track';
-}
-
-const healthConfig = {
+const healthConfig: Record<BudgetStatus, {
+  bg: string;
+  border: string;
+  text: string;
+  label: string;
+  Icon: React.ComponentType<{ className?: string }>;
+  progressBg: string;
+}> = {
   'on-track': {
     bg: 'bg-emerald-500/10',
     border: 'ring-emerald-500/20',
@@ -48,9 +47,9 @@ export function BudgetOverviewCard({
   totalMonthlyBudget,
   totalSpent,
   totalRemaining,
+  budgetStatus,
 }: BudgetOverviewCardProps) {
-  const health = getBudgetHealth(totalSpent, totalMonthlyBudget);
-  const config = healthConfig[health];
+  const config = healthConfig[budgetStatus];
   const Icon = config.Icon;
   const percentage = totalMonthlyBudget > 0 ? Math.min(Math.round((totalSpent / totalMonthlyBudget) * 100), 100) : 0;
 

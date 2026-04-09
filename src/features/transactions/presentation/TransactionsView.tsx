@@ -21,7 +21,7 @@ const EMPTY_FILTERS: TransactionFilters = {
 
 export function TransactionsView() {
   const router = useRouter();
-  const { transactions, categories, isLoading, error, hasMore, applyFilters, loadMore } =
+  const { transactions, categories, currency, isLoading, error, hasMore, applyFilters, loadMore } =
     useTransactionsViewModel();
 
   const [localFilters, setLocalFilters] = useState<TransactionFilters>(EMPTY_FILTERS);
@@ -161,6 +161,7 @@ export function TransactionsView() {
               dates={dates}
               grouped={grouped}
               categoryMap={categoryMap}
+              currency={currency}
               hasMore={hasMore}
               onLoadMore={loadMore}
               onSelect={(id) => router.push(ROUTES.transactionDetail(id))}

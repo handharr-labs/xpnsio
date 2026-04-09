@@ -1,3 +1,5 @@
+'use client';
+
 import { X, Check, UtensilsCrossed, Car, Home, ShoppingBag, Heart, BookOpen, Tv, Plane, Circle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 

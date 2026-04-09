@@ -1,16 +1,18 @@
 import { ChevronRight } from 'lucide-react';
 import type { Transaction } from '@/features/transactions/domain/entities/Transaction';
-import { formatCurrency } from '@/shared/core/utils/formatCurrency';
-import { formatRelativeDate } from '@/shared/core/utils/formatRelativeDate';
+import { formatCurrency } from '@/shared/presentation/utils/formatCurrency';
+import { formatRelativeDate } from '@/shared/presentation/utils/formatRelativeDate';
 
 interface RecentTransactionsSectionProps {
-  transactions: Transaction[];
+  transactions: ReadonlyArray<Transaction>;
+  currency: string;
   onViewAll: () => void;
   onSelect: (id: string) => void;
 }
 
 export function RecentTransactionsSection({
   transactions,
+  currency,
   onViewAll,
   onSelect,
 }: RecentTransactionsSectionProps) {
@@ -61,7 +63,7 @@ export function RecentTransactionsSection({
                   tx.type === 'income' ? 'text-emerald-400' : 'text-red-400'
                 }`}
               >
-                {tx.type === 'income' ? '+' : '-'}{formatCurrency(tx.amount, 'IDR')}
+                {tx.type === 'income' ? '+' : '-'}{formatCurrency(tx.amount, currency)}
               </p>
               <p className="text-xs text-muted-foreground">{formatRelativeDate(tx.date)}</p>
             </div>

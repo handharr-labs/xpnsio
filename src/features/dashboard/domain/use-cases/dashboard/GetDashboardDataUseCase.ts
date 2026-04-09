@@ -39,9 +39,11 @@ export class GetDashboardDataUseCaseImpl implements GetDashboardDataUseCase {
     // Resolve starterDay from the applied budget setting for this month
     const application = await this.budgetRepository.getApplication(userId, year, month);
     let starterDay = 1;
+    let currency = 'IDR';
     if (application) {
       const setting = await this.budgetSettingRepository.getById(application.budgetSettingId);
       starterDay = setting?.starterDay ?? 1;
+      currency = setting?.currency ?? 'IDR';
     }
 
     const { periodStart, periodEnd, daysInPeriod } = this.computationService.getPeriodBounds(year, month, starterDay);
@@ -96,9 +98,7 @@ export class GetDashboardDataUseCaseImpl implements GetDashboardDataUseCase {
         remaining = this.computationService.computeDailyRemaining(input);
         rolloverAmount = this.computationService.computeRolloverAmount(input);
         dailyBudget = budget.amount / daysInPeriod;
-        const daysElapsed = Math.round(
-          (new Date(effectiveToday).getTime() - new Date(periodStart).getTime()) / 86400000
-        ) + 1;
+        const daysElapsed = this.computationService.computeDaysElapsed(periodStart, effectiveToday);
         accumulatedBudgetToDate = dailyBudget * daysElapsed;
 
         const dailyProgress = this.progressService.calculateProgress({
@@ -108,7 +108,7 @@ export class GetDashboardDataUseCaseImpl implements GetDashboardDataUseCase {
         const weekNumber = Math.ceil(daysElapsed / 7);
         const weeklyProgress = this.progressService.calculateProgress({
           spent: totalSpent,
-          budget: accumulatedBudgetToDate,
+          budget: dailyBudget * weekNumber * 7,
         });
         const monthlyProgress = this.progressService.calculateProgress({
           spent: totalSpent,
@@ -186,9 +186,7 @@ export class GetDashboardDataUseCaseImpl implements GetDashboardDataUseCase {
         continue;
       } else if (masterCategory === 'weekly') {
         const weeksInPeriod = daysInPeriod / 7;
-        const weeksElapsed = Math.round(
-          (new Date(effectiveToday).getTime() - new Date(periodStart).getTime()) / (86400000 * 7)
-        ) + 1;
+        const weeksElapsed = this.computationService.computeWeeksElapsed(periodStart, effectiveToday);
         weeklyBudget = budget.amount / weeksInPeriod;
         accumulatedWeeklyBudget = Math.min(weeklyBudget * weeksElapsed, budget.amount);
         remaining = this.computationService.computeWeeklyRemaining({
@@ -307,6 +305,7 @@ export class GetDashboardDataUseCaseImpl implements GetDashboardDataUseCase {
       recentTransactions,
       hasActiveBudget,
       periodEnd,
+      currency,
     };
   }
 
