@@ -12,9 +12,9 @@ export default async function DashboardPage() {
   if (!user) redirect('/login');
 
   const container = createServerContainer();
-  const settings = await container.getBudgetSettingsUseCase.execute(user.id);
+  const { isOnboarded } = await container.getUserOnboardingStatusUseCase.execute(user.id);
 
-  if (settings.length === 0) redirect('/setup');
+  if (!isOnboarded) redirect('/setup');
 
   return <DashboardView />;
 }
