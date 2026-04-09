@@ -1,19 +1,19 @@
 export interface BudgetRecord {
-  id: string;
-  userId: string;
-  categoryId: string;
-  amount: string;
-  month: number;
-  year: number;
-  createdAt: Date;
+  readonly id: string;
+  readonly userId: string;
+  readonly categoryId: string;
+  readonly amount: string;
+  readonly month: number;
+  readonly year: number;
+  readonly createdAt: Date;
 }
 
 export interface MonthlyBudgetApplicationRecord {
-  id: string;
-  userId: string;
-  budgetSettingId: string;
-  month: number;
-  year: number;
+  readonly id: string;
+  readonly userId: string;
+  readonly budgetSettingId: string;
+  readonly month: number;
+  readonly year: number;
 }
 
 export interface BudgetDbDataSource {

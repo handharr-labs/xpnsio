@@ -1,11 +1,11 @@
 export interface CategoryRecord {
-  id: string;
-  userId: string;
-  name: string;
-  masterCategory: 'daily' | 'weekly' | 'monthly';
-  color: string;
-  icon: string;
-  createdAt: Date;
+  readonly id: string;
+  readonly userId: string;
+  readonly name: string;
+  readonly masterCategory: 'daily' | 'weekly' | 'monthly';
+  readonly color: string;
+  readonly icon: string;
+  readonly createdAt: Date;
 }
 
 export interface CategoryDbDataSource {

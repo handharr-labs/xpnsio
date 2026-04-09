@@ -1,25 +1,25 @@
 export interface TransactionRecord {
-  id: string;
-  userId: string;
-  categoryId: string | null;
-  amount: string;
-  type: 'income' | 'expense';
-  description: string | null;
-  date: string;
-  createdAt: Date;
-  updatedAt: Date;
-  categoryName: string | null;
+  readonly id: string;
+  readonly userId: string;
+  readonly categoryId: string | null;
+  readonly amount: string;
+  readonly type: 'income' | 'expense';
+  readonly description: string | null;
+  readonly date: string;
+  readonly createdAt: Date;
+  readonly updatedAt: Date;
+  readonly categoryName: string | null;
 }
 
 export interface TransactionFilterParams {
-  userId: string;
-  startDate?: string;
-  endDate?: string;
-  categoryId?: string;
-  type?: 'income' | 'expense';
-  description?: string;
-  limit?: number;
-  offset?: number;
+  readonly userId: string;
+  readonly startDate?: string;
+  readonly endDate?: string;
+  readonly categoryId?: string;
+  readonly type?: 'income' | 'expense';
+  readonly description?: string;
+  readonly limit?: number;
+  readonly offset?: number;
 }
 
 export interface TransactionDbDataSource {

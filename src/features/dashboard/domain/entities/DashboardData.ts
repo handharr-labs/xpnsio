@@ -5,8 +5,9 @@ export interface DashboardData {
   readonly totalMonthlyBudget: number;
   readonly totalSpent: number;
   readonly totalRemaining: number;
-  readonly categories: CategoryBudgetInfo[];
-  readonly recentTransactions: Transaction[];
+  readonly categories: ReadonlyArray<CategoryBudgetInfo>;
+  readonly recentTransactions: ReadonlyArray<Transaction>;
   readonly hasActiveBudget: boolean;
   readonly periodEnd: string;
+  readonly currency: string;
 }

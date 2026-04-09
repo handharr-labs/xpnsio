@@ -14,6 +14,6 @@ export interface BudgetSetting {
   readonly totalMonthlyBudget: number;
   readonly currency: string;
   readonly starterDay: number;
-  readonly items: BudgetSettingItem[];
+  readonly items: ReadonlyArray<BudgetSettingItem>;
   readonly createdAt: Date;
 }

@@ -60,7 +60,7 @@ export function useBudgetSettingEditViewModel(budgetSettingId: string) {
     });
   }, [budgetSettingId]);
 
-  const saveWithCategories = async (saveItems: EditableCategoryItem[]) => {
+  const saveWithCategories = async (saveItems: ReadonlyArray<EditableCategoryItem>) => {
     setError(null);
     setIsSubmitting(true);
     try {
@@ -131,7 +131,7 @@ export function useBudgetSettingEditViewModel(budgetSettingId: string) {
     updateCurrency: (v: string) => setCurrency(v),
     starterDay,
     updateStarterDay: (v: number) => setStarterDay(v),
-    items,
+    items: items as ReadonlyArray<EditableCategoryItem>,
     addItem,
     removeItem,
     updateItem,
