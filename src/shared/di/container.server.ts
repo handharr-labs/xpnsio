@@ -15,8 +15,8 @@ import { BudgetSettingRepositoryImpl } from '@/features/budget-settings/data/rep
 import { BudgetRepositoryImpl } from '@/features/budget-settings/data/repositories/BudgetRepositoryImpl';
 
 // --- Services ---
-import { BudgetComputationServiceImpl } from '@/features/budget-settings/domain/services/BudgetComputationService';
-import { BudgetProgressServiceImpl } from '@/features/dashboard/domain/services/BudgetProgressService';
+import { BudgetComputationServiceImpl } from '@/features/budget-settings/data/services/BudgetComputationServiceImpl';
+import { BudgetProgressServiceImpl } from '@/features/dashboard/data/services/BudgetProgressServiceImpl';
 
 // --- Use Cases: Categories ---
 import { GetCategoriesUseCaseImpl } from '@/features/categories/domain/use-cases/categories/GetCategoriesUseCase';
@@ -31,12 +31,14 @@ import type { DeleteCategoryUseCase } from '@/features/categories/domain/use-cas
 // --- Use Cases: Budget Settings ---
 import { GetBudgetSettingsUseCaseImpl } from '@/features/budget-settings/domain/use-cases/budget-settings/GetBudgetSettingsUseCase';
 import { GetBudgetSettingByIdUseCaseImpl } from '@/features/budget-settings/domain/use-cases/budget-settings/GetBudgetSettingByIdUseCase';
+import { GetUserOnboardingStatusUseCaseImpl } from '@/features/budget-settings/domain/use-cases/budget-settings/GetUserOnboardingStatusUseCase';
 import { CreateBudgetSettingUseCaseImpl } from '@/features/budget-settings/domain/use-cases/budget-settings/CreateBudgetSettingUseCase';
 import { UpdateBudgetSettingUseCaseImpl } from '@/features/budget-settings/domain/use-cases/budget-settings/UpdateBudgetSettingUseCase';
 import { ApplyBudgetSettingUseCaseImpl } from '@/features/budget-settings/domain/use-cases/budget-settings/ApplyBudgetSettingUseCase';
 import { DeleteBudgetSettingUseCaseImpl } from '@/features/budget-settings/domain/use-cases/budget-settings/DeleteBudgetSettingUseCase';
 import type { GetBudgetSettingsUseCase } from '@/features/budget-settings/domain/use-cases/budget-settings/GetBudgetSettingsUseCase';
 import type { GetBudgetSettingByIdUseCase } from '@/features/budget-settings/domain/use-cases/budget-settings/GetBudgetSettingByIdUseCase';
+import type { GetUserOnboardingStatusUseCase } from '@/features/budget-settings/domain/use-cases/budget-settings/GetUserOnboardingStatusUseCase';
 import type { CreateBudgetSettingUseCase } from '@/features/budget-settings/domain/use-cases/budget-settings/CreateBudgetSettingUseCase';
 import type { UpdateBudgetSettingUseCase } from '@/features/budget-settings/domain/use-cases/budget-settings/UpdateBudgetSettingUseCase';
 import type { ApplyBudgetSettingUseCase } from '@/features/budget-settings/domain/use-cases/budget-settings/ApplyBudgetSettingUseCase';
@@ -55,10 +57,14 @@ import type { UpdateTransactionUseCase } from '@/features/transactions/domain/us
 import type { DeleteTransactionUseCase } from '@/features/transactions/domain/use-cases/transactions/DeleteTransactionUseCase';
 
 // --- Auth Admin ---
-import { AuthAdminDataSourceImpl } from '@/features/auth/data/data-sources/auth/AuthAdminDataSourceImpl';
+import { AuthAdminRemoteDataSourceImpl } from '@/features/auth/data/data-sources/auth/AuthAdminRemoteDataSourceImpl';
 import { AuthAdminRepositoryImpl } from '@/features/auth/data/repositories/AuthAdminRepositoryImpl';
 import { DeleteAccountUseCaseImpl } from '@/features/auth/domain/use-cases/auth/DeleteAccountUseCase';
 import type { DeleteAccountUseCase } from '@/features/auth/domain/use-cases/auth/DeleteAccountUseCase';
+import { UserProfileDbDataSourceImpl } from '@/features/auth/data/data-sources/profile/UserProfileDbDataSourceImpl';
+import { UserProfileRepositoryImpl } from '@/features/auth/data/repositories/UserProfileRepositoryImpl';
+import { UpsertUserProfileUseCaseImpl } from '@/features/auth/domain/use-cases/auth/UpsertUserProfileUseCase';
+import type { UpsertUserProfileUseCase } from '@/features/auth/domain/use-cases/auth/UpsertUserProfileUseCase';
 
 // --- Use Cases: Dashboard ---
 import { GetDashboardDataUseCaseImpl } from '@/features/dashboard/domain/use-cases/dashboard/GetDashboardDataUseCase';
@@ -93,6 +99,7 @@ const deleteCategoryUseCase = new DeleteCategoryUseCaseImpl(categoryRepository);
 // Use cases: Budget Settings
 const getBudgetSettingsUseCase = new GetBudgetSettingsUseCaseImpl(budgetSettingRepository);
 const getBudgetSettingByIdUseCase = new GetBudgetSettingByIdUseCaseImpl(budgetSettingRepository);
+const getUserOnboardingStatusUseCase = new GetUserOnboardingStatusUseCaseImpl(budgetSettingRepository);
 const createBudgetSettingUseCase = new CreateBudgetSettingUseCaseImpl(budgetSettingRepository);
 const updateBudgetSettingUseCase = new UpdateBudgetSettingUseCaseImpl(budgetSettingRepository);
 const applyBudgetSettingUseCase = new ApplyBudgetSettingUseCaseImpl(
@@ -109,9 +116,14 @@ const updateTransactionUseCase = new UpdateTransactionUseCaseImpl(transactionRep
 const deleteTransactionUseCase = new DeleteTransactionUseCaseImpl(transactionRepository);
 
 // Auth admin
-const authAdminDataSource = new AuthAdminDataSourceImpl();
+const authAdminDataSource = new AuthAdminRemoteDataSourceImpl();
 const authAdminRepository = new AuthAdminRepositoryImpl(authAdminDataSource);
 const deleteAccountUseCase = new DeleteAccountUseCaseImpl(authAdminRepository);
+
+// User profile
+const userProfileDataSource = new UserProfileDbDataSourceImpl();
+const userProfileRepository = new UserProfileRepositoryImpl(userProfileDataSource);
+const upsertUserProfileUseCase = new UpsertUserProfileUseCaseImpl(userProfileRepository);
 
 // Use cases: Dashboard
 const syncBudgetForPeriodUseCase = new SyncBudgetForPeriodUseCaseImpl(
@@ -139,6 +151,7 @@ export interface ServerContainer {
   // Use cases: Budget Settings
   getBudgetSettingsUseCase: GetBudgetSettingsUseCase;
   getBudgetSettingByIdUseCase: GetBudgetSettingByIdUseCase;
+  getUserOnboardingStatusUseCase: GetUserOnboardingStatusUseCase;
   createBudgetSettingUseCase: CreateBudgetSettingUseCase;
   updateBudgetSettingUseCase: UpdateBudgetSettingUseCase;
   applyBudgetSettingUseCase: ApplyBudgetSettingUseCase;
@@ -157,6 +170,9 @@ export interface ServerContainer {
 
   // Auth admin
   deleteAccountUseCase: DeleteAccountUseCase;
+
+  // User profile
+  upsertUserProfileUseCase: UpsertUserProfileUseCase;
 }
 
 export function createServerContainer(): ServerContainer {
@@ -170,6 +186,7 @@ export function createServerContainer(): ServerContainer {
     // Use cases: Budget Settings
     getBudgetSettingsUseCase,
     getBudgetSettingByIdUseCase,
+    getUserOnboardingStatusUseCase,
     createBudgetSettingUseCase,
     updateBudgetSettingUseCase,
     applyBudgetSettingUseCase,
@@ -188,5 +205,8 @@ export function createServerContainer(): ServerContainer {
 
     // Auth admin
     deleteAccountUseCase,
+
+    // User profile
+    upsertUserProfileUseCase,
   };
 }

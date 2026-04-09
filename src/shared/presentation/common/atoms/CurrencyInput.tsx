@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useRef, useEffect } from 'react';
-import { getLocale } from '@/shared/core/utils/formatCurrency';
+import { getLocale } from '@/shared/presentation/utils/formatCurrency';
 
 function formatAmount(value: number, currency: string): string {
   if (value === 0) return '';
