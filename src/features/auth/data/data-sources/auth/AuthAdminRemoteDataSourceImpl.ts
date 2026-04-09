@@ -1,8 +1,8 @@
 import 'server-only';
 import { supabaseAdmin } from '@/lib/auth';
-import type { AuthAdminDataSource } from './AuthAdminDataSource';
+import type { AuthAdminRemoteDataSource } from './AuthAdminRemoteDataSource';
 
-export class AuthAdminDataSourceImpl implements AuthAdminDataSource {
+export class AuthAdminRemoteDataSourceImpl implements AuthAdminRemoteDataSource {
   async deleteUser(id: string): Promise<void> {
     const { error } = await supabaseAdmin.auth.admin.deleteUser(id);
     if (error) throw new Error(`Failed to delete user: ${error.message}`);
