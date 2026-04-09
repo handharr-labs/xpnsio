@@ -18,4 +18,4 @@ On `fix/`|`feature/` branch → add feedback to current issue. On `main` → cre
 ## Project-specific agent rules
 `.claude/agents.local/` — additive rules on top of the shared starter-kit agents.
 
-<!-- Shared arch docs, skills, workflow, and code principles → .claude/starter-kit/ -->
+<!-- Shared arch docs, skills, workflow, and code principles → .claude/web-agentic/ -->
