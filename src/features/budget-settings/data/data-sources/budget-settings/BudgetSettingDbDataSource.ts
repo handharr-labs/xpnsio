@@ -1,21 +1,21 @@
 export interface BudgetSettingItemRecord {
-  id: string;
-  budgetSettingId: string;
-  categoryId: string;
-  monthlyAmount: string;
-  categoryName: string;
-  masterCategory: 'daily' | 'weekly' | 'monthly' | null;
+  readonly id: string;
+  readonly budgetSettingId: string;
+  readonly categoryId: string;
+  readonly monthlyAmount: string;
+  readonly categoryName: string;
+  readonly masterCategory: 'daily' | 'weekly' | 'monthly' | null;
 }
 
 export interface BudgetSettingRecord {
-  id: string;
-  userId: string;
-  name: string;
-  totalMonthlyBudget: string;
-  currency: string;
-  starterDay: number;
-  createdAt: Date;
-  items: BudgetSettingItemRecord[];
+  readonly id: string;
+  readonly userId: string;
+  readonly name: string;
+  readonly totalMonthlyBudget: string;
+  readonly currency: string;
+  readonly starterDay: number;
+  readonly createdAt: Date;
+  readonly items: ReadonlyArray<BudgetSettingItemRecord>;
 }
 
 export interface BudgetSettingDbDataSource {

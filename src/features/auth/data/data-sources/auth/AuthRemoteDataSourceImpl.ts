@@ -1,7 +1,8 @@
 import { createBrowserClient } from '@supabase/ssr';
-import type { AuthDbDataSource, AuthUserRecord } from './AuthDbDataSource';
+import type { AuthRemoteDataSource } from './AuthRemoteDataSource';
+import type { AuthUserRecord } from './AuthUserRecord';
 
-export class AuthDbDataSourceImpl implements AuthDbDataSource {
+export class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
   private readonly supabase = createBrowserClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!

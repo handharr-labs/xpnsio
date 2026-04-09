@@ -1,3 +1,5 @@
+'use client';
+
 import { Button } from '@/components/ui/button';
 import { Calendar, Tag, ArrowDownUp } from 'lucide-react';
 import type { Category } from '@/features/categories/domain/entities/Category';

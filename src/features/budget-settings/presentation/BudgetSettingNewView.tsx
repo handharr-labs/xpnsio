@@ -7,14 +7,7 @@ import { Button } from '@/components/ui/button';
 import { useBudgetSettingNewViewModel } from './useBudgetSettingNewViewModel';
 import { CurrencyInput } from '@/shared/presentation/common/atoms/CurrencyInput';
 import { ROUTES } from '@/shared/presentation/navigation/routes';
-
-const CURRENCY_OPTIONS = [
-  { value: 'IDR', label: 'IDR — Indonesian Rupiah' },
-  { value: 'USD', label: 'USD — US Dollar' },
-  { value: 'SGD', label: 'SGD — Singapore Dollar' },
-  { value: 'MYR', label: 'MYR — Malaysian Ringgit' },
-  { value: 'EUR', label: 'EUR — Euro' },
-];
+import { CURRENCY_OPTIONS } from '@/shared/presentation/constants/currencyOptions';
 
 const COLOR_OPTIONS = [
   '#6366f1', '#ec4899', '#f59e0b', '#10b981', '#3b82f6',

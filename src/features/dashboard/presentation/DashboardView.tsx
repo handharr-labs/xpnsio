@@ -4,6 +4,7 @@ import { useRouter } from 'next/navigation';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { useDashboardViewModel } from './useDashboardViewModel';
+import { BudgetProgressServiceImpl } from '@/features/dashboard/data/services/BudgetProgressServiceImpl';
 import { usePullToRefresh } from '@/shared/presentation/hooks/usePullToRefresh';
 import { ROUTES } from '@/shared/presentation/navigation/routes';
 import { MonthNavigator } from '@/shared/presentation/common/molecules/MonthNavigator';
@@ -26,6 +27,13 @@ export function DashboardView() {
   } = useDashboardViewModel();
 
   const { containerRef, pullDistance, isRefreshing } = usePullToRefresh(refresh);
+
+  const budgetProgressService = new BudgetProgressServiceImpl();
+  const budgetStatus = dashboardData
+    ? budgetProgressService.getProgressStatus(
+        budgetProgressService.calculatePercent(dashboardData.totalSpent, dashboardData.totalMonthlyBudget)
+      )
+    : 'on-track' as const;
 
   return (
     <main
@@ -106,10 +114,12 @@ export function DashboardView() {
                 totalMonthlyBudget={dashboardData.totalMonthlyBudget}
                 totalSpent={dashboardData.totalSpent}
                 totalRemaining={dashboardData.totalRemaining}
+                budgetStatus={budgetStatus}
               />
               <CategoryBreakdownSection categories={dashboardData.categories} isCurrentPeriod={isCurrentMonth} />
               <RecentTransactionsSection
                 transactions={dashboardData.recentTransactions}
+                currency={dashboardData.currency}
                 onViewAll={() => router.push(ROUTES.transactions)}
                 onSelect={(id) => router.push(ROUTES.transactionDetail(id))}
               />

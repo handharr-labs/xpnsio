@@ -1,7 +1,7 @@
 import { Play, Pencil, Trash2, Layers } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import type { BudgetSetting } from '@/features/budget-settings/domain/entities/BudgetSetting';
-import { formatCurrency } from '@/shared/core/utils/formatCurrency';
+import { formatCurrency } from '@/shared/presentation/utils/formatCurrency';
 
 interface BudgetSettingCardProps {
   setting: BudgetSetting;
@@ -28,7 +28,7 @@ export function BudgetSettingCard({
         <div className="space-y-1">
           <h3 className="text-lg font-semibold tracking-tight">{setting.name}</h3>
           <p className="text-2xl font-bold text-primary">
-            {formatCurrency(typeof setting.totalMonthlyBudget === 'string' ? parseFloat(setting.totalMonthlyBudget) : setting.totalMonthlyBudget, 'IDR')}
+            {formatCurrency(setting.totalMonthlyBudget, 'IDR')}
             <span className="text-sm font-normal text-muted-foreground">/month</span>
           </p>
         </div>

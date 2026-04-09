@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { createCategoryAction } from '@/features/categories/presentation/actions/categories';
+import { createCategoryAction } from '@/shared/presentation/actions/categories';
 import { createBudgetSettingAction } from '@/features/budget-settings/presentation/actions/budget-settings';
 import type { BudgetSetting } from '@/features/budget-settings/domain/entities/BudgetSetting';
 

@@ -1,3 +1,5 @@
+'use client';
+
 interface MonthNavigatorProps {
   label: string;
   onPrev: () => void;

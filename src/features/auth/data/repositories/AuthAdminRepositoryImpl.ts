@@ -1,9 +1,9 @@
 import { DomainError } from '@/shared/domain/errors/DomainError';
 import type { AuthAdminRepository } from '@/features/auth/domain/repositories/AuthAdminRepository';
-import type { AuthAdminDataSource } from '@/features/auth/data/data-sources/auth/AuthAdminDataSource';
+import type { AuthAdminRemoteDataSource } from '@/features/auth/data/data-sources/auth/AuthAdminRemoteDataSource';
 
 export class AuthAdminRepositoryImpl implements AuthAdminRepository {
-  constructor(private readonly dataSource: AuthAdminDataSource) {}
+  constructor(private readonly dataSource: AuthAdminRemoteDataSource) {}
 
   async deleteAccount(userId: string): Promise<void> {
     try {

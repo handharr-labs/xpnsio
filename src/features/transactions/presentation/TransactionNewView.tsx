@@ -10,7 +10,7 @@ import { ROUTES } from '@/shared/presentation/navigation/routes';
 
 export function TransactionNewView() {
   const router = useRouter();
-  const { categories, isSubmitting, error, createTransaction } = useTransactionNewViewModel();
+  const { categories, currency, isSubmitting, error, createTransaction } = useTransactionNewViewModel();
 
   const [amount, setAmount] = useState(0);
   const [categoryId, setCategoryId] = useState('');
@@ -78,7 +78,7 @@ export function TransactionNewView() {
                 <CurrencyInput
                   value={amount}
                   onChange={setAmount}
-                  currency="IDR"
+                  currency={currency}
                   required
                   className="text-lg h-14 rounded-xl"
                 />

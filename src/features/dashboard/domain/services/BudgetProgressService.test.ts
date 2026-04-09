@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { BudgetProgressServiceImpl } from './BudgetProgressService';
+import { BudgetProgressServiceImpl } from '@/features/dashboard/data/services/BudgetProgressServiceImpl';
 
 describe('BudgetProgressService', () => {
   const service = new BudgetProgressServiceImpl();

@@ -1,34 +1,19 @@
 'use client';
 
-import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Layers, Wallet, Settings, CheckCircle2, Plus, Trash2, Check } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useSetupViewModel } from './useSetupViewModel';
 import type { SetupCategory } from './useSetupViewModel';
 import { CurrencyInput } from '@/shared/presentation/common/atoms/CurrencyInput';
-import { formatCurrency } from '@/shared/core/utils/formatCurrency';
+import { formatCurrency } from '@/shared/presentation/utils/formatCurrency';
 import { getOrdinalSuffix } from '@/shared/core/utils/formatOrdinal';
 import { ROUTES } from '@/shared/presentation/navigation/routes';
-
-const CURRENCY_OPTIONS = [
-  { value: 'IDR', label: 'IDR — Indonesian Rupiah' },
-  { value: 'USD', label: 'USD — US Dollar' },
-  { value: 'SGD', label: 'SGD — Singapore Dollar' },
-  { value: 'MYR', label: 'MYR — Malaysian Ringgit' },
-  { value: 'EUR', label: 'EUR — Euro' },
-];
+import { CURRENCY_OPTIONS } from '@/shared/presentation/constants/currencyOptions';
 
 const COLOR_OPTIONS = [
   '#6366f1', '#ec4899', '#f59e0b', '#10b981', '#3b82f6',
   '#8b5cf6', '#ef4444', '#14b8a6', '#f97316', '#84cc16',
-];
-
-const DEFAULT_CATEGORIES: SetupCategory[] = [
-  { name: 'Food & Dining', masterCategory: 'daily', color: '#f59e0b', icon: 'food', amount: 0 },
-  { name: 'Transport', masterCategory: 'daily', color: '#3b82f6', icon: 'car', amount: 0 },
-  { name: 'Shopping', masterCategory: 'monthly', color: '#ec4899', icon: 'shopping', amount: 0 },
-  { name: 'Health', masterCategory: 'monthly', color: '#10b981', icon: 'health', amount: 0 },
 ];
 
 const STEPS = [
@@ -40,34 +25,28 @@ const STEPS = [
 
 export function SetupView() {
   const router = useRouter();
-  const { isSubmitting, error, completeSetup } = useSetupViewModel();
-
-  const [step, setStep] = useState(1);
-  const [categories, setCategories] = useState<SetupCategory[]>(DEFAULT_CATEGORIES);
-  const [budgetName, setBudgetName] = useState('My Budget');
-  const [currency, setCurrency] = useState('IDR');
-  const [startDay, setStartDay] = useState(1);
-
-  const totalAllocated = categories.reduce((sum, c) => sum + (c.amount || 0), 0);
-
-  const addCategory = () => {
-    setCategories((prev) => [
-      ...prev,
-      { name: '', masterCategory: 'monthly', color: '#6366f1', icon: 'circle', amount: 0 },
-    ]);
-  };
-
-  const updateCategory = (index: number, field: keyof SetupCategory, value: string | number) => {
-    setCategories((prev) => prev.map((c, i) => (i === index ? { ...c, [field]: value } : c)));
-  };
-
-  const removeCategory = (index: number) => {
-    setCategories((prev) => prev.filter((_, i) => i !== index));
-  };
+  const {
+    step,
+    setStep,
+    categories,
+    budgetName,
+    setBudgetName,
+    currency,
+    setCurrency,
+    startDay,
+    setStartDay,
+    totalAllocated,
+    addCategory,
+    updateCategory,
+    removeCategory,
+    isSubmitting,
+    error,
+    completeSetup,
+  } = useSetupViewModel();
 
   const handleComplete = async () => {
     try {
-      await completeSetup({ categories, budgetName, currency, totalBudget: totalAllocated, startDay });
+      await completeSetup();
       router.push(ROUTES.dashboard);
     } catch {
       // error set by ViewModel
@@ -88,21 +67,17 @@ export function SetupView() {
 
           {/* Step Indicator */}
           <div className="space-y-4">
-            {/* Progress Bar */}
             <div className="relative h-2 bg-muted rounded-full overflow-hidden">
               <div
                 className="absolute inset-y-0 left-0 bg-primary rounded-full transition-all duration-500 ease-out"
                 style={{ width: `${(step / 4) * 100}%` }}
               />
             </div>
-
-            {/* Step Labels */}
             <div className="flex justify-between">
               {STEPS.map((s) => {
                 const isActive = step === s.id;
                 const isCompleted = step > s.id;
                 const Icon = s.Icon;
-
                 return (
                   <div
                     key={s.id}
@@ -145,11 +120,8 @@ export function SetupView() {
                 </p>
               </div>
               <div className="p-5 space-y-3">
-                {categories.map((cat, index) => (
-                  <div
-                    key={index}
-                    className="rounded-xl ring-1 ring-border p-4 space-y-3"
-                  >
+                {(categories as SetupCategory[]).map((cat, index) => (
+                  <div key={index} className="rounded-xl ring-1 ring-border p-4 space-y-3">
                     <div className="flex items-center gap-3">
                       <input
                         className="flex-1 h-11 px-4 rounded-lg bg-muted/50 ring-1 ring-border text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all"
@@ -167,7 +139,6 @@ export function SetupView() {
                       </button>
                     </div>
                     <div className="flex items-center gap-3 flex-wrap">
-                      {/* Period Selector */}
                       <div className="flex rounded-lg ring-1 ring-border overflow-hidden">
                         {(['daily', 'weekly', 'monthly'] as const).map((m) => (
                           <button
@@ -184,7 +155,6 @@ export function SetupView() {
                           </button>
                         ))}
                       </div>
-                      {/* Color Picker */}
                       <div className="flex gap-1.5">
                         {COLOR_OPTIONS.slice(0, 6).map((c) => (
                           <button
@@ -216,7 +186,7 @@ export function SetupView() {
                 <Button
                   className="w-full h-12 rounded-xl"
                   onClick={() => setStep(2)}
-                  disabled={categories.filter((c) => c.name.trim()).length === 0}
+                  disabled={(categories as SetupCategory[]).filter((c) => c.name.trim()).length === 0}
                 >
                   Continue
                 </Button>
@@ -234,16 +204,10 @@ export function SetupView() {
                 </p>
               </div>
               <div className="p-5 space-y-3">
-                {categories.map((cat, index) => (
-                  <div
-                    key={index}
-                    className="flex items-center gap-4 p-4 rounded-xl ring-1 ring-border"
-                  >
+                {(categories as SetupCategory[]).map((cat, index) => (
+                  <div key={index} className="flex items-center gap-4 p-4 rounded-xl ring-1 ring-border">
                     <div className="flex items-center gap-3 flex-1 min-w-0">
-                      <span
-                        className="w-4 h-4 rounded-full flex-shrink-0"
-                        style={{ backgroundColor: cat.color }}
-                      />
+                      <span className="w-4 h-4 rounded-full flex-shrink-0" style={{ backgroundColor: cat.color }} />
                       <div className="min-w-0">
                         <p className="text-sm font-medium truncate">{cat.name || 'Unnamed'}</p>
                         <p className="text-xs text-muted-foreground capitalize">{cat.masterCategory}</p>
@@ -257,8 +221,6 @@ export function SetupView() {
                     />
                   </div>
                 ))}
-
-                {/* Total */}
                 {totalAllocated > 0 && (
                   <div className="rounded-xl bg-primary/10 ring-1 ring-primary/20 p-4">
                     <div className="flex items-center justify-between">
@@ -271,16 +233,8 @@ export function SetupView() {
                 )}
               </div>
               <div className="p-5 border-t border-border flex gap-3">
-                <Button
-                  variant="outline"
-                  className="flex-1 h-12 rounded-xl"
-                  onClick={() => setStep(1)}
-                >
-                  Back
-                </Button>
-                <Button className="flex-1 h-12 rounded-xl" onClick={() => setStep(3)}>
-                  Continue
-                </Button>
+                <Button variant="outline" className="flex-1 h-12 rounded-xl" onClick={() => setStep(1)}>Back</Button>
+                <Button className="flex-1 h-12 rounded-xl" onClick={() => setStep(3)}>Continue</Button>
               </div>
             </div>
           )}
@@ -312,9 +266,7 @@ export function SetupView() {
                     onChange={(e) => setCurrency(e.target.value)}
                   >
                     {CURRENCY_OPTIONS.map((c) => (
-                      <option key={c.value} value={c.value}>
-                        {c.label}
-                      </option>
+                      <option key={c.value} value={c.value}>{c.label}</option>
                     ))}
                   </select>
                 </div>
@@ -326,27 +278,15 @@ export function SetupView() {
                     onChange={(e) => setStartDay(Number(e.target.value))}
                   >
                     {Array.from({ length: 28 }, (_, i) => i + 1).map((day) => (
-                      <option key={day} value={day}>
-                        {day}{getOrdinalSuffix(day)} of each month
-                      </option>
+                      <option key={day} value={day}>{day}{getOrdinalSuffix(day)} of each month</option>
                     ))}
                   </select>
-                  <p className="text-xs text-muted-foreground">
-                    The day when your monthly budget period starts.
-                  </p>
+                  <p className="text-xs text-muted-foreground">The day when your monthly budget period starts.</p>
                 </div>
               </div>
               <div className="p-5 border-t border-border flex gap-3">
-                <Button
-                  variant="outline"
-                  className="flex-1 h-12 rounded-xl"
-                  onClick={() => setStep(2)}
-                >
-                  Back
-                </Button>
-                <Button className="flex-1 h-12 rounded-xl" onClick={() => setStep(4)}>
-                  Continue
-                </Button>
+                <Button variant="outline" className="flex-1 h-12 rounded-xl" onClick={() => setStep(2)}>Back</Button>
+                <Button className="flex-1 h-12 rounded-xl" onClick={() => setStep(4)}>Continue</Button>
               </div>
             </div>
           )}
@@ -361,9 +301,7 @@ export function SetupView() {
                 </p>
               </div>
               <div className="p-5 space-y-5">
-                {/* Summary Card - Receipt Style */}
                 <div className="rounded-xl bg-muted/30 ring-1 ring-border p-5 space-y-4">
-                  {/* Budget Info */}
                   <div className="text-center pb-4 border-b border-dashed border-border">
                     <p className="text-xs text-muted-foreground uppercase tracking-wider">Budget</p>
                     <p className="text-xl font-bold mt-1">{budgetName}</p>
@@ -371,56 +309,36 @@ export function SetupView() {
                       {currency} · Starts on the {startDay}{getOrdinalSuffix(startDay)}
                     </p>
                   </div>
-
-                  {/* Categories */}
                   <div className="space-y-2">
                     <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-                      Categories ({categories.filter((c) => c.name.trim()).length})
+                      Categories ({(categories as SetupCategory[]).filter((c) => c.name.trim()).length})
                     </p>
-                    {categories.filter((c) => c.name.trim()).map((cat, i) => (
+                    {(categories as SetupCategory[]).filter((c) => c.name.trim()).map((cat, i) => (
                       <div key={i} className="flex items-center justify-between py-2">
                         <div className="flex items-center gap-3">
-                          <span
-                            className="w-3 h-3 rounded-full"
-                            style={{ backgroundColor: cat.color }}
-                          />
+                          <span className="w-3 h-3 rounded-full" style={{ backgroundColor: cat.color }} />
                           <span className="text-sm">{cat.name}</span>
-                          <span className="text-xs text-muted-foreground capitalize">
-                            ({cat.masterCategory})
-                          </span>
+                          <span className="text-xs text-muted-foreground capitalize">({cat.masterCategory})</span>
                         </div>
                         {cat.amount > 0 && (
-                          <span className="text-sm font-medium">
-                            {formatCurrency(cat.amount, currency)}
-                          </span>
+                          <span className="text-sm font-medium">{formatCurrency(cat.amount, currency)}</span>
                         )}
                       </div>
                     ))}
                   </div>
-
-                  {/* Total */}
                   <div className="pt-4 border-t border-dashed border-border">
                     <div className="flex items-center justify-between">
                       <span className="font-semibold">Total Monthly</span>
-                      <span className="text-xl font-bold text-primary">
-                        {formatCurrency(totalAllocated, currency)}
-                      </span>
+                      <span className="text-xl font-bold text-primary">{formatCurrency(totalAllocated, currency)}</span>
                     </div>
                   </div>
                 </div>
-
                 <p className="text-xs text-muted-foreground text-center">
                   This budget will be applied to the current month automatically.
                 </p>
               </div>
               <div className="p-5 border-t border-border flex gap-3">
-                <Button
-                  variant="outline"
-                  className="flex-1 h-12 rounded-xl"
-                  onClick={() => setStep(3)}
-                >
-                  Back
-                </Button>
+                <Button variant="outline" className="flex-1 h-12 rounded-xl" onClick={() => setStep(3)}>Back</Button>
                 <Button
                   className="flex-1 h-12 rounded-xl"
                   onClick={handleComplete}

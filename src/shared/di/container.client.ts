@@ -1,6 +1,6 @@
 import 'client-only';
 
-import { AuthDbDataSourceImpl } from '@/features/auth/data/data-sources/auth/AuthDbDataSourceImpl';
+import { AuthRemoteDataSourceImpl } from '@/features/auth/data/data-sources/auth/AuthRemoteDataSourceImpl';
 import { AuthRepositoryImpl } from '@/features/auth/data/repositories/AuthRepositoryImpl';
 import { SignInWithGoogleUseCaseImpl } from '@/features/auth/domain/use-cases/auth/SignInWithGoogleUseCase';
 import { SignOutUseCaseImpl } from '@/features/auth/domain/use-cases/auth/SignOutUseCase';
@@ -8,7 +8,7 @@ import { GetCurrentUserUseCaseImpl } from '@/features/auth/domain/use-cases/auth
 
 export function createClientContainer() {
   // Auth
-  const authDataSource = new AuthDbDataSourceImpl(
+  const authDataSource = new AuthRemoteDataSourceImpl(
     typeof window !== 'undefined' ? window.location.origin : ''
   );
   const authRepository = new AuthRepositoryImpl(authDataSource);

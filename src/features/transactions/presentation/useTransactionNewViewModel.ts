@@ -2,11 +2,12 @@
 
 import { useState, useEffect } from 'react';
 import { createTransactionAction } from '@/features/transactions/presentation/actions/transactions';
-import { getCategoriesAction } from '@/features/categories/presentation/actions/categories';
+import { getCategoriesAction } from '@/shared/presentation/actions/categories';
 import type { Category } from '@/features/categories/domain/entities/Category';
 
 export function useTransactionNewViewModel() {
   const [categories, setCategories] = useState<Category[]>([]);
+  const [currency] = useState('IDR');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -45,6 +46,7 @@ export function useTransactionNewViewModel() {
 
   return {
     categories,
+    currency,
     isSubmitting,
     error,
     createTransaction,

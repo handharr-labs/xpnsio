@@ -26,11 +26,19 @@ export async function middleware(request: NextRequest) {
   // Refresh session — required for Server Components to read auth state
   const { data: { user } } = await supabase.auth.getUser();
 
-  // Redirect unauthenticated users away from protected routes
-  const isProtected = !request.nextUrl.pathname.startsWith('/login') &&
-    !request.nextUrl.pathname.startsWith('/auth');
+  const { pathname } = request.nextUrl;
 
-  if (!user && isProtected && request.nextUrl.pathname !== '/') {
+  // Root route: redirect based on auth state
+  if (pathname === '/') {
+    const url = request.nextUrl.clone();
+    url.pathname = user ? '/dashboard' : '/login';
+    return NextResponse.redirect(url);
+  }
+
+  // Redirect unauthenticated users away from protected routes
+  const isProtected = !pathname.startsWith('/login') && !pathname.startsWith('/auth');
+
+  if (!user && isProtected) {
     const url = request.nextUrl.clone();
     url.pathname = '/login';
     return NextResponse.redirect(url);
