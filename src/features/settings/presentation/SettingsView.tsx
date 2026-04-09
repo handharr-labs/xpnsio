@@ -1,51 +1,25 @@
 'use client';
 
-import { useState } from 'react';
-import { useRouter } from 'next/navigation';
-import { useTheme } from 'next-themes';
 import { Sun, Moon } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { useDI } from '@/shared/di/DIContext';
-import { ROUTES } from '@/shared/presentation/navigation/routes';
-import { deleteAccountAction } from '@/features/auth/presentation/actions/auth';
+import { useSettingsViewModel } from './useSettingsViewModel';
 
 export function SettingsView() {
-  const { signOutUseCase } = useDI();
-  const router = useRouter();
-  const [isSigningOut, setIsSigningOut] = useState(false);
-  const [isDeleting, setIsDeleting] = useState(false);
-  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
-  const [deleteConfirmText, setDeleteConfirmText] = useState('');
-
-  const handleSignOut = async () => {
-    setIsSigningOut(true);
-    try {
-      await signOutUseCase.execute();
-      router.push(ROUTES.login);
-    } catch {
-      setIsSigningOut(false);
-    }
-  };
-
-  const handleDeleteAccount = async () => {
-    setIsDeleting(true);
-    try {
-      await deleteAccountAction({});
-      // After successful deletion, the session will be invalid
-      // Redirect to login page
-      router.push(ROUTES.login);
-    } catch (error) {
-      setIsDeleting(false);
-      setDeleteConfirmText('');
-      setShowDeleteConfirm(false);
-      // Show error - could add toast notification here
-      console.error('Failed to delete account:', error);
-    }
-  };
-
-  const { theme, setTheme } = useTheme();
-  const canDelete = deleteConfirmText === 'DELETE';
+  const {
+    theme,
+    toggleTheme,
+    isSigningOut,
+    isDeleting,
+    showDeleteConfirm,
+    deleteConfirmText,
+    canDelete,
+    updateDeleteConfirmText,
+    handleSignOut,
+    handleDeleteAccount,
+    openDeleteConfirm,
+    cancelDeleteConfirm,
+  } = useSettingsViewModel();
 
   return (
     <main className="min-h-screen p-6">
@@ -65,7 +39,7 @@ export function SettingsView() {
               </div>
               <button
                 type="button"
-                onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
+                onClick={toggleTheme}
                 className="flex items-center gap-2 px-4 py-2 rounded-xl ring-1 ring-border bg-muted/50 hover:bg-muted text-sm font-medium transition-colors min-h-[44px]"
               >
                 {theme === 'dark' ? (
@@ -111,7 +85,7 @@ export function SettingsView() {
                 <Button
                   variant="destructive"
                   className="w-full"
-                  onClick={() => setShowDeleteConfirm(true)}
+                  onClick={openDeleteConfirm}
                 >
                   Delete Account
                 </Button>
@@ -133,7 +107,7 @@ export function SettingsView() {
                 <input
                   type="text"
                   value={deleteConfirmText}
-                  onChange={(e) => setDeleteConfirmText(e.target.value.toUpperCase())}
+                  onChange={(e) => updateDeleteConfirmText(e.target.value)}
                   placeholder="Type DELETE to confirm"
                   className="w-full px-3 py-2 border border-input rounded-md bg-background text-sm"
                   autoFocus
@@ -142,10 +116,7 @@ export function SettingsView() {
                   <Button
                     variant="outline"
                     className="flex-1"
-                    onClick={() => {
-                      setShowDeleteConfirm(false);
-                      setDeleteConfirmText('');
-                    }}
+                    onClick={cancelDeleteConfirm}
                     disabled={isDeleting}
                   >
                     Cancel

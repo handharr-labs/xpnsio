@@ -6,7 +6,7 @@ import {
   updateTransactionAction,
   deleteTransactionAction,
 } from '@/features/transactions/presentation/actions/transactions';
-import { getCategoriesAction } from '@/features/categories/presentation/actions/categories';
+import { getCategoriesAction } from '@/shared/presentation/actions/categories';
 import type { Transaction } from '@/features/transactions/domain/entities/Transaction';
 import type { Category } from '@/features/categories/domain/entities/Category';
 

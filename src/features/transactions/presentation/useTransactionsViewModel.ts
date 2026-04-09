@@ -7,7 +7,7 @@ import {
   updateTransactionAction,
   deleteTransactionAction,
 } from '@/features/transactions/presentation/actions/transactions';
-import { getCategoriesAction } from '@/features/categories/presentation/actions/categories';
+import { getCategoriesAction } from '@/shared/presentation/actions/categories';
 import type { Transaction } from '@/features/transactions/domain/entities/Transaction';
 import type { Category } from '@/features/categories/domain/entities/Category';
 
@@ -24,6 +24,7 @@ export type TransactionFilters = {
 export function useTransactionsViewModel() {
   const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
+  const [currency] = useState('IDR');
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [filters, setFilters] = useState<TransactionFilters>({});
@@ -127,6 +128,7 @@ export function useTransactionsViewModel() {
   return {
     transactions,
     categories,
+    currency,
     isLoading,
     error,
     filters,
