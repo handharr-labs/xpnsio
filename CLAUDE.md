@@ -9,13 +9,22 @@ Stack: Next.js 15 App Router + React 19 · PostgreSQL/Supabase · Drizzle ORM ·
 ## Features
 `src/features/{auth,transactions,categories,budget-settings,dashboard}` · `src/shared/{domain,presentation,core,di}` · `src/lib` · `src/app`
 
-## Workflow
-Before any work: `/create-issue [title]` → wait for instruction → invoke agent
-
-## Issue rule
-On `fix/`|`feature/` branch → add feedback to current issue. On `main` → create new issue.
-
 ## Project-specific agent rules
 `.claude/agents.local/` — additive rules on top of the shared starter-kit agents.
 
-<!-- Shared arch docs, skills, workflow, and code principles → .claude/web-agentic/ -->
+<!-- BEGIN web-agentic -->
+## Workflow
+Before any work, invoke the **issue-worker** agent with a title (new) or number (existing).
+
+```
+issue-worker "add X"   → create GH issue + branch + backlog row
+issue-worker 42        → pick up existing GH issue + branch + backlog row
+```
+
+Agents: `feature-orchestrator` · `backend-orchestrator` · `debug-worker` · `test-worker` · `arch-review-worker` · `/simplify` · `.claude/skills/`
+
+Issue rule: On `fix/`|`feat/` branch → add feedback to current issue. On `main` → create new issue.
+
+## Code Principles
+CLEAN · DRY · SOLID (SRP, OCP, LSP, ISP, DIP). Wire deps via `src/shared/di/`.
+<!-- END web-agentic -->
