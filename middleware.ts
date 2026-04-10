@@ -32,7 +32,11 @@ export async function middleware(request: NextRequest) {
   if (pathname === '/') {
     const url = request.nextUrl.clone();
     url.pathname = user ? '/dashboard' : '/login';
-    return NextResponse.redirect(url);
+    const redirectResponse = NextResponse.redirect(url);
+    supabaseResponse.cookies.getAll().forEach((cookie) =>
+      redirectResponse.cookies.set(cookie.name, cookie.value, cookie)
+    );
+    return redirectResponse;
   }
 
   // Redirect unauthenticated users away from protected routes
@@ -41,7 +45,11 @@ export async function middleware(request: NextRequest) {
   if (!user && isProtected) {
     const url = request.nextUrl.clone();
     url.pathname = '/login';
-    return NextResponse.redirect(url);
+    const redirectResponse = NextResponse.redirect(url);
+    supabaseResponse.cookies.getAll().forEach((cookie) =>
+      redirectResponse.cookies.set(cookie.name, cookie.value, cookie)
+    );
+    return redirectResponse;
   }
 
   return supabaseResponse;
