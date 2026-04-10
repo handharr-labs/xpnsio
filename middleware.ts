@@ -28,28 +28,20 @@ export async function middleware(request: NextRequest) {
 
   const { pathname } = request.nextUrl;
 
-  // Root route: redirect based on auth state
-  if (pathname === '/') {
-    const url = request.nextUrl.clone();
-    url.pathname = user ? '/dashboard' : '/login';
-    const redirectResponse = NextResponse.redirect(url);
-    supabaseResponse.cookies.getAll().forEach((cookie) =>
-      redirectResponse.cookies.set(cookie.name, cookie.value, cookie)
-    );
-    return redirectResponse;
-  }
-
-  // Redirect unauthenticated users away from protected routes
-  const isProtected = !pathname.startsWith('/login') && !pathname.startsWith('/auth');
+  // Redirect unauthenticated users away from protected routes.
+  // '/' is excluded — it is handled by app/page.tsx as a Server Component
+  // so that Next.js automatically merges middleware Set-Cookie headers into
+  // the page-level redirect. Doing the redirect here via NextResponse.redirect()
+  // causes iOS Safari PWA to drop the refreshed session cookies.
+  const isProtected =
+    pathname !== '/' &&
+    !pathname.startsWith('/login') &&
+    !pathname.startsWith('/auth');
 
   if (!user && isProtected) {
     const url = request.nextUrl.clone();
     url.pathname = '/login';
-    const redirectResponse = NextResponse.redirect(url);
-    supabaseResponse.cookies.getAll().forEach((cookie) =>
-      redirectResponse.cookies.set(cookie.name, cookie.value, cookie)
-    );
-    return redirectResponse;
+    return NextResponse.redirect(url);
   }
 
   return supabaseResponse;
