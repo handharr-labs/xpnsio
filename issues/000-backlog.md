@@ -2,6 +2,7 @@
 
 | # | Title | Status | Link |
 |---|-------|--------|------|
+| 068 | PWA iOS: Session not persisted when app is added to home screen | `pending` | [#68](https://github.com/handharr-labs/xpnsio/issues/68) |
 | 066 | Architecture violations fix: BudgetOverviewCard logic divergence, ViewModel mutable state, onboarding route guard, AuthDbDataSource rename | `pending` | [#66](https://github.com/handharr-labs/xpnsio/issues/66) |
 | 064 | fix: architecture violations - entity immutability, usecase bypasses, and layer boundary breaches | `pending` | [#64](https://github.com/handharr-labs/xpnsio/issues/64) |
 | 062 | Fix PWA session not persisting after app kill by adding missing middleware.ts | `pending` | [#62](https://github.com/handharr-labs/xpnsio/issues/62) |

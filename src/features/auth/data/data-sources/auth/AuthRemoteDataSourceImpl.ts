@@ -1,12 +1,9 @@
-import { createBrowserClient } from '@supabase/ssr';
+import { createSupabaseBrowserClient } from '@/lib/supabase-browser';
 import type { AuthRemoteDataSource } from './AuthRemoteDataSource';
 import type { AuthUserRecord } from './AuthUserRecord';
 
 export class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
-  private readonly supabase = createBrowserClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-  );
+  private readonly supabase = createSupabaseBrowserClient();
 
   constructor(private readonly redirectOrigin: string) {}
 
