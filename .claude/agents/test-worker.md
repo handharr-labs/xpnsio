@@ -1,1 +1,1 @@
-../web-agentic/agents/test-worker.md
+../software-dev-agentic/platforms/web/agents/test-worker.md

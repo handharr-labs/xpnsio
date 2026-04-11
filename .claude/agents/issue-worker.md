@@ -1,1 +1,1 @@
-../web-agentic/agents/issue-worker.md
+../software-dev-agentic/core/agents/issue-worker.md

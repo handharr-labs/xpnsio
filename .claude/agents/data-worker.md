@@ -1,1 +1,1 @@
-../web-agentic/agents/data-worker.md
+../software-dev-agentic/platforms/web/agents/data-worker.md

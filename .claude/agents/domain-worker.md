@@ -1,1 +1,1 @@
-../web-agentic/agents/domain-worker.md
+../software-dev-agentic/platforms/web/agents/domain-worker.md
