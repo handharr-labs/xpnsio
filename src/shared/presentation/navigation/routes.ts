@@ -23,4 +23,10 @@ export const ROUTES = {
   transactions: '/transactions',
   transactionNew: '/transactions/new',
   transactionDetail: (id: string) => `/transactions/${id}`,
+
+  // Split Bill
+  splitBills: '/split-bill',
+  splitBillNew: '/split-bill/new',
+  splitBillManage: (id: string) => `/split-bill/${id}`,
+  splitBillPublic: (id: string) => `/bill/${id}`,
 } as const;
