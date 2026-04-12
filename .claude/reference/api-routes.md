@@ -1,1 +1,1 @@
-../software-dev-agentic/platforms/web/reference/api-routes.md
+../software-dev-agentic/lib/platforms/web/reference/api-routes.md

@@ -1,1 +1,1 @@
-../software-dev-agentic/core/agents/perf-worker.md
+../software-dev-agentic/lib/core/agents/perf-worker.md

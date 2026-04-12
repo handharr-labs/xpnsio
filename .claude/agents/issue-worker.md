@@ -1,1 +1,1 @@
-../software-dev-agentic/core/agents/issue-worker.md
+../software-dev-agentic/lib/core/agents/tracker/issue-worker.md

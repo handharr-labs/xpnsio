@@ -1,1 +1,1 @@
-../software-dev-agentic/core/reference/clean-arch/di-containers.md
+../software-dev-agentic/lib/core/reference/clean-arch/di-containers.md

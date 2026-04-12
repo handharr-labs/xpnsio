@@ -1,1 +1,1 @@
-../software-dev-agentic/core/agents/backend-orchestrator.md
+../software-dev-agentic/lib/core/agents/builder/backend-orchestrator.md

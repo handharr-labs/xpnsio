@@ -1,1 +1,1 @@
-../software-dev-agentic/core/reference/clean-arch/domain-purity.md
+../software-dev-agentic/lib/core/reference/clean-arch/domain-purity.md

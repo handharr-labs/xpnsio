@@ -1,1 +1,1 @@
-../software-dev-agentic/core/agents/arch-review-worker.md
+../software-dev-agentic/lib/core/agents/auditor/arch-review-worker.md

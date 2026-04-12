@@ -1,1 +1,1 @@
-../software-dev-agentic/platforms/web/reference/index.md
+../software-dev-agentic/lib/platforms/web/reference/index.md

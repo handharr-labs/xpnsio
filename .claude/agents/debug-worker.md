@@ -1,1 +1,1 @@
-../software-dev-agentic/core/agents/debug-worker.md
+../software-dev-agentic/lib/core/agents/detective/debug-worker.md

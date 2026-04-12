@@ -1,1 +1,1 @@
-../software-dev-agentic/platforms/web/reference/testing.md
+../software-dev-agentic/lib/platforms/web/reference/testing.md

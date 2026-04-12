@@ -1,1 +1,1 @@
-../software-dev-agentic/core/agents/feature-orchestrator.md
+../software-dev-agentic/lib/core/agents/builder/feature-orchestrator.md

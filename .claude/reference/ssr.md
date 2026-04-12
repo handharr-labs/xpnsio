@@ -1,1 +1,1 @@
-../software-dev-agentic/platforms/web/reference/ssr.md
+../software-dev-agentic/lib/platforms/web/reference/ssr.md

@@ -1,1 +1,1 @@
-../software-dev-agentic/platforms/web/reference/modular.md
+../software-dev-agentic/lib/platforms/web/reference/modular.md

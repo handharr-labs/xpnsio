@@ -1,1 +1,1 @@
-../software-dev-agentic/platforms/web/agents/test-worker.md
+../software-dev-agentic/lib/core/agents/builder/test-worker.md

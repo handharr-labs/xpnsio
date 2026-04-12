@@ -1,1 +1,1 @@
-../software-dev-agentic/platforms/web/reference/domain.md
+../software-dev-agentic/lib/platforms/web/reference/domain.md

@@ -1,1 +1,1 @@
-../software-dev-agentic/platforms/web/reference/error-handling.md
+../software-dev-agentic/lib/platforms/web/reference/error-handling.md

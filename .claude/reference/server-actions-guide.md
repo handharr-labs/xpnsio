@@ -1,1 +1,1 @@
-../software-dev-agentic/platforms/web/reference/server-actions-guide.md
+../software-dev-agentic/lib/platforms/web/reference/server-actions-guide.md

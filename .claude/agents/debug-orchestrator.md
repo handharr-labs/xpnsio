@@ -1,0 +1,1 @@
+../software-dev-agentic/lib/core/agents/detective/debug-orchestrator.md
