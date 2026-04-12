@@ -1,0 +1,21 @@
+'use client';
+
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useAction } from 'next-safe-action/hooks';
+import { getSplitBillsAction } from './actions/split-bill';
+
+export function useSplitBillListViewModel() {
+  const { executeAsync: fetchBills, result, isExecuting } = useAction(getSplitBillsAction);
+
+  const queryClient = useQueryClient();
+
+  const { data: bills = [], isLoading } = useQuery({
+    queryKey: ['split-bills'],
+    queryFn: async () => {
+      const res = await fetchBills({});
+      return res?.data ?? [];
+    },
+  });
+
+  return { bills, isLoading };
+}
