@@ -281,9 +281,12 @@ export function SplitBillFormView({ vm }: { vm: SplitBillFormVm }) {
                               className="w-full h-9 rounded-xl border border-dashed border-border text-xs text-muted-foreground hover:border-primary hover:text-primary transition-colors"
                               onClick={() => {
                                 const share = Math.floor(remaining / unsetParticipants.length);
+                                const leftover = remaining - share * unsetParticipants.length;
                                 vm.setCustomAmounts((prev) => {
                                   const next = { ...prev };
-                                  unsetParticipants.forEach((p) => { next[p.localId] = share; });
+                                  unsetParticipants.forEach((p, i) => {
+                                    next[p.localId] = share + (i === unsetParticipants.length - 1 ? leftover : 0);
+                                  });
                                   return next;
                                 });
                               }}
