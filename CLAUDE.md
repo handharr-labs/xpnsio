@@ -12,21 +12,20 @@ Stack: Next.js 15 App Router + React 19 · PostgreSQL/Supabase · Drizzle ORM ·
 ## Project-specific agent rules
 `.claude/agents.local/` — additive rules on top of the shared starter-kit agents.
 
-<!-- BEGIN web-agentic -->
+<!-- BEGIN software-dev-agentic:web -->
+Next.js 15 App Router · React 19 · Clean Architecture
+
+## Architecture
+
+Module structure and path conventions: `.claude/reference/`
+
+## Principles
+
+Clean Architecture · DRY · SOLID — apply to all new code.
+
 ## Workflow
-Before any work, invoke the **issue-worker** agent with a title (new) or number (existing).
 
-```
-issue-worker "add X"   → create GH issue + branch + backlog row
-issue-worker 42        → pick up existing GH issue + branch + backlog row
-```
-
-Agents: `feature-orchestrator` · `backend-orchestrator` · `debug-worker` · `test-worker` · `arch-review-worker` · `/simplify` · `.claude/skills/`
+Agents: `feature-orchestrator` · `backend-orchestrator` · `debug-worker` · `test-worker` · `arch-review-worker` · `.claude/skills/`
 
 **Feature work (create or update, any scope) → always delegate to `feature-orchestrator`, never inline.**
-
-Issue rule: On `fix/`|`feat/` branch → add feedback to current issue. On `main` → create new issue.
-
-## Code Principles
-CLEAN · DRY · SOLID (SRP, OCP, LSP, ISP, DIP). Wire deps via `src/shared/di/`.
-<!-- END web-agentic -->
+<!-- END software-dev-agentic:web -->
