@@ -28,5 +28,6 @@ export const ROUTES = {
   splitBills: '/split-bill',
   splitBillNew: '/split-bill/new',
   splitBillManage: (id: string) => `/split-bill/${id}`,
+  splitBillEdit: (id: string) => `/split-bill/${id}/edit`,
   splitBillPublic: (id: string) => `/bill/${id}`,
 } as const;

@@ -1,7 +1,7 @@
 'use client';
 
 import { useRouter, usePathname } from 'next/navigation';
-import { Home, ArrowLeftRight, Plus, Wallet, Settings } from 'lucide-react';
+import { Home, Receipt, Plus, Wallet, Settings } from 'lucide-react';
 import { ROUTES } from '@/shared/presentation/navigation/routes';
 
 export function BottomNav() {
@@ -21,11 +21,11 @@ export function BottomNav() {
           <span>Dashboard</span>
         </button>
         <button
-          className={`flex-1 flex flex-col items-center gap-1 text-xs transition-colors ${isActive(ROUTES.transactions) ? 'text-foreground' : 'text-muted-foreground hover:text-foreground'}`}
-          onClick={() => router.push(ROUTES.transactions)}
+          className={`flex-1 flex flex-col items-center gap-1 text-xs transition-colors ${isActive(ROUTES.splitBills) ? 'text-foreground' : 'text-muted-foreground hover:text-foreground'}`}
+          onClick={() => router.push(ROUTES.splitBills)}
         >
-          <ArrowLeftRight size={20} />
-          <span>Transactions</span>
+          <Receipt size={20} />
+          <span>Split Bill</span>
         </button>
         <button
           className="flex-1 flex justify-center"
