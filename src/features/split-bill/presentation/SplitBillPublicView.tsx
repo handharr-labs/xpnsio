@@ -139,7 +139,7 @@ export function SplitBillPublicView({ billId }: { billId: string }) {
                   {p.status === 'pending' && (
                     <button
                       onClick={() => setSelectedParticipant(p)}
-                      className="text-sm font-medium text-primary hover:underline min-h-[44px] flex items-center"
+                      className="text-sm font-medium px-3 py-1.5 rounded-lg border border-border hover:bg-accent transition-colors min-h-[44px] flex items-center"
                     >
                       I'm {p.name}
                     </button>

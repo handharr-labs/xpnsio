@@ -266,19 +266,12 @@ export function SplitBillFormView({ vm }: { vm: SplitBillFormVm }) {
                 <div className="space-y-4">
                   {vm.items.map((item) => (
                     <div key={item.localId} className="rounded-xl ring-1 ring-border p-3 space-y-3">
-                      <div className="flex gap-2">
+                      <div className="flex gap-2 items-center">
                         <input
-                          className={`${inputCls} flex-1`}
+                          className={`${inputCls} flex-1 min-w-0`}
                           placeholder="Item name"
                           value={item.name}
                           onChange={(e) => vm.updateItem(item.localId, { name: e.target.value })}
-                        />
-                        <input
-                          type="number"
-                          className={`${inputCls} w-32`}
-                          placeholder="Price"
-                          value={item.price || ''}
-                          onChange={(e) => vm.updateItem(item.localId, { price: parseInt(e.target.value) || 0 })}
                         />
                         <button
                           type="button"
@@ -288,6 +281,13 @@ export function SplitBillFormView({ vm }: { vm: SplitBillFormVm }) {
                           <Trash2 className="w-4 h-4" />
                         </button>
                       </div>
+                      <input
+                        type="number"
+                        className={inputCls}
+                        placeholder="Price (IDR)"
+                        value={item.price || ''}
+                        onChange={(e) => vm.updateItem(item.localId, { price: parseInt(e.target.value) || 0 })}
+                      />
                       <div>
                         <p className="text-xs text-muted-foreground mb-2">Assign to:</p>
                         <div className="flex flex-wrap gap-2">
@@ -353,7 +353,7 @@ export function SplitBillFormView({ vm }: { vm: SplitBillFormVm }) {
                   </div>
                   <div className="flex gap-2">
                     <select
-                      className={`${inputCls} flex-1`}
+                      className={`${flexInputCls} w-44 flex-none pr-8`}
                       value={adj.type}
                       onChange={(e) => vm.updateAdjustment(adj.localId, { type: e.target.value as AdjustmentForm['type'] })}
                     >
@@ -362,7 +362,7 @@ export function SplitBillFormView({ vm }: { vm: SplitBillFormVm }) {
                     </select>
                     <input
                       type="number"
-                      className={`${inputCls} w-32`}
+                      className={`${flexInputCls} flex-1`}
                       placeholder={adj.type === 'percentage' ? '11 (= 11%)' : 'Amount'}
                       value={adj.type === 'percentage' ? (adj.value / 100 || '') : (adj.value || '')}
                       onChange={(e) => {
@@ -521,3 +521,7 @@ function Field({ label, children }: { label: string; children: React.ReactNode }
 
 const inputCls =
   'w-full h-11 px-4 rounded-xl bg-muted/50 ring-1 ring-border text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all';
+
+// Same as inputCls but without w-full — safe to use inside flex rows with flex-1 or explicit widths
+const flexInputCls =
+  'h-11 px-4 rounded-xl bg-muted/50 ring-1 ring-border text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all';
