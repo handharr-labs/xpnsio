@@ -1,7 +1,7 @@
 'use client';
 
 import { useRouter } from 'next/navigation';
-import { ArrowLeft, Copy, Check, ExternalLink, ImageIcon } from 'lucide-react';
+import { ArrowLeft, Copy, Check, ExternalLink, ImageIcon, Pencil, Trash2 } from 'lucide-react';
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { useSplitBillManageViewModel } from './useSplitBillManageViewModel';
@@ -25,11 +25,12 @@ const STATUS_LABEL: Record<ParticipantStatus, string> = {
 
 export function SplitBillManageView({ billId }: { billId: string }) {
   const router = useRouter();
-  const { bill, isLoading, isUpdating, error, approveParticipant, rejectParticipant } =
+  const { bill, isLoading, isUpdating, isDeleting, error, approveParticipant, rejectParticipant, deleteBillById } =
     useSplitBillManageViewModel(billId);
   const [copiedAccount, setCopiedAccount] = useState<string | null>(null);
   const [copiedLink, setCopiedLink] = useState(false);
   const [proofModal, setProofModal] = useState<string | null>(null);
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
 
   const publicUrl = typeof window !== 'undefined'
     ? `${window.location.origin}${ROUTES.splitBillPublic(billId)}`
@@ -81,6 +82,20 @@ export function SplitBillManageView({ billId }: { billId: string }) {
             <h1 className="text-xl font-bold truncate">{bill.title}</h1>
             <p className="text-xs text-muted-foreground">{bill.date} · <span className="capitalize">{bill.splitMode}</span></p>
           </div>
+          <button
+            onClick={() => router.push(ROUTES.splitBillEdit(billId))}
+            className="flex items-center justify-center w-11 h-11 rounded-xl bg-muted hover:bg-muted/80 transition-colors"
+            aria-label="Edit bill"
+          >
+            <Pencil className="w-4 h-4" />
+          </button>
+          <button
+            onClick={() => setShowDeleteConfirm(true)}
+            className="flex items-center justify-center w-11 h-11 rounded-xl bg-muted hover:bg-red-500/10 text-muted-foreground hover:text-red-600 transition-colors"
+            aria-label="Delete bill"
+          >
+            <Trash2 className="w-4 h-4" />
+          </button>
         </header>
 
         {error && (
@@ -193,6 +208,49 @@ export function SplitBillManageView({ billId }: { billId: string }) {
           onClick={() => setProofModal(null)}
         >
           <img src={proofModal} alt="Payment proof" className="max-w-full max-h-full rounded-xl object-contain" />
+        </div>
+      )}
+
+      {/* Delete confirmation dialog */}
+      {showDeleteConfirm && (
+        <div
+          className="fixed inset-0 bg-black/60 z-50 flex items-end sm:items-center justify-center p-4"
+          onClick={() => setShowDeleteConfirm(false)}
+        >
+          <div
+            className="bg-background rounded-2xl p-6 w-full max-w-sm space-y-4 shadow-xl"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="space-y-1.5">
+              <h2 className="text-base font-semibold">Delete bill?</h2>
+              <p className="text-sm text-muted-foreground">
+                This will permanently delete <span className="font-medium text-foreground">{bill?.title}</span> and all
+                participant data. This cannot be undone.
+              </p>
+              {bill?.participants.some((p) => p.status === 'proof_uploaded' || p.status === 'approved') && (
+                <p className="text-sm text-yellow-700 dark:text-yellow-400 bg-yellow-500/10 rounded-xl px-3 py-2">
+                  Some participants have already submitted or been approved. Their proof data will be lost.
+                </p>
+              )}
+            </div>
+            <div className="flex gap-2">
+              <Button
+                variant="outline"
+                className="flex-1 rounded-xl"
+                onClick={() => setShowDeleteConfirm(false)}
+                disabled={isDeleting}
+              >
+                Cancel
+              </Button>
+              <Button
+                className="flex-1 rounded-xl bg-red-600 hover:bg-red-700 text-white"
+                disabled={isDeleting}
+                onClick={() => deleteBillById(() => router.push(ROUTES.splitBills))}
+              >
+                {isDeleting ? 'Deleting…' : 'Delete'}
+              </Button>
+            </div>
+          </div>
         </div>
       )}
     </main>

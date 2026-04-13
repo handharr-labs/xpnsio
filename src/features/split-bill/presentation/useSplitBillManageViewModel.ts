@@ -2,12 +2,13 @@
 
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useAction } from 'next-safe-action/hooks';
-import { getSplitBillAction, updateParticipantStatusAction } from './actions/split-bill';
+import { getSplitBillAction, updateParticipantStatusAction, deleteSplitBillAction } from './actions/split-bill';
 import { useState } from 'react';
 
 export function useSplitBillManageViewModel(billId: string) {
   const { executeAsync: fetchBill } = useAction(getSplitBillAction);
   const { executeAsync: updateStatus, isExecuting: isUpdating } = useAction(updateParticipantStatusAction);
+  const { executeAsync: deleteBill, isExecuting: isDeleting } = useAction(deleteSplitBillAction);
   const queryClient = useQueryClient();
   const [error, setError] = useState<string | null>(null);
 
@@ -39,5 +40,17 @@ export function useSplitBillManageViewModel(billId: string) {
     }
   };
 
-  return { bill, isLoading, isUpdating, error, approveParticipant, rejectParticipant };
+  const deleteBillById = async (onSuccess: () => void) => {
+    setError(null);
+    try {
+      await deleteBill({ billId });
+      queryClient.removeQueries({ queryKey: ['split-bill', billId] });
+      queryClient.invalidateQueries({ queryKey: ['split-bills'] });
+      onSuccess();
+    } catch {
+      setError('Failed to delete bill');
+    }
+  };
+
+  return { bill, isLoading, isUpdating, isDeleting, error, approveParticipant, rejectParticipant, deleteBillById };
 }
