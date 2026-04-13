@@ -7,6 +7,7 @@ import { formatCurrency } from '@/shared/presentation/utils/formatCurrency';
 import type { SplitMode } from '../domain/entities/SplitBill';
 import type { ParticipantForm, ItemForm, AdjustmentForm, AccountForm, FormStep } from './useSplitBillNewViewModel';
 import { CurrencyInput } from '@/shared/presentation/common/atoms/CurrencyInput';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 
 const STEPS = ['Bill Info', 'Participants', 'Adjustments', 'Review', 'Payment'];
 
@@ -396,14 +397,18 @@ export function SplitBillFormView({ vm }: { vm: SplitBillFormVm }) {
                     </button>
                   </div>
                   <div className="flex gap-2">
-                    <select
-                      className={`${flexInputCls} w-44 flex-none pr-8`}
+                    <Select
                       value={adj.type}
-                      onChange={(e) => vm.updateAdjustment(adj.localId, { type: e.target.value as AdjustmentForm['type'] })}
+                      onValueChange={(v) => vm.updateAdjustment(adj.localId, { type: v as AdjustmentForm['type'] })}
                     >
-                      <option value="percentage">Percentage (%)</option>
-                      <option value="fixed">Fixed (IDR)</option>
-                    </select>
+                      <SelectTrigger className="w-44 flex-none !h-11 rounded-xl bg-muted/50 ring-1 ring-border px-4 text-sm">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="percentage">Percentage (%)</SelectItem>
+                        <SelectItem value="fixed">Fixed (IDR)</SelectItem>
+                      </SelectContent>
+                    </Select>
                     {adj.type === 'fixed' ? (
                       <CurrencyInput
                         value={adj.value}
