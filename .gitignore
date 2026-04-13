@@ -45,3 +45,6 @@ next-env.d.ts
 /public/swe-worker-*.js
 /public/sw.js.map
 /public/workbox-*.js.map
+
+# Claude Code — delegation flags
+.claude/.delegated-*

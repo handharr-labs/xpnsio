@@ -56,6 +56,24 @@ import type { CreateTransactionUseCase } from '@/features/transactions/domain/us
 import type { UpdateTransactionUseCase } from '@/features/transactions/domain/use-cases/transactions/UpdateTransactionUseCase';
 import type { DeleteTransactionUseCase } from '@/features/transactions/domain/use-cases/transactions/DeleteTransactionUseCase';
 
+// --- Split Bill ---
+import { SplitBillDbDataSourceImpl } from '@/features/split-bill/data/data-sources/SplitBillDbDataSourceImpl';
+import { SplitBillRepositoryImpl } from '@/features/split-bill/data/repositories/SplitBillRepositoryImpl';
+import { CreateSplitBillUseCaseImpl } from '@/features/split-bill/domain/use-cases/CreateSplitBillUseCase';
+import { GetSplitBillUseCaseImpl } from '@/features/split-bill/domain/use-cases/GetSplitBillUseCase';
+import { GetSplitBillsUseCaseImpl } from '@/features/split-bill/domain/use-cases/GetSplitBillsUseCase';
+import { UpdateSplitBillUseCaseImpl } from '@/features/split-bill/domain/use-cases/UpdateSplitBillUseCase';
+import { UploadPaymentProofUseCaseImpl } from '@/features/split-bill/domain/use-cases/UploadPaymentProofUseCase';
+import { UpdateParticipantStatusUseCaseImpl } from '@/features/split-bill/domain/use-cases/UpdateParticipantStatusUseCase';
+import { DeleteSplitBillUseCaseImpl } from '@/features/split-bill/domain/use-cases/DeleteSplitBillUseCase';
+import type { CreateSplitBillUseCase } from '@/features/split-bill/domain/use-cases/CreateSplitBillUseCase';
+import type { GetSplitBillUseCase } from '@/features/split-bill/domain/use-cases/GetSplitBillUseCase';
+import type { GetSplitBillsUseCase } from '@/features/split-bill/domain/use-cases/GetSplitBillsUseCase';
+import type { UpdateSplitBillUseCase } from '@/features/split-bill/domain/use-cases/UpdateSplitBillUseCase';
+import type { UploadPaymentProofUseCase } from '@/features/split-bill/domain/use-cases/UploadPaymentProofUseCase';
+import type { UpdateParticipantStatusUseCase } from '@/features/split-bill/domain/use-cases/UpdateParticipantStatusUseCase';
+import type { DeleteSplitBillUseCase } from '@/features/split-bill/domain/use-cases/DeleteSplitBillUseCase';
+
 // --- Auth Admin ---
 import { AuthAdminRemoteDataSourceImpl } from '@/features/auth/data/data-sources/auth/AuthAdminRemoteDataSourceImpl';
 import { AuthAdminRepositoryImpl } from '@/features/auth/data/repositories/AuthAdminRepositoryImpl';
@@ -115,6 +133,17 @@ const createTransactionUseCase = new CreateTransactionUseCaseImpl(transactionRep
 const updateTransactionUseCase = new UpdateTransactionUseCaseImpl(transactionRepository);
 const deleteTransactionUseCase = new DeleteTransactionUseCaseImpl(transactionRepository);
 
+// Split Bill
+const splitBillDataSource = new SplitBillDbDataSourceImpl();
+const splitBillRepository = new SplitBillRepositoryImpl(splitBillDataSource);
+const createSplitBillUseCase = new CreateSplitBillUseCaseImpl(splitBillRepository);
+const getSplitBillUseCase = new GetSplitBillUseCaseImpl(splitBillRepository);
+const getSplitBillsUseCase = new GetSplitBillsUseCaseImpl(splitBillRepository);
+const updateSplitBillUseCase = new UpdateSplitBillUseCaseImpl(splitBillRepository);
+const uploadPaymentProofUseCase = new UploadPaymentProofUseCaseImpl(splitBillRepository);
+const updateParticipantStatusUseCase = new UpdateParticipantStatusUseCaseImpl(splitBillRepository);
+const deleteSplitBillUseCase = new DeleteSplitBillUseCaseImpl(splitBillRepository);
+
 // Auth admin
 const authAdminDataSource = new AuthAdminRemoteDataSourceImpl();
 const authAdminRepository = new AuthAdminRepositoryImpl(authAdminDataSource);
@@ -173,6 +202,15 @@ export interface ServerContainer {
 
   // User profile
   upsertUserProfileUseCase: UpsertUserProfileUseCase;
+
+  // Split Bill
+  createSplitBillUseCase: CreateSplitBillUseCase;
+  getSplitBillUseCase: GetSplitBillUseCase;
+  getSplitBillsUseCase: GetSplitBillsUseCase;
+  updateSplitBillUseCase: UpdateSplitBillUseCase;
+  uploadPaymentProofUseCase: UploadPaymentProofUseCase;
+  updateParticipantStatusUseCase: UpdateParticipantStatusUseCase;
+  deleteSplitBillUseCase: DeleteSplitBillUseCase;
 }
 
 export function createServerContainer(): ServerContainer {
@@ -208,5 +246,14 @@ export function createServerContainer(): ServerContainer {
 
     // User profile
     upsertUserProfileUseCase,
+
+    // Split Bill
+    createSplitBillUseCase,
+    getSplitBillUseCase,
+    getSplitBillsUseCase,
+    updateSplitBillUseCase,
+    uploadPaymentProofUseCase,
+    updateParticipantStatusUseCase,
+    deleteSplitBillUseCase,
   };
 }

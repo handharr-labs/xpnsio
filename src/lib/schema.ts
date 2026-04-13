@@ -1,4 +1,3 @@
-import 'server-only';
 import {
   pgTable,
   uuid,
@@ -9,12 +8,17 @@ import {
   integer,
   pgEnum,
   unique,
+  primaryKey,
 } from 'drizzle-orm/pg-core';
 
 // --- Enums ---
 
 export const transactionTypeEnum = pgEnum('transaction_type', ['income', 'expense']);
 export const masterCategoryEnum = pgEnum('master_category', ['daily', 'weekly', 'monthly']);
+export const splitModeEnum = pgEnum('split_mode', ['equal', 'custom', 'itemized']);
+export const participantStatusEnum = pgEnum('participant_status', ['pending', 'proof_uploaded', 'approved', 'rejected']);
+export const adjustmentTypeEnum = pgEnum('adjustment_type', ['percentage', 'fixed']);
+export const adjustmentDistributionEnum = pgEnum('adjustment_distribution', ['proportional', 'equal']);
 
 // --- Tables ---
 
@@ -113,6 +117,78 @@ export const monthlyBudgetApplications = pgTable(
   (t) => [unique('uniq_user_month_year').on(t.userId, t.month, t.year)]
 );
 
+// --- Split Bill Tables ---
+
+export const splitBills = pgTable('split_bills', {
+  id: uuid('id').defaultRandom().primaryKey(),
+  userId: uuid('user_id')
+    .notNull()
+    .references(() => profiles.id, { onDelete: 'cascade' }),
+  title: text('title').notNull(),
+  description: text('description'),
+  date: date('date').notNull(),
+  splitMode: splitModeEnum('split_mode').notNull(),
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+});
+
+export const splitBillAccounts = pgTable('split_bill_accounts', {
+  id: uuid('id').defaultRandom().primaryKey(),
+  billId: uuid('bill_id')
+    .notNull()
+    .references(() => splitBills.id, { onDelete: 'cascade' }),
+  bankName: text('bank_name').notNull(),
+  accountNumber: text('account_number').notNull(),
+});
+
+export const splitBillParticipants = pgTable('split_bill_participants', {
+  id: uuid('id').defaultRandom().primaryKey(),
+  billId: uuid('bill_id')
+    .notNull()
+    .references(() => splitBills.id, { onDelete: 'cascade' }),
+  name: text('name').notNull(),
+  email: text('email'),
+  finalAmount: integer('final_amount').notNull(),
+  status: participantStatusEnum('status').notNull().default('pending'),
+  proofImageUrl: text('proof_image_url'),
+  proofUploadedAt: timestamp('proof_uploaded_at'),
+  approvedAt: timestamp('approved_at'),
+});
+
+export const splitBillItems = pgTable('split_bill_items', {
+  id: uuid('id').defaultRandom().primaryKey(),
+  billId: uuid('bill_id')
+    .notNull()
+    .references(() => splitBills.id, { onDelete: 'cascade' }),
+  name: text('name').notNull(),
+  price: integer('price').notNull(),
+  orderIndex: integer('order_index').notNull().default(0),
+});
+
+export const splitBillItemAssignments = pgTable(
+  'split_bill_item_assignments',
+  {
+    itemId: uuid('item_id')
+      .notNull()
+      .references(() => splitBillItems.id, { onDelete: 'cascade' }),
+    participantId: uuid('participant_id')
+      .notNull()
+      .references(() => splitBillParticipants.id, { onDelete: 'cascade' }),
+  },
+  (t) => [primaryKey({ columns: [t.itemId, t.participantId] })]
+);
+
+export const splitBillAdjustments = pgTable('split_bill_adjustments', {
+  id: uuid('id').defaultRandom().primaryKey(),
+  billId: uuid('bill_id')
+    .notNull()
+    .references(() => splitBills.id, { onDelete: 'cascade' }),
+  label: text('label').notNull(),
+  type: adjustmentTypeEnum('type').notNull(),
+  value: integer('value').notNull(),
+  distribution: adjustmentDistributionEnum('distribution').notNull(),
+  orderIndex: integer('order_index').notNull().default(0),
+});
+
 // --- Types ---
 
 export type Profile = typeof profiles.$inferSelect;
@@ -129,3 +205,11 @@ export type BudgetSettingItem = typeof budgetSettingItems.$inferSelect;
 export type NewBudgetSettingItem = typeof budgetSettingItems.$inferInsert;
 export type MonthlyBudgetApplication = typeof monthlyBudgetApplications.$inferSelect;
 export type NewMonthlyBudgetApplication = typeof monthlyBudgetApplications.$inferInsert;
+
+export type SplitBillRow = typeof splitBills.$inferSelect;
+export type NewSplitBill = typeof splitBills.$inferInsert;
+export type SplitBillAccountRow = typeof splitBillAccounts.$inferSelect;
+export type SplitBillParticipantRow = typeof splitBillParticipants.$inferSelect;
+export type SplitBillItemRow = typeof splitBillItems.$inferSelect;
+export type SplitBillItemAssignmentRow = typeof splitBillItemAssignments.$inferSelect;
+export type SplitBillAdjustmentRow = typeof splitBillAdjustments.$inferSelect;

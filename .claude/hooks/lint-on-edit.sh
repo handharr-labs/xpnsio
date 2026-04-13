@@ -1,0 +1,1 @@
+../software-dev-agentic/lib/platforms/web/hooks/lint-on-edit.sh
