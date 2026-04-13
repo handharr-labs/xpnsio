@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button';
 import { formatCurrency } from '@/shared/presentation/utils/formatCurrency';
 import type { SplitMode } from '../domain/entities/SplitBill';
 import type { ParticipantForm, ItemForm, AdjustmentForm, AccountForm, FormStep } from './useSplitBillNewViewModel';
+import { CurrencyInput } from '@/shared/presentation/common/atoms/CurrencyInput';
 
 const STEPS = ['Bill Info', 'Participants', 'Adjustments', 'Review', 'Payment'];
 
@@ -220,12 +221,11 @@ export function SplitBillFormView({ vm }: { vm: SplitBillFormVm }) {
             {/* Equal mode: total amount */}
             {vm.splitMode === 'equal' && (
               <Field label="Total amount (IDR)">
-                <input
-                  type="number"
-                  className={inputCls}
-                  placeholder="0"
-                  value={vm.totalAmount || ''}
-                  onChange={(e) => vm.setTotalAmount(parseInt(e.target.value) || 0)}
+                <CurrencyInput
+                  value={vm.totalAmount}
+                  onChange={vm.setTotalAmount}
+                  currency="IDR"
+                  className="w-full h-11 rounded-xl bg-muted/50"
                 />
                 {vm.totalAmount > 0 && vm.participants.length > 0 && (
                   <p className="text-xs text-muted-foreground mt-1">
@@ -239,12 +239,11 @@ export function SplitBillFormView({ vm }: { vm: SplitBillFormVm }) {
             {vm.splitMode === 'custom' && (
               <>
                 <Field label="Total bill amount (IDR)">
-                  <input
-                    type="number"
-                    className={inputCls}
-                    placeholder="0"
-                    value={vm.totalAmount || ''}
-                    onChange={(e) => vm.setTotalAmount(parseInt(e.target.value) || 0)}
+                  <CurrencyInput
+                    value={vm.totalAmount}
+                    onChange={vm.setTotalAmount}
+                    currency="IDR"
+                    className="w-full h-11 rounded-xl bg-muted/50"
                   />
                 </Field>
                 <Field label="Amount per person (IDR)">
@@ -252,17 +251,11 @@ export function SplitBillFormView({ vm }: { vm: SplitBillFormVm }) {
                     {vm.participants.map((p) => (
                       <div key={p.localId} className="flex items-center gap-3">
                         <span className="text-sm font-medium w-24 truncate">{p.name || 'Unnamed'}</span>
-                        <input
-                          type="number"
-                          className={`${inputCls} flex-1`}
-                          placeholder="0"
-                          value={vm.customAmounts[p.localId] || ''}
-                          onChange={(e) =>
-                            vm.setCustomAmounts((prev) => ({
-                              ...prev,
-                              [p.localId]: parseInt(e.target.value) || 0,
-                            }))
-                          }
+                        <CurrencyInput
+                          value={vm.customAmounts[p.localId] ?? 0}
+                          onChange={(v) => vm.setCustomAmounts((prev) => ({ ...prev, [p.localId]: v }))}
+                          currency="IDR"
+                          className="flex-1 min-w-0 h-11 rounded-xl bg-muted/50"
                         />
                       </div>
                     ))}
@@ -330,12 +323,11 @@ export function SplitBillFormView({ vm }: { vm: SplitBillFormVm }) {
                           <Trash2 className="w-4 h-4" />
                         </button>
                       </div>
-                      <input
-                        type="number"
-                        className={inputCls}
-                        placeholder="Price (IDR)"
-                        value={item.price || ''}
-                        onChange={(e) => vm.updateItem(item.localId, { price: parseInt(e.target.value) || 0 })}
+                      <CurrencyInput
+                        value={item.price}
+                        onChange={(v) => vm.updateItem(item.localId, { price: v })}
+                        currency="IDR"
+                        className="w-full h-11 rounded-xl bg-muted/50"
                       />
                       <div>
                         <p className="text-xs text-muted-foreground mb-2">Assign to:</p>
@@ -409,16 +401,25 @@ export function SplitBillFormView({ vm }: { vm: SplitBillFormVm }) {
                       <option value="percentage">Percentage (%)</option>
                       <option value="fixed">Fixed (IDR)</option>
                     </select>
-                    <input
-                      type="number"
-                      className={`${flexInputCls} flex-1`}
-                      placeholder={adj.type === 'percentage' ? '11 (= 11%)' : 'Amount'}
-                      value={adj.type === 'percentage' ? (adj.value / 100 || '') : (adj.value || '')}
-                      onChange={(e) => {
-                        const raw = parseFloat(e.target.value) || 0;
-                        vm.updateAdjustment(adj.localId, { value: adj.type === 'percentage' ? Math.round(raw * 100) : raw });
-                      }}
-                    />
+                    {adj.type === 'fixed' ? (
+                      <CurrencyInput
+                        value={adj.value}
+                        onChange={(v) => vm.updateAdjustment(adj.localId, { value: v })}
+                        currency="IDR"
+                        className="flex-1 min-w-0 h-11 rounded-xl bg-muted/50"
+                      />
+                    ) : (
+                      <input
+                        type="number"
+                        className={`${flexInputCls} flex-1`}
+                        placeholder="11 (= 11%)"
+                        value={adj.value / 100 || ''}
+                        onChange={(e) => {
+                          const raw = parseFloat(e.target.value) || 0;
+                          vm.updateAdjustment(adj.localId, { value: Math.round(raw * 100) });
+                        }}
+                      />
+                    )}
                   </div>
                   <div className="flex gap-2">
                     {(['proportional', 'equal'] as const).map((dist) => (
