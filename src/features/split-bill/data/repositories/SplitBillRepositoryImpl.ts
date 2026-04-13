@@ -1,7 +1,7 @@
 import type { SplitBill } from '@/features/split-bill/domain/entities/SplitBill';
 import type { SplitBillDetail } from '@/features/split-bill/domain/entities/SplitBillDetail';
 import type { SplitBillParticipant, ParticipantStatus } from '@/features/split-bill/domain/entities/SplitBillParticipant';
-import type { SplitBillRepository, CreateSplitBillParams } from '@/features/split-bill/domain/repositories/SplitBillRepository';
+import type { SplitBillRepository, CreateSplitBillParams, UpdateSplitBillParams } from '@/features/split-bill/domain/repositories/SplitBillRepository';
 import type { SplitBillDbDataSource } from '@/features/split-bill/data/data-sources/SplitBillDbDataSource';
 import { SplitBillMapper } from '@/features/split-bill/data/mappers/SplitBillMapper';
 import { DomainError } from '@/shared/domain/errors/DomainError';
@@ -44,6 +44,22 @@ export class SplitBillRepositoryImpl implements SplitBillRepository {
         participantLocalIds: params.participantLocalIds,
       });
       return this.mapper.toDetail(record);
+    } catch (error) {
+      throw DomainError.serverError(String(error));
+    }
+  }
+
+  async update(params: UpdateSplitBillParams): Promise<void> {
+    try {
+      await this.dataSource.updateBill(params);
+    } catch (error) {
+      throw DomainError.serverError(String(error));
+    }
+  }
+
+  async delete(billId: string): Promise<void> {
+    try {
+      await this.dataSource.deleteBill(billId);
     } catch (error) {
       throw DomainError.serverError(String(error));
     }

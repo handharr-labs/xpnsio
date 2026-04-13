@@ -1,4 +1,4 @@
-import { eq, inArray } from 'drizzle-orm';
+import { and, eq, inArray, notInArray } from 'drizzle-orm';
 import { db } from '@/lib/db';
 import {
   splitBills,
@@ -14,6 +14,7 @@ import type {
   SplitBillDbDataSource,
   SplitBillDetailRecord,
   CreateBillDataParams,
+  UpdateBillDataParams,
 } from './SplitBillDbDataSource';
 
 export class SplitBillDbDataSourceImpl implements SplitBillDbDataSource {
@@ -154,6 +155,123 @@ export class SplitBillDbDataSourceImpl implements SplitBillDbDataSource {
 
       return { ...bill, accounts, participants: participantsWithItems, items: itemsWithAssignees, adjustments: insertedAdjustments };
     });
+  }
+
+  async updateBill(params: UpdateBillDataParams): Promise<void> {
+    await db.transaction(async (tx) => {
+      // 1. Update bill fields
+      await tx
+        .update(splitBills)
+        .set({ title: params.title, description: params.description, date: params.date, splitMode: params.splitMode })
+        .where(eq(splitBills.id, params.billId));
+
+      // 2. Replace accounts (no state to preserve)
+      await tx.delete(splitBillAccounts).where(eq(splitBillAccounts.billId, params.billId));
+      if (params.accounts.length > 0) {
+        await tx.insert(splitBillAccounts).values(
+          params.accounts.map((a) => ({ billId: params.billId, bankName: a.bankName, accountNumber: a.accountNumber }))
+        );
+      }
+
+      // 3. Handle participants
+      const existingDbIds = params.participants.filter((p) => p.dbId).map((p) => p.dbId!);
+
+      // Delete pending participants no longer in the form
+      if (existingDbIds.length > 0) {
+        await tx
+          .delete(splitBillParticipants)
+          .where(
+            and(
+              eq(splitBillParticipants.billId, params.billId),
+              notInArray(splitBillParticipants.id, existingDbIds),
+              eq(splitBillParticipants.status, 'pending')
+            )
+          );
+      } else {
+        // All participants are new → delete all pending ones for this bill
+        await tx
+          .delete(splitBillParticipants)
+          .where(and(eq(splitBillParticipants.billId, params.billId), eq(splitBillParticipants.status, 'pending')));
+      }
+
+      // Update existing participants (preserve status / proof)
+      const formIdToDbId: Record<string, string> = {};
+      for (const p of params.participants.filter((p) => p.dbId)) {
+        await tx
+          .update(splitBillParticipants)
+          .set({ name: p.name, finalAmount: p.finalAmount, email: p.email ?? null })
+          .where(eq(splitBillParticipants.id, p.dbId!));
+        formIdToDbId[p.formId] = p.dbId!;
+      }
+
+      // Insert new participants
+      const newParticipants = params.participants.filter((p) => !p.dbId);
+      if (newParticipants.length > 0) {
+        const inserted = await tx
+          .insert(splitBillParticipants)
+          .values(
+            newParticipants.map((p) => ({
+              billId: params.billId,
+              name: p.name,
+              email: p.email ?? null,
+              finalAmount: p.finalAmount,
+              status: 'pending' as const,
+            }))
+          )
+          .returning();
+        newParticipants.forEach((p, i) => {
+          if (inserted[i]) formIdToDbId[p.formId] = inserted[i].id;
+        });
+      }
+
+      // 4. Replace items + assignments (cascade handles assignment deletion)
+      await tx.delete(splitBillItems).where(eq(splitBillItems.billId, params.billId));
+      if (params.items.length > 0) {
+        const insertedItems = await tx
+          .insert(splitBillItems)
+          .values(
+            params.items.map((item) => ({
+              billId: params.billId,
+              name: item.name,
+              price: item.price,
+              orderIndex: item.orderIndex,
+            }))
+          )
+          .returning();
+
+        const assignmentRows: { itemId: string; participantId: string }[] = [];
+        params.items.forEach((item, i) => {
+          const dbItem = insertedItems[i];
+          if (!dbItem) return;
+          item.assignedParticipantFormIds.forEach((formId) => {
+            const participantDbId = formIdToDbId[formId];
+            if (participantDbId) assignmentRows.push({ itemId: dbItem.id, participantId: participantDbId });
+          });
+        });
+        if (assignmentRows.length > 0) {
+          await tx.insert(splitBillItemAssignments).values(assignmentRows);
+        }
+      }
+
+      // 5. Replace adjustments
+      await tx.delete(splitBillAdjustments).where(eq(splitBillAdjustments.billId, params.billId));
+      if (params.adjustments.length > 0) {
+        await tx.insert(splitBillAdjustments).values(
+          params.adjustments.map((a) => ({
+            billId: params.billId,
+            label: a.label,
+            type: a.type,
+            value: a.value,
+            distribution: a.distribution,
+            orderIndex: a.orderIndex,
+          }))
+        );
+      }
+    });
+  }
+
+  async deleteBill(billId: string): Promise<void> {
+    await db.delete(splitBills).where(eq(splitBills.id, billId));
   }
 
   async updateParticipantProof(participantId: string, imageUrl: string): Promise<SplitBillParticipantRow> {

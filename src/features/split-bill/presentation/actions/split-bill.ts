@@ -82,6 +82,51 @@ export const createSplitBillAction = authActionClient
     });
   });
 
+export const updateSplitBillAction = authActionClient
+  .schema(
+    z.object({
+      billId: z.string().uuid(),
+      title: z.string().min(1),
+      description: z.string().optional(),
+      date: z.string(),
+      splitMode: z.enum(['equal', 'custom', 'itemized']),
+      accounts: z.array(accountSchema).min(1),
+      participants: z.array(
+        z.object({
+          dbId: z.string().uuid().optional(),
+          formId: z.string(),
+          name: z.string().min(1),
+          email: z.string().email().optional(),
+          finalAmount: z.number().int().positive(),
+        })
+      ).min(1),
+      items: z.array(
+        z.object({
+          name: z.string().min(1),
+          price: z.number().int().positive(),
+          orderIndex: z.number().int().min(0),
+          assignedParticipantFormIds: z.array(z.string()),
+        })
+      ).default([]),
+      adjustments: z.array(adjustmentSchema).default([]),
+    })
+  )
+  .action(async ({ parsedInput }) => {
+    const container = createServerContainer();
+    await container.updateSplitBillUseCase.execute({
+      billId: parsedInput.billId,
+      title: parsedInput.title,
+      description: parsedInput.description ?? null,
+      date: parsedInput.date,
+      splitMode: parsedInput.splitMode,
+      accounts: parsedInput.accounts,
+      participants: parsedInput.participants,
+      items: parsedInput.items,
+      adjustments: parsedInput.adjustments,
+    });
+    return { billId: parsedInput.billId };
+  });
+
 // Public — participant uploads proof (no auth required)
 export const uploadPaymentProofAction = actionClient
   .schema(
@@ -96,6 +141,13 @@ export const uploadPaymentProofAction = actionClient
       participantId: parsedInput.participantId,
       imageUrl: parsedInput.imageUrl,
     });
+  });
+
+export const deleteSplitBillAction = authActionClient
+  .schema(z.object({ billId: z.string().uuid() }))
+  .action(async ({ parsedInput, ctx: { user } }) => {
+    const container = createServerContainer();
+    await container.deleteSplitBillUseCase.execute(parsedInput.billId, user.id);
   });
 
 export const updateParticipantStatusAction = authActionClient
