@@ -57,8 +57,11 @@ export function SplitBillFormView({ vm }: { vm: SplitBillFormVm }) {
   const canProceedStep1 = (() => {
     if (vm.participants.some((p) => !p.name.trim())) return false;
     if (vm.splitMode === 'equal') return vm.totalAmount > 0;
-    if (vm.splitMode === 'custom')
-      return vm.participants.every((p) => (vm.customAmounts[p.localId] ?? 0) > 0);
+    if (vm.splitMode === 'custom') {
+      if (vm.totalAmount <= 0) return false;
+      const sum = Object.values(vm.customAmounts).reduce((a, b) => a + b, 0);
+      return sum === vm.totalAmount && vm.participants.every((p) => (vm.customAmounts[p.localId] ?? 0) > 0);
+    }
     if (vm.splitMode === 'itemized')
       return vm.items.length > 0 && vm.items.every((i) => i.name.trim() && i.price > 0 && i.assignedParticipantLocalIds.length > 0);
     return false;
@@ -232,32 +235,78 @@ export function SplitBillFormView({ vm }: { vm: SplitBillFormVm }) {
               </Field>
             )}
 
-            {/* Custom mode: per-person amounts */}
+            {/* Custom mode: total bill amount + per-person amounts */}
             {vm.splitMode === 'custom' && (
-              <Field label="Amount per person (IDR)">
-                <div className="space-y-2">
-                  {vm.participants.map((p) => (
-                    <div key={p.localId} className="flex items-center gap-3">
-                      <span className="text-sm font-medium w-24 truncate">{p.name || 'Unnamed'}</span>
-                      <input
-                        type="number"
-                        className={`${inputCls} flex-1`}
-                        placeholder="0"
-                        value={vm.customAmounts[p.localId] || ''}
-                        onChange={(e) =>
-                          vm.setCustomAmounts((prev) => ({
-                            ...prev,
-                            [p.localId]: parseInt(e.target.value) || 0,
-                          }))
-                        }
-                      />
-                    </div>
-                  ))}
-                  <div className="text-sm text-muted-foreground pt-1">
-                    Total: {formatCurrency(Object.values(vm.customAmounts).reduce((a, b) => a + b, 0), 'IDR')}
+              <>
+                <Field label="Total bill amount (IDR)">
+                  <input
+                    type="number"
+                    className={inputCls}
+                    placeholder="0"
+                    value={vm.totalAmount || ''}
+                    onChange={(e) => vm.setTotalAmount(parseInt(e.target.value) || 0)}
+                  />
+                </Field>
+                <Field label="Amount per person (IDR)">
+                  <div className="space-y-2">
+                    {vm.participants.map((p) => (
+                      <div key={p.localId} className="flex items-center gap-3">
+                        <span className="text-sm font-medium w-24 truncate">{p.name || 'Unnamed'}</span>
+                        <input
+                          type="number"
+                          className={`${inputCls} flex-1`}
+                          placeholder="0"
+                          value={vm.customAmounts[p.localId] || ''}
+                          onChange={(e) =>
+                            vm.setCustomAmounts((prev) => ({
+                              ...prev,
+                              [p.localId]: parseInt(e.target.value) || 0,
+                            }))
+                          }
+                        />
+                      </div>
+                    ))}
+                    {(() => {
+                      const customSum = Object.values(vm.customAmounts).reduce((a, b) => a + b, 0);
+                      const remaining = vm.totalAmount - customSum;
+                      const unsetParticipants = vm.participants.filter(
+                        (p) => (vm.customAmounts[p.localId] ?? 0) === 0
+                      );
+                      const showSplitBtn =
+                        vm.totalAmount > 0 && remaining > 0 && unsetParticipants.length > 0;
+                      const remainingCls =
+                        vm.totalAmount > 0 && remaining === 0
+                          ? 'text-green-500'
+                          : remaining < 0
+                          ? 'text-red-500'
+                          : 'text-muted-foreground';
+                      return (
+                        <>
+                          {showSplitBtn && (
+                            <button
+                              type="button"
+                              className="w-full h-9 rounded-xl border border-dashed border-border text-xs text-muted-foreground hover:border-primary hover:text-primary transition-colors"
+                              onClick={() => {
+                                const share = Math.floor(remaining / unsetParticipants.length);
+                                vm.setCustomAmounts((prev) => {
+                                  const next = { ...prev };
+                                  unsetParticipants.forEach((p) => { next[p.localId] = share; });
+                                  return next;
+                                });
+                              }}
+                            >
+                              Split remaining equally
+                            </button>
+                          )}
+                          <div className={`text-sm pt-1 ${remainingCls}`}>
+                            Remaining: {formatCurrency(remaining, 'IDR')}
+                          </div>
+                        </>
+                      );
+                    })()}
                   </div>
-                </div>
-              </Field>
+                </Field>
+              </>
             )}
 
             {/* Itemized mode: items with assignees */}
