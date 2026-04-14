@@ -20,7 +20,7 @@ export interface CreateBillDataParams {
   date: string;
   splitMode: 'equal' | 'custom' | 'itemized';
   accounts: { bankName: string; accountNumber: string }[];
-  participants: { name: string; email?: string; finalAmount: number }[];
+  participants: { name: string; email?: string; finalAmount: number; isCreator?: boolean }[];
   items: { name: string; price: number; orderIndex: number; assignedParticipantLocalIds: string[] }[];
   adjustments: { label: string; type: 'percentage' | 'fixed'; value: number; distribution: 'proportional' | 'equal'; orderIndex: number }[];
   participantLocalIds: string[]; // local temp ids in same order as participants array
@@ -39,6 +39,7 @@ export interface UpdateBillDataParams {
     name: string;
     email?: string;
     finalAmount: number;
+    isCreator?: boolean;
   }[];
   items: { name: string; price: number; orderIndex: number; assignedParticipantFormIds: string[] }[];
   adjustments: { label: string; type: 'percentage' | 'fixed'; value: number; distribution: 'proportional' | 'equal'; orderIndex: number }[];
