@@ -7,6 +7,7 @@ export interface SplitBillParticipant {
   readonly email: string | null;
   readonly finalAmount: number; // IDR integer
   readonly status: ParticipantStatus;
+  readonly isCreator: boolean;
   readonly proofImageUrl: string | null;
   readonly proofUploadedAt: Date | null;
   readonly approvedAt: Date | null;
