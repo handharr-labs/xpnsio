@@ -62,6 +62,7 @@ export function useSplitBillEditViewModel(billId: string) {
           name: p.name,
           email: p.email ?? undefined,
           status: p.status,
+          isCreator: p.isCreator,
         }));
         setParticipants(mappedParticipants);
 
@@ -184,9 +185,10 @@ export function useSplitBillEditViewModel(billId: string) {
         participants: participants.map((p) => ({
           dbId: p.dbId,
           formId: p.localId,
-          name: p.name.trim(),
+          name: p.isCreator ? 'You' : p.name.trim(),
           email: p.email,
           finalAmount: finalAmounts[p.localId] ?? 0,
+          isCreator: p.isCreator,
         })),
         items: items.map((item, i) => ({
           name: item.name.trim(),

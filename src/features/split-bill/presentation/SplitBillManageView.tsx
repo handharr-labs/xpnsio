@@ -158,7 +158,12 @@ export function SplitBillManageView({ billId }: { billId: string }) {
             <div key={p.id} className="rounded-xl ring-1 ring-border p-4 space-y-3">
               <div className="flex items-start justify-between gap-3">
                 <div>
-                  <p className="font-semibold">{p.name}</p>
+                  <p className="font-semibold flex items-center gap-2">
+                    {p.isCreator ? 'You' : p.name}
+                    {p.isCreator && (
+                      <span className="text-xs bg-primary/10 text-primary px-1.5 py-0.5 rounded-md font-medium">You</span>
+                    )}
+                  </p>
                   <p className="text-sm font-medium text-primary">{formatCurrency(p.finalAmount, 'IDR')}</p>
                 </div>
                 <span className={`text-xs font-medium px-2.5 py-1 rounded-full ${STATUS_STYLES[p.status]}`}>

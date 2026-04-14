@@ -133,10 +133,13 @@ export function SplitBillPublicView({ billId }: { billId: string }) {
               >
                 <div className="flex items-start justify-between gap-3">
                   <div>
-                    <p className="font-semibold">{p.name}</p>
+                    <p className="font-semibold flex items-center gap-2">
+                      {p.isCreator ? 'You' : p.name}
+                      {p.isCreator && <span className="text-xs bg-primary/10 text-primary px-1.5 py-0.5 rounded-md font-medium">Bill creator</span>}
+                    </p>
                     <p className="text-sm font-medium">{formatCurrency(p.finalAmount, 'IDR')}</p>
                   </div>
-                  {p.status === 'pending' && (
+                  {p.status === 'pending' && !p.isCreator && (
                     <button
                       onClick={() => setSelectedParticipant(p)}
                       className="text-sm font-medium px-3 py-1.5 rounded-lg border border-border hover:bg-accent transition-colors min-h-[44px] flex items-center"
@@ -144,8 +147,8 @@ export function SplitBillPublicView({ billId }: { billId: string }) {
                       I'm {p.name}
                     </button>
                   )}
-                  {p.status !== 'pending' && (
-                    <span className="text-xs font-medium">{STATUS_LABEL[p.status]}</span>
+                  {(p.status !== 'pending' || p.isCreator) && (
+                    <span className="text-xs font-medium">{p.isCreator ? 'Paid' : STATUS_LABEL[p.status]}</span>
                   )}
                 </div>
               </div>

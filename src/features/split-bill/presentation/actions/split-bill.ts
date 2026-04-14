@@ -13,6 +13,7 @@ const participantSchema = z.object({
   name: z.string().min(1),
   email: z.string().email().optional(),
   finalAmount: z.number().int().positive(),
+  isCreator: z.boolean().optional(),
 });
 
 const itemSchema = z.object({
@@ -98,6 +99,7 @@ export const updateSplitBillAction = authActionClient
           name: z.string().min(1),
           email: z.string().email().optional(),
           finalAmount: z.number().int().positive(),
+          isCreator: z.boolean().optional(),
         })
       ).min(1),
       items: z.array(

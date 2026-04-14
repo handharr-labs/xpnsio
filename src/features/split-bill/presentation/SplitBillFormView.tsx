@@ -179,15 +179,22 @@ export function SplitBillFormView({ vm }: { vm: SplitBillFormVm }) {
             <Field label="Participants">
               <div className="space-y-2">
                 {vm.participants.map((p) => {
-                  const isLocked = p.status && p.status !== 'pending';
+                  const isLocked = !p.isCreator && p.status && p.status !== 'pending';
                   return (
-                    <div key={p.localId} className="flex gap-2">
-                      <input
-                        className={`${inputCls} flex-1`}
-                        placeholder="Name"
-                        value={p.name}
-                        onChange={(e) => vm.updateParticipant(p.localId, { name: e.target.value })}
-                      />
+                    <div key={p.localId} className="flex gap-2 items-center">
+                      {p.isCreator ? (
+                        <div className={`${inputCls} flex-1 flex items-center gap-2 cursor-default select-none`}>
+                          <span className="font-medium">You</span>
+                          <span className="text-xs bg-primary/10 text-primary px-1.5 py-0.5 rounded-md font-medium">Me</span>
+                        </div>
+                      ) : (
+                        <input
+                          className={`${inputCls} flex-1`}
+                          placeholder="Name"
+                          value={p.name}
+                          onChange={(e) => vm.updateParticipant(p.localId, { name: e.target.value })}
+                        />
+                      )}
                       {vm.participants.length > 1 && (
                         isLocked ? (
                           <div
@@ -484,7 +491,10 @@ export function SplitBillFormView({ vm }: { vm: SplitBillFormVm }) {
               <p className="text-sm font-medium text-muted-foreground">Final amounts</p>
               {vm.participants.map((p) => (
                 <div key={p.localId} className="flex items-center justify-between py-3 px-4 rounded-xl bg-muted/50 ring-1 ring-border">
-                  <span className="font-medium">{p.name}</span>
+                  <span className="font-medium flex items-center gap-2">
+                    {p.isCreator ? 'You' : p.name}
+                    {p.isCreator && <span className="text-xs bg-primary/10 text-primary px-1.5 py-0.5 rounded-md font-medium">Me</span>}
+                  </span>
                   <span className="font-semibold">{formatCurrency(finalAmounts[p.localId] ?? 0, 'IDR')}</span>
                 </div>
               ))}

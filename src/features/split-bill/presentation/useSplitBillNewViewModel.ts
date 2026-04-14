@@ -24,6 +24,7 @@ export interface ParticipantForm {
   dbId?: string;
   /** Participant's payment status — set in edit mode to prevent removing non-pending participants */
   status?: import('../domain/entities/SplitBillParticipant').ParticipantStatus;
+  isCreator?: boolean;
 }
 
 export interface ItemForm {
@@ -68,7 +69,7 @@ export function useSplitBillNewViewModel() {
 
   // Step 1: participants & amounts
   const [participants, setParticipants] = useState<ParticipantForm[]>([
-    { localId: newId(), name: '' },
+    { localId: newId(), name: 'You', isCreator: true },
   ]);
   const [totalAmount, setTotalAmount] = useState(0); // equal mode
   const [customAmounts, setCustomAmounts] = useState<Record<string, number>>({}); // custom mode
@@ -158,9 +159,10 @@ export function useSplitBillNewViewModel() {
           .filter((a) => a.bankName.trim() && a.accountNumber.trim())
           .map(({ bankName, accountNumber }) => ({ bankName, accountNumber })),
         participants: participants.map((p) => ({
-          name: p.name.trim(),
+          name: p.isCreator ? 'You' : p.name.trim(),
           email: p.email,
           finalAmount: finalAmounts[p.localId] ?? 0,
+          isCreator: p.isCreator,
         })),
         items: items.map((item, i) => ({
           name: item.name.trim(),
