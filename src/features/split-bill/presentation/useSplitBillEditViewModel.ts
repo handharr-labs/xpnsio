@@ -3,12 +3,13 @@
 import { useState, useCallback, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAction } from 'next-safe-action/hooks';
-import { getSplitBillAction, updateSplitBillAction } from './actions/split-bill';
+import { getSplitBillAction, updateSplitBillAction, getPaymentAccountsAction } from './actions/split-bill';
 import { BillAmountCalculationServiceImpl } from '@/features/split-bill/domain/services/BillAmountCalculationService';
 import type { SplitMode } from '@/features/split-bill/domain/entities/SplitBill';
 import type { AdjustmentType, AdjustmentDistribution } from '@/features/split-bill/domain/entities/SplitBillAdjustment';
 import type { ParticipantForm, ItemForm, AdjustmentForm, AccountForm, FormStep } from './useSplitBillNewViewModel';
 import { ROUTES } from '@/shared/presentation/navigation/routes';
+import { createSupabaseBrowserClient } from '@/lib/supabase-browser';
 
 const calcService = new BillAmountCalculationServiceImpl();
 
@@ -19,8 +20,10 @@ export function useSplitBillEditViewModel(billId: string) {
   const router = useRouter();
   const { executeAsync: updateBill, isExecuting: isSubmitting } = useAction(updateSplitBillAction);
   const { executeAsync: fetchBill } = useAction(getSplitBillAction);
+  const { executeAsync: fetchPaymentAccounts } = useAction(getPaymentAccountsAction);
   const [error, setError] = useState<string | null>(null);
   const [isLoadingBill, setIsLoadingBill] = useState(true);
+  const [currentUserName, setCurrentUserName] = useState<string>('You');
 
   // Step
   const [step, setStep] = useState<FormStep>(0);
@@ -42,6 +45,19 @@ export function useSplitBillEditViewModel(billId: string) {
 
   // Step 4
   const [accounts, setAccounts] = useState<AccountForm[]>([]);
+
+  // Load current user on mount
+  useEffect(() => {
+    const loadCurrentUser = async () => {
+      const supabase = createSupabaseBrowserClient();
+      const { data: { user } } = await supabase.auth.getUser();
+      if (user) {
+        const fullName = user.user_metadata?.full_name ?? user.email ?? 'You';
+        setCurrentUserName(fullName);
+      }
+    };
+    loadCurrentUser();
+  }, []);
 
   // Load existing bill on mount
   useEffect(() => {

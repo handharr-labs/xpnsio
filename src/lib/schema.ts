@@ -10,6 +10,7 @@ import {
   pgEnum,
   unique,
   primaryKey,
+  index,
 } from 'drizzle-orm/pg-core';
 
 // --- Enums ---
@@ -192,6 +193,21 @@ export const splitBillAdjustments = pgTable('split_bill_adjustments', {
   orderIndex: integer('order_index').notNull().default(0),
 });
 
+// --- Payment Accounts Table ---
+
+export const paymentAccounts = pgTable(
+  'payment_accounts',
+  {
+    id: uuid('id').defaultRandom().primaryKey(),
+    userId: text('user_id').notNull(),
+    bankName: text('bank_name').notNull(),
+    accountNumber: text('account_number').notNull(),
+    createdAt: timestamp('created_at').defaultNow().notNull(),
+    updatedAt: timestamp('updated_at').defaultNow().notNull(),
+  },
+  (t) => [{ userIdIdx: index('idx_payment_accounts_user_id').on(t.userId) }]
+);
+
 // --- Trips Tables ---
 
 export const trips = pgTable('trips', {
@@ -245,6 +261,9 @@ export type SplitBillParticipantRow = typeof splitBillParticipants.$inferSelect;
 export type SplitBillItemRow = typeof splitBillItems.$inferSelect;
 export type SplitBillItemAssignmentRow = typeof splitBillItemAssignments.$inferSelect;
 export type SplitBillAdjustmentRow = typeof splitBillAdjustments.$inferSelect;
+
+export type PaymentAccountRow = typeof paymentAccounts.$inferSelect;
+export type NewPaymentAccount = typeof paymentAccounts.$inferInsert;
 
 export type TripRow = typeof trips.$inferSelect;
 export type NewTrip = typeof trips.$inferInsert;

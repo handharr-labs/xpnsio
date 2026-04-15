@@ -1,5 +1,6 @@
 import type { SplitBillDetail } from '../entities/SplitBillDetail';
 import type { SplitBillRepository, CreateSplitBillParams } from '../repositories/SplitBillRepository';
+import type { SavePaymentAccountsUseCase } from './SavePaymentAccountsUseCase';
 import { DomainError } from '@/shared/domain/errors/DomainError';
 
 export interface CreateSplitBillUseCase {
@@ -7,7 +8,10 @@ export interface CreateSplitBillUseCase {
 }
 
 export class CreateSplitBillUseCaseImpl implements CreateSplitBillUseCase {
-  constructor(private readonly repository: SplitBillRepository) {}
+  constructor(
+    private readonly repository: SplitBillRepository,
+    private readonly savePaymentAccountsUseCase: SavePaymentAccountsUseCase,
+  ) {}
 
   async execute(params: CreateSplitBillParams): Promise<SplitBillDetail> {
     if (!params.title.trim()) {
@@ -25,6 +29,11 @@ export class CreateSplitBillUseCaseImpl implements CreateSplitBillUseCase {
     if (params.participants.filter((p) => p.isCreator).length > 1) {
       throw DomainError.validationFailed('participants', 'At most one participant can be marked as creator');
     }
-    return this.repository.create(params);
+    const bill = await this.repository.create(params);
+    await this.savePaymentAccountsUseCase.execute({
+      userId: params.userId,
+      accounts: params.accounts,
+    });
+    return bill;
   }
 }

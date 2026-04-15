@@ -165,8 +165,10 @@ export class TripDbDataSourceImpl implements TripDbDataSource {
     // 2. Group by (participant_name lowercased, participant_email lowercased/null)
     interface ParticipantGroup {
       nameNorm: string;
+      displayName: string; // original-cased name from the first occurrence
       emailNorm: string | null;
       totalAmount: number;
+      isCreator: boolean;
     }
 
     const groupMap: Record<string, ParticipantGroup> = {};
@@ -180,11 +182,15 @@ export class TripDbDataSourceImpl implements TripDbDataSource {
       if (!groupMap[key]) {
         groupMap[key] = {
           nameNorm,
+          displayName: participant.name,
           emailNorm,
           totalAmount: 0,
+          isCreator: participant.isCreator,
         };
       }
       groupMap[key].totalAmount += participant.finalAmount;
+      // If any occurrence is marked creator, the group is the creator
+      if (participant.isCreator) groupMap[key].isCreator = true;
     }
 
     // 3. For each group: upsert into trip_participant_settlements
@@ -207,21 +213,27 @@ export class TripDbDataSourceImpl implements TripDbDataSource {
         .limit(1);
 
       if (existing[0]) {
-        // Update only if status is 'pending' (preserve proof/status for settled)
         if (existing[0].status === 'pending') {
           await tx
             .update(tripParticipantSettlements)
-            .set({ totalNetAmount: group.totalAmount })
+            .set({
+              totalNetAmount: group.totalAmount,
+              participantName: group.displayName,
+              // Auto-approve the creator — they collect, not pay
+              ...(group.isCreator ? { status: 'approved' as const, approvedAt: new Date() } : {}),
+            })
             .where(eq(tripParticipantSettlements.id, existing[0].id));
         }
       } else {
         // Insert new settlement
         await tx.insert(tripParticipantSettlements).values({
           tripId,
-          participantName: group.nameNorm,
+          participantName: group.displayName,
           participantEmail: group.emailNorm,
           totalNetAmount: group.totalAmount,
-          status: 'pending',
+          // Creator is auto-approved — they are the one collecting payments
+          status: group.isCreator ? 'approved' : 'pending',
+          ...(group.isCreator ? { approvedAt: new Date() } : {}),
         });
       }
     }

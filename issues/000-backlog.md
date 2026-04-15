@@ -2,6 +2,7 @@
 
 | # | Title | Status | Link |
 |---|-------|--------|------|
+| 081 | fix(trips): settlement UX improvements — merge payment accounts, save bank accounts to DB, replace 'You' with user name | `pending` | [#81](https://github.com/handharr-labs/xpnsio/issues/81) |
 | 077 | fix(trips): UX improvements for trip & split bill features | `pending` | [#77](https://github.com/handharr-labs/xpnsio/issues/77) |
 | 075 | Include creator as optional participant in split bill | `pending` | [#75](https://github.com/handharr-labs/xpnsio/issues/75) |
 | 073 | feat: split bill MVP | `pending` | [#73](https://github.com/handharr-labs/xpnsio/issues/73) |
