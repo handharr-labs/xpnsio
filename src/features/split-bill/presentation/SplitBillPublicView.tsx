@@ -1,42 +1,24 @@
 'use client';
 
 import { useState, useRef } from 'react';
-import { Copy, Check, Upload, X, ImageIcon } from 'lucide-react';
+import { Upload, X, ImageIcon } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useSplitBillPublicViewModel } from './useSplitBillPublicViewModel';
 import { formatCurrency } from '@/shared/presentation/utils/formatCurrency';
-import type { SplitBillParticipant, ParticipantStatus } from '../domain/entities/SplitBillParticipant';
-
-const STATUS_STYLES: Record<ParticipantStatus, string> = {
-  pending: '',
-  proof_uploaded: 'bg-yellow-500/10 ring-yellow-500/20 text-yellow-700 dark:text-yellow-400',
-  approved: 'bg-green-500/10 ring-green-500/20 text-green-700 dark:text-green-400',
-  rejected: 'bg-red-500/10 ring-red-500/20 text-red-700 dark:text-red-400',
-};
-
-const STATUS_LABEL: Record<ParticipantStatus, string> = {
-  pending: '',
-  proof_uploaded: 'Proof submitted — awaiting approval',
-  approved: 'Paid',
-  rejected: 'Proof rejected — contact the bill creator',
-};
+import { PaymentAccountList } from '@/shared/presentation/common/organisms/PaymentAccountList';
+import { PublicParticipantCard } from '@/shared/presentation/common/organisms/PublicParticipantCard';
+import type { SplitBillParticipant } from '../domain/entities/SplitBillParticipant';
 
 export function SplitBillPublicView({ billId }: { billId: string }) {
   const { bill, isLoading, isUploading, uploadError, uploadProof } =
     useSplitBillPublicViewModel(billId);
-  const [copiedAccount, setCopiedAccount] = useState<string | null>(null);
   const [selectedParticipant, setSelectedParticipant] = useState<SplitBillParticipant | null>(null);
   const [proofFile, setProofFile] = useState<File | null>(null);
   const [proofPreview, setProofPreview] = useState<string | null>(null);
   const [email, setEmail] = useState('');
   const [localError, setLocalError] = useState<string | null>(null);
+  const [copiedAccount, setCopiedAccount] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
-
-  const copyAccount = (text: string, id: string) => {
-    navigator.clipboard.writeText(text);
-    setCopiedAccount(id);
-    setTimeout(() => setCopiedAccount(null), 2000);
-  };
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -104,54 +86,28 @@ export function SplitBillPublicView({ billId }: { billId: string }) {
           </div>
 
           {/* Payment accounts */}
-          <div className="rounded-2xl bg-muted/50 ring-1 ring-border p-4 space-y-3">
-            <p className="text-sm font-semibold">Pay to</p>
-            {bill.accounts.map((acc) => (
-              <div key={acc.id} className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm font-medium">{acc.bankName}</p>
-                  <p className="font-mono text-sm">{acc.accountNumber}</p>
-                </div>
-                <button
-                  onClick={() => copyAccount(acc.accountNumber, acc.id)}
-                  className="flex items-center gap-1.5 text-xs font-medium text-primary hover:underline min-h-[44px] px-2"
-                >
-                  {copiedAccount === acc.id ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
-                  {copiedAccount === acc.id ? 'Copied!' : 'Copy'}
-                </button>
-              </div>
-            ))}
-          </div>
+          <PaymentAccountList
+            label="Pay to"
+            accounts={bill.accounts.map((acc) => ({
+              id: acc.id,
+              bankName: acc.bankName,
+              accountNumber: acc.accountNumber,
+            }))}
+          />
 
           {/* Participants */}
           <div className="space-y-2">
             <p className="text-sm font-semibold">Who needs to pay</p>
             {bill.participants.map((p) => (
-              <div
+              <PublicParticipantCard
                 key={p.id}
-                className={`rounded-xl ring-1 p-4 ${p.status === 'pending' ? 'ring-border' : STATUS_STYLES[p.status]}`}
-              >
-                <div className="flex items-start justify-between gap-3">
-                  <div>
-                    <p className="font-semibold flex items-center gap-2">
-                      {p.isCreator ? 'You' : p.name}
-                      {p.isCreator && <span className="text-xs bg-primary/10 text-primary px-1.5 py-0.5 rounded-md font-medium">Bill creator</span>}
-                    </p>
-                    <p className="text-sm font-medium">{formatCurrency(p.finalAmount, 'IDR')}</p>
-                  </div>
-                  {p.status === 'pending' && !p.isCreator && (
-                    <button
-                      onClick={() => setSelectedParticipant(p)}
-                      className="text-sm font-medium px-3 py-1.5 rounded-lg border border-border hover:bg-accent transition-colors min-h-[44px] flex items-center"
-                    >
-                      I'm {p.name}
-                    </button>
-                  )}
-                  {(p.status !== 'pending' || p.isCreator) && (
-                    <span className="text-xs font-medium">{p.isCreator ? 'Paid' : STATUS_LABEL[p.status]}</span>
-                  )}
-                </div>
-              </div>
+                name={p.name}
+                amount={p.finalAmount}
+                isCreator={p.isCreator}
+                creatorBadgeLabel="Bill creator"
+                status={p.status}
+                onSelectSelf={!p.isCreator ? () => setSelectedParticipant(p) : undefined}
+              />
             ))}
           </div>
 
@@ -186,11 +142,14 @@ export function SplitBillPublicView({ billId }: { billId: string }) {
                 <div key={acc.id} className="flex items-center justify-between rounded-xl bg-muted/50 ring-1 ring-border px-3 py-2.5">
                   <span className="text-sm"><strong>{acc.bankName}</strong> · <span className="font-mono">{acc.accountNumber}</span></span>
                   <button
-                    onClick={() => copyAccount(acc.accountNumber, acc.id)}
+                    onClick={() => {
+                      navigator.clipboard.writeText(acc.accountNumber);
+                      setCopiedAccount(acc.id);
+                      setTimeout(() => setCopiedAccount(null), 2000);
+                    }}
                     className="text-xs font-medium text-primary hover:underline min-h-[44px] flex items-center gap-1 px-2"
                   >
-                    {copiedAccount === acc.id ? <Check className="w-3.5 h-3.5" /> : <Copy className="w-3.5 h-3.5" />}
-                    Copy
+                    {copiedAccount === acc.id ? 'Copied' : 'Copy'}
                   </button>
                 </div>
               ))}
