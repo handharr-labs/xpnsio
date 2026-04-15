@@ -2,6 +2,7 @@
 
 | # | Title | Status | Link |
 |---|-------|--------|------|
+| 077 | fix(trips): UX improvements for trip & split bill features | `pending` | [#77](https://github.com/handharr-labs/xpnsio/issues/77) |
 | 075 | Include creator as optional participant in split bill | `pending` | [#75](https://github.com/handharr-labs/xpnsio/issues/75) |
 | 073 | feat: split bill MVP | `pending` | [#73](https://github.com/handharr-labs/xpnsio/issues/73) |
 | 068 | PWA iOS: Session not persisted when app is added to home screen | `pending` | [#68](https://github.com/handharr-labs/xpnsio/issues/68) |

@@ -1,10 +1,11 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { ArrowLeft, Copy, Check, ExternalLink, ImageIcon, Plus, Trash2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useTripDetailViewModel } from '../state/useTripDetailViewModel';
+import { getStandaloneBillsAction } from '../actions/trips';
 import { formatCurrency } from '@/shared/presentation/utils/formatCurrency';
 import { ROUTES } from '@/shared/presentation/navigation/routes';
 import type { SettlementStatus } from '../../domain/entities/TripParticipantSettlement';
@@ -39,7 +40,9 @@ export function TripDetailView({ tripId }: { tripId: string }) {
 
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [showAddBills, setShowAddBills] = useState(false);
-  const [addBillIdsInput, setAddBillIdsInput] = useState('');
+  const [standaloneBills, setStandaloneBills] = useState<{ id: string; title: string; date: string }[]>([]);
+  const [selectedBillIds, setSelectedBillIds] = useState<string[]>([]);
+  const [isFetchingBills, setIsFetchingBills] = useState(false);
   const [proofModal, setProofModal] = useState<string | null>(null);
   const [copiedLink, setCopiedLink] = useState(false);
 
@@ -60,15 +63,32 @@ export function TripDetailView({ tripId }: { tripId: string }) {
       )
     : 0;
 
+  useEffect(() => {
+    if (!showAddBills) {
+      setStandaloneBills([]);
+      setSelectedBillIds([]);
+      return;
+    }
+    setIsFetchingBills(true);
+    getStandaloneBillsAction({})
+      .then((res) => {
+        setStandaloneBills(res?.data ?? []);
+        setIsFetchingBills(false);
+      })
+      .catch(() => setIsFetchingBills(false));
+  }, [showAddBills]);
+
+  const toggleBill = (id: string) => {
+    setSelectedBillIds((prev) =>
+      prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]
+    );
+  };
+
   const handleAddBillsSubmit = async () => {
-    const ids = addBillIdsInput
-      .split(',')
-      .map((s) => s.trim())
-      .filter(Boolean);
-    if (ids.length === 0) return;
-    await addBills(ids);
+    if (selectedBillIds.length === 0) return;
+    await addBills(selectedBillIds);
     setShowAddBills(false);
-    setAddBillIdsInput('');
+    setSelectedBillIds([]);
   };
 
   if (isLoading) {
@@ -282,37 +302,60 @@ export function TripDetailView({ tripId }: { tripId: string }) {
       {/* Add Bills dialog */}
       {showAddBills && (
         <div
-          className="fixed inset-0 bg-black/60 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4"
+          className='fixed inset-0 bg-black/60 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4'
           onClick={() => setShowAddBills(false)}
         >
           <div
-            className="bg-background w-full sm:max-w-md rounded-t-2xl sm:rounded-2xl p-5 space-y-4"
+            className='bg-background w-full sm:max-w-md rounded-t-2xl sm:rounded-2xl p-5 space-y-4'
             onClick={(e) => e.stopPropagation()}
           >
-            <h2 className="font-bold text-lg">Add Bills to Trip</h2>
-            <p className="text-sm text-muted-foreground">
-              Enter the bill IDs (comma-separated) of standalone bills to add to this trip.
+            <h2 className='font-bold text-lg'>Add Bills to Trip</h2>
+            <p className='text-sm text-muted-foreground'>
+              Select standalone bills to add to this trip.
             </p>
-            <textarea
-              className="w-full h-24 px-4 py-3 rounded-xl bg-muted/50 ring-1 ring-border text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 resize-none"
-              placeholder="bill-uuid-1, bill-uuid-2"
-              value={addBillIdsInput}
-              onChange={(e) => setAddBillIdsInput(e.target.value)}
-            />
-            <div className="flex gap-2">
+            <div className='max-h-72 overflow-y-auto space-y-2'>
+              {isFetchingBills && (
+                <p className='text-sm text-muted-foreground text-center py-4'>Loading...</p>
+              )}
+              {!isFetchingBills && standaloneBills.length === 0 && (
+                <p className='text-sm text-muted-foreground text-center py-4'>No standalone bills available.</p>
+              )}
+              {!isFetchingBills && standaloneBills.map((bill) => {
+                const isSelected = selectedBillIds.includes(bill.id);
+                return (
+                  <div
+                    key={bill.id}
+                    onClick={() => toggleBill(bill.id)}
+                    className={`cursor-pointer flex items-center gap-3 p-3 rounded-xl ring-1 hover:bg-muted/50 transition-colors ${isSelected ? 'ring-primary/50 bg-primary/5' : 'ring-border'}`}
+                  >
+                    <input
+                      type='checkbox'
+                      readOnly
+                      checked={isSelected}
+                      className='w-4 h-4 accent-primary'
+                    />
+                    <div className='flex-1 min-w-0'>
+                      <p className='text-sm font-medium truncate'>{bill.title}</p>
+                      <p className='text-xs text-muted-foreground'>{bill.date}</p>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+            <div className='flex gap-2'>
               <Button
-                variant="outline"
-                className="flex-1 rounded-xl"
+                variant='outline'
+                className='flex-1 rounded-xl'
                 onClick={() => setShowAddBills(false)}
               >
                 Cancel
               </Button>
               <Button
-                className="flex-1 rounded-xl"
-                disabled={isAddingBills || !addBillIdsInput.trim()}
+                className='flex-1 rounded-xl'
+                disabled={isAddingBills || selectedBillIds.length === 0}
                 onClick={handleAddBillsSubmit}
               >
-                {isAddingBills ? 'Adding…' : 'Add Bills'}
+                {isAddingBills ? 'Adding...' : `Add ${selectedBillIds.length > 0 ? selectedBillIds.length + ' ' : ''}Bill${selectedBillIds.length !== 1 ? 's' : ''}`}
               </Button>
             </div>
           </div>

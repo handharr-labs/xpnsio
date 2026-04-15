@@ -3,7 +3,7 @@
 import { useState, useRef } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useAction } from 'next-safe-action/hooks';
-import { Upload, X, ImageIcon, Check } from 'lucide-react';
+import { Upload, X, ImageIcon, Check, Copy } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { getTripDetailPublicAction, uploadTripSettlementProofAction } from '../actions/trips';
 import { formatCurrency } from '@/shared/presentation/utils/formatCurrency';
@@ -34,7 +34,14 @@ export function TripPublicView({ tripId }: { tripId: string }) {
   const [proofPreview, setProofPreview] = useState<string | null>(null);
   const [uploadError, setUploadError] = useState<string | null>(null);
   const [localError, setLocalError] = useState<string | null>(null);
+  const [copiedAccount, setCopiedAccount] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const copyAccount = (accountNumber: string, id: string) => {
+    navigator.clipboard.writeText(accountNumber);
+    setCopiedAccount(id);
+    setTimeout(() => setCopiedAccount(null), 2000);
+  };
 
   const { data: tripDetail, isLoading } = useQuery({
     queryKey: ['trip-public', tripId],
@@ -138,14 +145,36 @@ export function TripPublicView({ tripId }: { tripId: string }) {
 
           {/* Bills summary */}
           {bills.length > 0 && (
-            <div className="rounded-2xl bg-muted/50 ring-1 ring-border p-4 space-y-2">
-              <p className="text-sm font-semibold">Bills in this trip</p>
+            <div className='space-y-3'>
+              <p className='text-sm font-semibold'>Bills in this trip</p>
               {bills.map((bill) => {
                 const billTotal = bill.participants.reduce((s, p) => s + p.finalAmount, 0);
                 return (
-                  <div key={bill.id} className="flex items-center justify-between text-sm">
-                    <span className="text-muted-foreground truncate">{bill.title}</span>
-                    <span className="font-medium ml-2">{formatCurrency(billTotal, 'IDR')}</span>
+                  <div key={bill.id} className='rounded-2xl bg-muted/50 ring-1 ring-border p-4 space-y-3'>
+                    <div className='flex items-center justify-between text-sm'>
+                      <span className='font-medium truncate'>{bill.title}</span>
+                      <span className='font-semibold ml-2'>{formatCurrency(billTotal, 'IDR')}</span>
+                    </div>
+                    {bill.accounts.length > 0 && (
+                      <div className='space-y-2'>
+                        <p className='text-xs font-semibold text-muted-foreground'>Pay to</p>
+                        {bill.accounts.map((acc) => (
+                          <div key={acc.id} className='flex items-center justify-between'>
+                            <div>
+                              <p className='text-sm font-medium'>{acc.bankName}</p>
+                              <p className='font-mono text-sm'>{acc.accountNumber}</p>
+                            </div>
+                            <button
+                              onClick={() => copyAccount(acc.accountNumber, acc.id)}
+                              className='flex items-center gap-1.5 text-xs font-medium text-primary hover:underline min-h-[44px] px-2'
+                            >
+                              {copiedAccount === acc.id ? <Check className='w-4 h-4' /> : <Copy className='w-4 h-4' />}
+                              {copiedAccount === acc.id ? 'Copied!' : 'Copy'}
+                            </button>
+                          </div>
+                        ))}
+                      </div>
+                    )}
                   </div>
                 );
               })}

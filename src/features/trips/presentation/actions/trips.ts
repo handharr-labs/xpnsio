@@ -1,8 +1,11 @@
 'use server';
 
 import { z } from 'zod';
+import { and, eq, isNull, desc } from 'drizzle-orm';
 import { authActionClient, actionClient } from '@/lib/safe-action';
 import { createServerContainer } from '@/shared/di/container.server';
+import { db } from '@/lib/db';
+import { splitBills } from '@/lib/schema';
 
 // ─── Create Trip ────────────────────────────────────────────────────────────
 
@@ -119,4 +122,17 @@ export const updateTripSettlementStatusAction = authActionClient
       status: parsedInput.status,
       userId: user.id,
     });
+  });
+
+// ─── Get Standalone Bills (auth) ─────────────────────────────────────────────
+
+export const getStandaloneBillsAction = authActionClient
+  .schema(z.object({}))
+  .action(async ({ ctx: { user } }) => {
+    const rows = await db
+      .select({ id: splitBills.id, title: splitBills.title, date: splitBills.date })
+      .from(splitBills)
+      .where(and(eq(splitBills.userId, user.id), isNull(splitBills.tripId)))
+      .orderBy(desc(splitBills.createdAt));
+    return rows;
   });
