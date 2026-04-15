@@ -1,4 +1,4 @@
-import { and, eq, inArray, notInArray, or } from 'drizzle-orm';
+import { and, desc, eq, inArray, isNull, notInArray, or } from 'drizzle-orm';
 import { db } from '@/lib/db';
 import {
   splitBills,
@@ -63,7 +63,15 @@ export class SplitBillDbDataSourceImpl implements SplitBillDbDataSource {
       .select()
       .from(splitBills)
       .where(eq(splitBills.userId, userId))
-      .orderBy(splitBills.createdAt);
+      .orderBy(desc(splitBills.createdAt));
+  }
+
+  async findStandaloneByUserId(userId: string): Promise<SplitBillRow[]> {
+    return db
+      .select()
+      .from(splitBills)
+      .where(and(eq(splitBills.userId, userId), isNull(splitBills.tripId)))
+      .orderBy(desc(splitBills.createdAt));
   }
 
   async createBill(params: CreateBillDataParams): Promise<SplitBillDetailRecord> {
