@@ -2,31 +2,17 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { ArrowLeft, ImageIcon, Plus, Trash2 } from 'lucide-react';
+import { ArrowLeft, Plus, Trash2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useTripDetailViewModel } from '../state/useTripDetailViewModel';
 import { getStandaloneBillsAction } from '../actions/trips';
 import { formatCurrency } from '@/shared/presentation/utils/formatCurrency';
 import { ROUTES } from '@/shared/presentation/navigation/routes';
-import type { SettlementStatus } from '../../domain/entities/TripParticipantSettlement';
 import { ShareLinkRow } from '@/shared/presentation/common/organisms/ShareLinkRow';
 import { ProofImageModal } from '@/shared/presentation/common/organisms/ProofImageModal';
 import { DeleteConfirmDialog } from '@/shared/presentation/common/organisms/DeleteConfirmDialog';
-import { ProofActionsRow } from '@/shared/presentation/common/organisms/ProofActionsRow';
-
-const STATUS_STYLES: Record<SettlementStatus, string> = {
-  pending: 'bg-muted text-muted-foreground',
-  proof_uploaded: 'bg-yellow-500/10 text-yellow-700 dark:text-yellow-400',
-  approved: 'bg-green-500/10 text-green-700 dark:text-green-400',
-  rejected: 'bg-red-500/10 text-red-700 dark:text-red-400',
-};
-
-const STATUS_LABEL: Record<SettlementStatus, string> = {
-  pending: 'Pending',
-  proof_uploaded: 'Proof uploaded',
-  approved: 'Approved',
-  rejected: 'Rejected',
-};
+import { PaymentAccountList } from '@/shared/presentation/common/organisms/PaymentAccountList';
+import { ManageParticipantCard } from '@/shared/presentation/common/organisms/ManageParticipantCard';
 
 export function TripDetailView({ tripId }: { tripId: string }) {
   const router = useRouter();
@@ -115,6 +101,15 @@ export function TripDetailView({ tripId }: { tripId: string }) {
   const endDateLabel = trip.endDate ? trip.endDate.toISOString().split('T')[0] : null;
   const dateLabel = endDateLabel ? `${startDateLabel} → ${endDateLabel}` : startDateLabel;
 
+  // Deduplicate payment accounts across all bills by bankName-accountNumber
+  const seen = new Set<string>();
+  const uniqueAccounts = bills.flatMap((bill) => bill.accounts).filter((acc) => {
+    const key = `${acc.bankName}-${acc.accountNumber}`;
+    if (seen.has(key)) return false;
+    seen.add(key);
+    return true;
+  });
+
   return (
     <main className="min-h-screen">
       <div className="px-4 pt-4 pb-8 md:px-6 md:pt-6 max-w-lg mx-auto space-y-6">
@@ -162,6 +157,11 @@ export function TripDetailView({ tripId }: { tripId: string }) {
           url={publicUrl}
           href={ROUTES.tripPublic(tripId)}
         />
+
+        {/* Payment accounts */}
+        {uniqueAccounts.length > 0 && (
+          <PaymentAccountList accounts={uniqueAccounts} />
+        )}
 
         {/* Bills breakdown */}
         <div className="space-y-2">
@@ -214,39 +214,19 @@ export function TripDetailView({ tripId }: { tripId: string }) {
           )}
 
           {settlements.map((s) => (
-            <div key={s.id} className="rounded-xl ring-1 ring-border p-4 space-y-3">
-              <div className="flex items-start justify-between gap-3">
-                <div>
-                  <p className="font-semibold capitalize">{s.participantName}</p>
-                  {s.participantEmail && (
-                    <p className="text-xs text-muted-foreground">{s.participantEmail}</p>
-                  )}
-                  <p className="text-sm font-medium text-primary">
-                    {formatCurrency(s.totalNetAmount, 'IDR')}
-                  </p>
-                </div>
-                <span className={`text-xs font-medium px-2.5 py-1 rounded-full ${STATUS_STYLES[s.status]}`}>
-                  {STATUS_LABEL[s.status]}
-                </span>
-              </div>
-
-              {s.proofImageUrl && (
-                <button
-                  onClick={() => setProofModal(s.proofImageUrl!)}
-                  className="flex items-center gap-2 text-sm text-primary hover:underline"
-                >
-                  <ImageIcon className="w-4 h-4" /> View proof
-                </button>
-              )}
-
-              {s.status === 'proof_uploaded' && (
-                <ProofActionsRow
-                  isUpdating={isUpdatingStatus}
-                  onApprove={() => updateSettlementStatus(s.id, 'approved')}
-                  onReject={() => updateSettlementStatus(s.id, 'rejected')}
-                />
-              )}
-            </div>
+            <ManageParticipantCard
+              key={s.id}
+              name={s.participantName}
+              amount={s.totalNetAmount}
+              status={s.status}
+              isCreator={s.participantName.toLowerCase() === 'you'}
+              creatorBadgeLabel="Trip creator"
+              proofImageUrl={s.proofImageUrl}
+              isUpdating={isUpdatingStatus}
+              onViewProof={s.proofImageUrl ? () => setProofModal(s.proofImageUrl!) : undefined}
+              onApprove={() => updateSettlementStatus(s.id, 'approved')}
+              onReject={() => updateSettlementStatus(s.id, 'rejected')}
+            />
           ))}
         </div>
       </div>

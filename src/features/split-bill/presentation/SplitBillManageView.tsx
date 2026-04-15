@@ -1,31 +1,15 @@
 'use client';
 
 import { useRouter } from 'next/navigation';
-import { ArrowLeft, ImageIcon, Pencil, Trash2 } from 'lucide-react';
+import { ArrowLeft, Pencil, Trash2 } from 'lucide-react';
 import { useState } from 'react';
 import { useSplitBillManageViewModel } from './useSplitBillManageViewModel';
-import { formatCurrency } from '@/shared/presentation/utils/formatCurrency';
 import { ROUTES } from '@/shared/presentation/navigation/routes';
-import type { ParticipantStatus } from '../domain/entities/SplitBillParticipant';
 import { ShareLinkRow } from '@/shared/presentation/common/organisms/ShareLinkRow';
-import { PaymentAccountItem } from '@/shared/presentation/common/organisms/PaymentAccountItem';
+import { PaymentAccountList } from '@/shared/presentation/common/organisms/PaymentAccountList';
 import { ProofImageModal } from '@/shared/presentation/common/organisms/ProofImageModal';
 import { DeleteConfirmDialog } from '@/shared/presentation/common/organisms/DeleteConfirmDialog';
-import { ProofActionsRow } from '@/shared/presentation/common/organisms/ProofActionsRow';
-
-const STATUS_STYLES: Record<ParticipantStatus, string> = {
-  pending: 'bg-muted text-muted-foreground',
-  proof_uploaded: 'bg-yellow-500/10 text-yellow-700 dark:text-yellow-400',
-  approved: 'bg-green-500/10 text-green-700 dark:text-green-400',
-  rejected: 'bg-red-500/10 text-red-700 dark:text-red-400',
-};
-
-const STATUS_LABEL: Record<ParticipantStatus, string> = {
-  pending: 'Pending',
-  proof_uploaded: 'Proof uploaded',
-  approved: 'Approved',
-  rejected: 'Rejected',
-};
+import { ManageParticipantCard } from '@/shared/presentation/common/organisms/ManageParticipantCard';
 
 export function SplitBillManageView({ billId }: { billId: string }) {
   const router = useRouter();
@@ -101,55 +85,25 @@ export function SplitBillManageView({ billId }: { billId: string }) {
         />
 
         {/* Payment accounts */}
-        <div className="space-y-2">
-          <p className="text-sm font-medium text-muted-foreground">Payment accounts</p>
-          {bill.accounts.map((acc) => (
-            <PaymentAccountItem
-              key={acc.id}
-              id={acc.id}
-              bankName={acc.bankName}
-              accountNumber={acc.accountNumber}
-            />
-          ))}
-        </div>
+        <PaymentAccountList accounts={bill.accounts} />
 
         {/* Participants */}
         <div className="space-y-2">
           <p className="text-sm font-medium text-muted-foreground">Participants</p>
           {bill.participants.map((p) => (
-            <div key={p.id} className="rounded-xl ring-1 ring-border p-4 space-y-3">
-              <div className="flex items-start justify-between gap-3">
-                <div>
-                  <p className="font-semibold flex items-center gap-2">
-                    {p.name}
-                    {p.isCreator && (
-                      <span className="text-xs bg-primary/10 text-primary px-1.5 py-0.5 rounded-md font-medium">Me</span>
-                    )}
-                  </p>
-                  <p className="text-sm font-medium text-primary">{formatCurrency(p.finalAmount, 'IDR')}</p>
-                </div>
-                <span className={`text-xs font-medium px-2.5 py-1 rounded-full ${STATUS_STYLES[p.status]}`}>
-                  {STATUS_LABEL[p.status]}
-                </span>
-              </div>
-
-              {p.proofImageUrl && (
-                <button
-                  onClick={() => setProofModal(p.proofImageUrl!)}
-                  className="flex items-center gap-2 text-sm text-primary hover:underline"
-                >
-                  <ImageIcon className="w-4 h-4" /> View proof
-                </button>
-              )}
-
-              {p.status === 'proof_uploaded' && (
-                <ProofActionsRow
-                  isUpdating={isUpdating}
-                  onApprove={() => approveParticipant(p.id)}
-                  onReject={() => rejectParticipant(p.id)}
-                />
-              )}
-            </div>
+            <ManageParticipantCard
+              key={p.id}
+              name={p.name}
+              amount={p.finalAmount}
+              status={p.status}
+              isCreator={p.isCreator}
+              creatorBadgeLabel="Bill creator"
+              proofImageUrl={p.proofImageUrl}
+              isUpdating={isUpdating}
+              onViewProof={p.proofImageUrl ? () => setProofModal(p.proofImageUrl!) : undefined}
+              onApprove={() => approveParticipant(p.id)}
+              onReject={() => rejectParticipant(p.id)}
+            />
           ))}
         </div>
       </div>
