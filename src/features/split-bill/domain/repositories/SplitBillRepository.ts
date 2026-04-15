@@ -42,6 +42,7 @@ export interface UpdateSplitBillParams {
 export interface SplitBillRepository {
   getById(id: string): Promise<SplitBillDetail | null>;
   getByUserId(userId: string): Promise<SplitBill[]>;
+  getStandaloneByUserId(userId: string): Promise<SplitBill[]>;
   create(params: CreateSplitBillParams): Promise<SplitBillDetail>;
   update(params: UpdateSplitBillParams): Promise<void>;
   delete(billId: string): Promise<void>;

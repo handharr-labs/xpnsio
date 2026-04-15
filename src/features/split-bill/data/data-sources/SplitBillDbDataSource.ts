@@ -48,6 +48,7 @@ export interface UpdateBillDataParams {
 export interface SplitBillDbDataSource {
   findById(id: string): Promise<SplitBillDetailRecord | null>;
   findByUserId(userId: string): Promise<SplitBillRow[]>;
+  findStandaloneByUserId(userId: string): Promise<SplitBillRow[]>;
   createBill(params: CreateBillDataParams): Promise<SplitBillDetailRecord>;
   updateBill(params: UpdateBillDataParams): Promise<void>;
   deleteBill(billId: string): Promise<void>;

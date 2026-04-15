@@ -29,6 +29,15 @@ export class SplitBillRepositoryImpl implements SplitBillRepository {
     }
   }
 
+  async getStandaloneByUserId(userId: string): Promise<SplitBill[]> {
+    try {
+      const rows = await this.dataSource.findStandaloneByUserId(userId);
+      return rows.map((r) => this.mapper.toBill(r));
+    } catch (error) {
+      throw DomainError.serverError(String(error));
+    }
+  }
+
   async create(params: CreateSplitBillParams): Promise<SplitBillDetail> {
     try {
       const record = await this.dataSource.createBill({
