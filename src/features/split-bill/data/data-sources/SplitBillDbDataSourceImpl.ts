@@ -1,4 +1,4 @@
-import { and, eq, inArray, notInArray } from 'drizzle-orm';
+import { and, eq, inArray, notInArray, or } from 'drizzle-orm';
 import { db } from '@/lib/db';
 import {
   splitBills,
@@ -98,7 +98,9 @@ export class SplitBillDbDataSourceImpl implements SplitBillDbDataSource {
                 name: p.name,
                 email: p.email ?? null,
                 finalAmount: p.finalAmount,
-                status: 'pending' as const,
+                status: p.isCreator ? 'approved' as const : 'pending' as const,
+                isCreator: p.isCreator ?? false,
+                approvedAt: p.isCreator ? new Date() : null,
               }))
             )
             .returning()
@@ -176,7 +178,7 @@ export class SplitBillDbDataSourceImpl implements SplitBillDbDataSource {
       // 3. Handle participants
       const existingDbIds = params.participants.filter((p) => p.dbId).map((p) => p.dbId!);
 
-      // Delete pending participants no longer in the form
+      // Delete participants no longer in the form (pending ones, OR creator rows being explicitly removed)
       if (existingDbIds.length > 0) {
         await tx
           .delete(splitBillParticipants)
@@ -184,14 +186,25 @@ export class SplitBillDbDataSourceImpl implements SplitBillDbDataSource {
             and(
               eq(splitBillParticipants.billId, params.billId),
               notInArray(splitBillParticipants.id, existingDbIds),
-              eq(splitBillParticipants.status, 'pending')
+              or(
+                eq(splitBillParticipants.status, 'pending'),
+                eq(splitBillParticipants.isCreator, true)
+              )
             )
           );
       } else {
-        // All participants are new → delete all pending ones for this bill
+        // All participants are new → delete all pending and all creator rows for this bill
         await tx
           .delete(splitBillParticipants)
-          .where(and(eq(splitBillParticipants.billId, params.billId), eq(splitBillParticipants.status, 'pending')));
+          .where(
+            and(
+              eq(splitBillParticipants.billId, params.billId),
+              or(
+                eq(splitBillParticipants.status, 'pending'),
+                eq(splitBillParticipants.isCreator, true)
+              )
+            )
+          );
       }
 
       // Update existing participants (preserve status / proof)
@@ -199,7 +212,7 @@ export class SplitBillDbDataSourceImpl implements SplitBillDbDataSource {
       for (const p of params.participants.filter((p) => p.dbId)) {
         await tx
           .update(splitBillParticipants)
-          .set({ name: p.name, finalAmount: p.finalAmount, email: p.email ?? null })
+          .set({ name: p.name, finalAmount: p.finalAmount, email: p.email ?? null, isCreator: p.isCreator ?? false })
           .where(eq(splitBillParticipants.id, p.dbId!));
         formIdToDbId[p.formId] = p.dbId!;
       }
@@ -215,7 +228,9 @@ export class SplitBillDbDataSourceImpl implements SplitBillDbDataSource {
               name: p.name,
               email: p.email ?? null,
               finalAmount: p.finalAmount,
-              status: 'pending' as const,
+              status: p.isCreator ? 'approved' as const : 'pending' as const,
+              isCreator: p.isCreator ?? false,
+              approvedAt: p.isCreator ? new Date() : null,
             }))
           )
           .returning();

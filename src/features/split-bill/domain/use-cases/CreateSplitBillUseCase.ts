@@ -22,6 +22,9 @@ export class CreateSplitBillUseCaseImpl implements CreateSplitBillUseCase {
     if (params.participants.some((p) => p.finalAmount <= 0)) {
       throw DomainError.validationFailed('participants', 'All participant amounts must be greater than 0');
     }
+    if (params.participants.filter((p) => p.isCreator).length > 1) {
+      throw DomainError.validationFailed('participants', 'At most one participant can be marked as creator');
+    }
     return this.repository.create(params);
   }
 }

@@ -45,6 +45,7 @@ export class SplitBillMapper {
       email: row.email ?? null,
       finalAmount: row.finalAmount,
       status: row.status,
+      isCreator: row.isCreator,
       proofImageUrl: row.proofImageUrl ?? null,
       proofUploadedAt: row.proofUploadedAt ?? null,
       approvedAt: row.approvedAt ?? null,

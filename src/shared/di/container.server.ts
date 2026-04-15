@@ -74,6 +74,9 @@ import type { UploadPaymentProofUseCase } from '@/features/split-bill/domain/use
 import type { UpdateParticipantStatusUseCase } from '@/features/split-bill/domain/use-cases/UpdateParticipantStatusUseCase';
 import type { DeleteSplitBillUseCase } from '@/features/split-bill/domain/use-cases/DeleteSplitBillUseCase';
 
+// --- Trips ---
+import { createTripsModule, type TripsContainer } from '@/features/trips/di/tripsModule';
+
 // --- Auth Admin ---
 import { AuthAdminRemoteDataSourceImpl } from '@/features/auth/data/data-sources/auth/AuthAdminRemoteDataSourceImpl';
 import { AuthAdminRepositoryImpl } from '@/features/auth/data/repositories/AuthAdminRepositoryImpl';
@@ -91,6 +94,9 @@ import type { GetDashboardDataUseCase } from '@/features/dashboard/domain/use-ca
 import type { SyncBudgetForPeriodUseCase } from '@/features/dashboard/domain/use-cases/dashboard/SyncBudgetForPeriodUseCase';
 
 // --- Singleton instances (module-level, private) ---
+
+// Trips module
+const tripsModule = createTripsModule();
 
 // Data sources
 const categoryDataSource = new CategoryDbDataSourceImpl();
@@ -170,7 +176,7 @@ const getDashboardDataUseCase = new GetDashboardDataUseCaseImpl(
 
 // --- Container ---
 
-export interface ServerContainer {
+export interface ServerContainer extends TripsContainer {
   // Use cases: Categories
   getCategoriesUseCase: GetCategoriesUseCase;
   createCategoryUseCase: CreateCategoryUseCase;
@@ -215,6 +221,9 @@ export interface ServerContainer {
 
 export function createServerContainer(): ServerContainer {
   return {
+    // Trips
+    ...tripsModule,
+
     // Use cases: Categories
     getCategoriesUseCase,
     createCategoryUseCase,

@@ -9,7 +9,7 @@ export interface CreateSplitBillParams {
   date: string;
   splitMode: SplitBill['splitMode'];
   accounts: { bankName: string; accountNumber: string }[];
-  participants: { name: string; email?: string; finalAmount: number }[];
+  participants: { name: string; email?: string; finalAmount: number; isCreator?: boolean }[];
   items: { name: string; price: number; orderIndex: number; assignedParticipantLocalIds: string[] }[];
   adjustments: { label: string; type: 'percentage' | 'fixed'; value: number; distribution: 'proportional' | 'equal'; orderIndex: number }[];
   // mapping: local temp id → participant index (for item assignments in itemized mode)
@@ -33,6 +33,7 @@ export interface UpdateSplitBillParams {
     name: string;
     email?: string;
     finalAmount: number;
+    isCreator?: boolean;
   }[];
   items: { name: string; price: number; orderIndex: number; assignedParticipantFormIds: string[] }[];
   adjustments: { label: string; type: 'percentage' | 'fixed'; value: number; distribution: 'proportional' | 'equal'; orderIndex: number }[];

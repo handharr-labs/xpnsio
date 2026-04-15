@@ -6,6 +6,7 @@ import {
   timestamp,
   date,
   integer,
+  boolean,
   pgEnum,
   unique,
   primaryKey,
@@ -124,6 +125,7 @@ export const splitBills = pgTable('split_bills', {
   userId: uuid('user_id')
     .notNull()
     .references(() => profiles.id, { onDelete: 'cascade' }),
+  tripId: uuid('trip_id').references(() => trips.id, { onDelete: 'set null' }),
   title: text('title').notNull(),
   description: text('description'),
   date: date('date').notNull(),
@@ -149,6 +151,7 @@ export const splitBillParticipants = pgTable('split_bill_participants', {
   email: text('email'),
   finalAmount: integer('final_amount').notNull(),
   status: participantStatusEnum('status').notNull().default('pending'),
+  isCreator: boolean('is_creator').notNull().default(false),
   proofImageUrl: text('proof_image_url'),
   proofUploadedAt: timestamp('proof_uploaded_at'),
   approvedAt: timestamp('approved_at'),
@@ -189,6 +192,35 @@ export const splitBillAdjustments = pgTable('split_bill_adjustments', {
   orderIndex: integer('order_index').notNull().default(0),
 });
 
+// --- Trips Tables ---
+
+export const trips = pgTable('trips', {
+  id: uuid('id').defaultRandom().primaryKey(),
+  userId: uuid('user_id')
+    .notNull()
+    .references(() => profiles.id, { onDelete: 'cascade' }),
+  name: text('name').notNull(),
+  startDate: date('start_date').notNull(),
+  endDate: date('end_date'),
+  description: text('description'),
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+});
+
+export const tripParticipantSettlements = pgTable('trip_participant_settlements', {
+  id: uuid('id').defaultRandom().primaryKey(),
+  tripId: uuid('trip_id')
+    .notNull()
+    .references(() => trips.id, { onDelete: 'cascade' }),
+  participantName: text('participant_name').notNull(),
+  participantEmail: text('participant_email'),
+  totalNetAmount: integer('total_net_amount').notNull(),
+  proofImageUrl: text('proof_image_url'),
+  status: text('status').notNull().default('pending'),
+  proofUploadedAt: timestamp('proof_uploaded_at'),
+  approvedAt: timestamp('approved_at'),
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+});
+
 // --- Types ---
 
 export type Profile = typeof profiles.$inferSelect;
@@ -213,3 +245,8 @@ export type SplitBillParticipantRow = typeof splitBillParticipants.$inferSelect;
 export type SplitBillItemRow = typeof splitBillItems.$inferSelect;
 export type SplitBillItemAssignmentRow = typeof splitBillItemAssignments.$inferSelect;
 export type SplitBillAdjustmentRow = typeof splitBillAdjustments.$inferSelect;
+
+export type TripRow = typeof trips.$inferSelect;
+export type NewTrip = typeof trips.$inferInsert;
+export type TripParticipantSettlementRow = typeof tripParticipantSettlements.$inferSelect;
+export type NewTripParticipantSettlement = typeof tripParticipantSettlements.$inferInsert;

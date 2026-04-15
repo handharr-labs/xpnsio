@@ -46,5 +46,5 @@ next-env.d.ts
 /public/sw.js.map
 /public/workbox-*.js.map
 
-# Claude Code — delegation flags
-.claude/.delegated-*
+# Claude Code — agentic state (delegation flags, session state, run artifacts)
+.claude/agentic-state/

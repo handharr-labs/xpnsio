@@ -4,6 +4,7 @@ import { useRouter } from 'next/navigation';
 import { Plus, Receipt } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useSplitBillListViewModel } from './useSplitBillListViewModel';
+import { TripListView } from '@/features/trips/presentation/views/TripListView';
 import { ROUTES } from '@/shared/presentation/navigation/routes';
 import { formatRelativeDate } from '@/shared/presentation/utils/formatRelativeDate';
 
@@ -24,6 +25,21 @@ export function SplitBillListView() {
             <Plus className="w-4 h-4" /> New Bill
           </Button>
         </header>
+
+        {/* Trips section */}
+        <div className="mb-6">
+          <TripListView />
+        </div>
+
+        {/* Standalone bills section */}
+        <div className="mb-2">
+          <p className="text-sm font-semibold text-muted-foreground flex items-center gap-1.5">
+            <Receipt className="w-3.5 h-3.5" /> Standalone Bills
+          </p>
+          <p className="text-xs text-muted-foreground mt-0.5">
+            One-off bills split directly with participants. Each bill is settled individually.
+          </p>
+        </div>
 
         {isLoading && (
           <div className="space-y-3">
