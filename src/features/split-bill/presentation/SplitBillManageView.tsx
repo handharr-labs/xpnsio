@@ -184,7 +184,7 @@ export function SplitBillManageView({ billId }: { billId: string }) {
                 <div className="flex gap-2">
                   <Button
                     size="sm"
-                    className="flex-1 rounded-xl bg-green-600 hover:bg-green-700 text-white"
+                    className="flex-1 rounded-xl bg-green-500/15 text-green-700 dark:text-green-400 hover:bg-green-500/25"
                     disabled={isUpdating}
                     onClick={() => approveParticipant(p.id)}
                   >
@@ -192,8 +192,7 @@ export function SplitBillManageView({ billId }: { billId: string }) {
                   </Button>
                   <Button
                     size="sm"
-                    variant="outline"
-                    className="flex-1 rounded-xl text-red-600 border-red-200 hover:bg-red-50"
+                    className="flex-1 rounded-xl bg-red-500/15 text-red-700 dark:text-red-400 hover:bg-red-500/25"
                     disabled={isUpdating}
                     onClick={() => rejectParticipant(p.id)}
                   >

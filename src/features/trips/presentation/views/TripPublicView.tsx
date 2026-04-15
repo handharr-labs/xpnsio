@@ -132,7 +132,7 @@ export function TripPublicView({ tripId }: { tripId: string }) {
 
   // Get unique payment accounts across all bills and find creator name
   const uniqueAccounts = new Map<string, { id: string; bankName: string; accountNumber: string }>();
-  let creatorName = 'the creator';
+  let creatorName = '';
 
   bills.forEach((bill) => {
     bill.accounts.forEach((acc) => {
@@ -142,12 +142,21 @@ export function TripPublicView({ tripId }: { tripId: string }) {
       }
     });
 
-    // Find creator from participants
+    // Find creator from participants — prefer a non-"you" name (i.e. already resolved)
     const creator = bill.participants.find((p) => p.isCreator);
-    if (creator && creatorName === 'the creator') {
+    if (creator && !creatorName) {
       creatorName = creator.name;
     }
   });
+
+  // Resolve the display name for a settlement — handles legacy "you" entries stored
+  // before the creator-name fix, replacing them with the actual creator name.
+  const resolveDisplayName = (participantName: string): string => {
+    if (participantName.toLowerCase() === 'you' && creatorName) {
+      return creatorName;
+    }
+    return participantName;
+  };
 
   const allPaymentAccounts = Array.from(uniqueAccounts.values());
 
@@ -167,7 +176,7 @@ export function TripPublicView({ tripId }: { tripId: string }) {
           {/* Payment accounts — shared across all bills */}
           {allPaymentAccounts.length > 0 && (
             <div className='space-y-3'>
-              <p className='text-sm font-semibold'>Pay to {creatorName}</p>
+              <p className='text-sm font-semibold'>Pay to {creatorName || 'the creator'}</p>
               {allPaymentAccounts.map((acc) => (
                 <div key={acc.id} className='rounded-2xl bg-muted/50 ring-1 ring-border p-4 flex items-center justify-between'>
                   <div>
@@ -214,6 +223,10 @@ export function TripPublicView({ tripId }: { tripId: string }) {
 
             {settlements.map((s) => {
               const statusStyle = STATUS_STYLES[s.status];
+              const displayName = resolveDisplayName(s.participantName);
+              const isCreatorRow = s.participantName.toLowerCase() === 'you'
+                || (creatorName && displayName.toLowerCase() === creatorName.toLowerCase());
+
               return (
                 <div
                   key={s.id}
@@ -221,7 +234,7 @@ export function TripPublicView({ tripId }: { tripId: string }) {
                 >
                   <div className="flex items-start justify-between gap-3">
                     <div>
-                      <p className="font-semibold capitalize">{s.participantName}</p>
+                      <p className="font-semibold">{displayName}</p>
                       {s.participantEmail && (
                         <p className="text-xs text-muted-foreground">{s.participantEmail}</p>
                       )}
@@ -230,13 +243,15 @@ export function TripPublicView({ tripId }: { tripId: string }) {
                     {s.status === 'pending' && (
                       <button
                         onClick={() => setSelectedSettlement(s)}
-                        className="text-sm font-medium px-3 py-1.5 rounded-lg border border-border hover:bg-accent transition-colors min-h-[44px] flex items-center capitalize"
+                        className="text-sm font-medium px-3 py-1.5 rounded-lg border border-border hover:bg-accent transition-colors min-h-[44px] flex items-center"
                       >
-                        I'm {s.participantName}
+                        I'm {displayName}
                       </button>
                     )}
                     {s.status !== 'pending' && (
-                      <span className="text-xs font-medium">{STATUS_LABEL[s.status]}</span>
+                      <span className="text-xs font-medium">
+                        {isCreatorRow && s.status === 'approved' ? 'Collecting' : STATUS_LABEL[s.status]}
+                      </span>
                     )}
                   </div>
 
@@ -246,6 +261,7 @@ export function TripPublicView({ tripId }: { tripId: string }) {
                       {bills.map((bill) => {
                         const participant = bill.participants.find(
                           (p) => p.name.toLowerCase() === s.participantName.toLowerCase()
+                            || p.name.toLowerCase() === displayName.toLowerCase()
                         );
                         if (!participant) return null;
                         return (
