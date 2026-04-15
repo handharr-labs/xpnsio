@@ -3,24 +3,14 @@
 import { useState, useRef } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useAction } from 'next-safe-action/hooks';
-import { Upload, X, ImageIcon, Check, Copy, Loader2, CheckCircle2 } from 'lucide-react';
+import { Upload, X, ImageIcon, Loader2, CheckCircle2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { getTripDetailPublicAction, uploadTripSettlementProofAction } from '../actions/trips';
 import { formatCurrency } from '@/shared/presentation/utils/formatCurrency';
 import { createSupabaseBrowserClient } from '@/lib/supabase-browser';
-import type { TripParticipantSettlement, SettlementStatus } from '../../domain/entities/TripParticipantSettlement';
-
-const STATUS_STYLES: Partial<Record<SettlementStatus, string>> = {
-  proof_uploaded: 'bg-yellow-500/10 ring-yellow-500/20 text-yellow-700 dark:text-yellow-400',
-  approved: 'bg-green-500/10 ring-green-500/20 text-green-700 dark:text-green-400',
-  rejected: 'bg-red-500/10 ring-red-500/20 text-red-700 dark:text-red-400',
-};
-
-const STATUS_LABEL: Partial<Record<SettlementStatus, string>> = {
-  proof_uploaded: 'Proof submitted — awaiting approval',
-  approved: 'Paid',
-  rejected: 'Proof rejected — contact the trip creator',
-};
+import { PaymentAccountList } from '@/shared/presentation/common/organisms/PaymentAccountList';
+import { PublicParticipantCard } from '@/shared/presentation/common/organisms/PublicParticipantCard';
+import type { TripParticipantSettlement } from '../../domain/entities/TripParticipantSettlement';
 
 export function TripPublicView({ tripId }: { tripId: string }) {
   const { executeAsync: fetchTrip } = useAction(getTripDetailPublicAction);
@@ -35,14 +25,7 @@ export function TripPublicView({ tripId }: { tripId: string }) {
   const [uploadError, setUploadError] = useState<string | null>(null);
   const [localError, setLocalError] = useState<string | null>(null);
   const [uploadSuccess, setUploadSuccess] = useState(false);
-  const [copiedAccount, setCopiedAccount] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
-
-  const copyAccount = (accountNumber: string, id: string) => {
-    navigator.clipboard.writeText(accountNumber);
-    setCopiedAccount(id);
-    setTimeout(() => setCopiedAccount(null), 2000);
-  };
 
   const { data: tripDetail, isLoading } = useQuery({
     queryKey: ['trip-public', tripId],
@@ -177,24 +160,10 @@ export function TripPublicView({ tripId }: { tripId: string }) {
 
           {/* Payment accounts — shared across all bills */}
           {allPaymentAccounts.length > 0 && (
-            <div className='space-y-3'>
-              <p className='text-sm font-semibold'>Pay to {creatorName || 'the creator'}</p>
-              {allPaymentAccounts.map((acc) => (
-                <div key={acc.id} className='rounded-2xl bg-muted/50 ring-1 ring-border p-4 flex items-center justify-between'>
-                  <div>
-                    <p className='text-sm font-medium'>{acc.bankName}</p>
-                    <p className='font-mono text-sm'>{acc.accountNumber}</p>
-                  </div>
-                  <button
-                    onClick={() => copyAccount(acc.accountNumber, acc.id)}
-                    className='flex items-center gap-1.5 text-xs font-medium text-primary hover:underline min-h-[44px] px-2'
-                  >
-                    {copiedAccount === acc.id ? <Check className='w-4 h-4' /> : <Copy className='w-4 h-4' />}
-                    {copiedAccount === acc.id ? 'Copied!' : 'Copy'}
-                  </button>
-                </div>
-              ))}
-            </div>
+            <PaymentAccountList
+              label={`Pay to ${creatorName || 'the creator'}`}
+              accounts={allPaymentAccounts}
+            />
           )}
 
           {/* Bills summary */}
@@ -224,63 +193,42 @@ export function TripPublicView({ tripId }: { tripId: string }) {
             )}
 
             {settlements.map((s) => {
-              const statusStyle = STATUS_STYLES[s.status];
               const displayName = resolveDisplayName(s.participantName);
               const isCreatorRow = s.participantName.toLowerCase() === 'you'
-                || (creatorName && displayName.toLowerCase() === creatorName.toLowerCase());
+                || (creatorName !== '' && displayName.toLowerCase() === creatorName.toLowerCase());
+
+              // Per-bill breakdown rendered as children
+              const perBillBreakdown = bills.length > 0 ? (
+                <div className="mt-3 space-y-1">
+                  {bills.map((bill) => {
+                    const participant = bill.participants.find(
+                      (p) => p.name.toLowerCase() === s.participantName.toLowerCase()
+                        || p.name.toLowerCase() === displayName.toLowerCase()
+                    );
+                    if (!participant) return null;
+                    return (
+                      <div key={bill.id} className="flex items-center justify-between text-xs text-muted-foreground">
+                        <span className="truncate">{bill.title}</span>
+                        <span className="ml-2">{formatCurrency(participant.finalAmount, 'IDR')}</span>
+                      </div>
+                    );
+                  })}
+                </div>
+              ) : null;
 
               return (
-                <div
+                <PublicParticipantCard
                   key={s.id}
-                  className={`rounded-xl ring-1 p-4 ${s.status === 'pending' ? 'ring-border' : statusStyle}`}
+                  name={displayName}
+                  amount={s.totalNetAmount}
+                  isCreator={isCreatorRow}
+                  creatorBadgeLabel="Trip creator"
+                  status={s.status}
+                  email={s.participantEmail ?? undefined}
+                  onSelectSelf={!isCreatorRow ? () => setSelectedSettlement(s) : undefined}
                 >
-                  <div className="flex items-start justify-between gap-3">
-                    <div>
-                      <p className="font-semibold flex items-center gap-2">
-                        {displayName}
-                        {isCreatorRow && (
-                          <span className="text-xs bg-primary/10 text-primary px-1.5 py-0.5 rounded-md font-medium">Trip creator</span>
-                        )}
-                      </p>
-                      {s.participantEmail && (
-                        <p className="text-xs text-muted-foreground">{s.participantEmail}</p>
-                      )}
-                      <p className="text-sm font-medium">{formatCurrency(s.totalNetAmount, 'IDR')}</p>
-                    </div>
-                    {s.status === 'pending' && (
-                      <button
-                        onClick={() => setSelectedSettlement(s)}
-                        className="text-sm font-medium px-3 py-1.5 rounded-lg border border-border hover:bg-accent transition-colors min-h-[44px] flex items-center"
-                      >
-                        I'm {displayName}
-                      </button>
-                    )}
-                    {s.status !== 'pending' && (
-                      <span className="text-xs font-medium">
-                        {isCreatorRow && s.status === 'approved' ? 'Collecting' : STATUS_LABEL[s.status]}
-                      </span>
-                    )}
-                  </div>
-
-                  {/* Per-bill breakdown for selected participant */}
-                  {bills.length > 0 && (
-                    <div className="mt-3 space-y-1">
-                      {bills.map((bill) => {
-                        const participant = bill.participants.find(
-                          (p) => p.name.toLowerCase() === s.participantName.toLowerCase()
-                            || p.name.toLowerCase() === displayName.toLowerCase()
-                        );
-                        if (!participant) return null;
-                        return (
-                          <div key={bill.id} className="flex items-center justify-between text-xs text-muted-foreground">
-                            <span className="truncate">{bill.title}</span>
-                            <span className="ml-2">{formatCurrency(participant.finalAmount, 'IDR')}</span>
-                          </div>
-                        );
-                      })}
-                    </div>
-                  )}
-                </div>
+                  {perBillBreakdown}
+                </PublicParticipantCard>
               );
             })}
           </div>
