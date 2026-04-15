@@ -159,9 +159,9 @@ export function SplitBillManageView({ billId }: { billId: string }) {
               <div className="flex items-start justify-between gap-3">
                 <div>
                   <p className="font-semibold flex items-center gap-2">
-                    {p.isCreator ? 'You' : p.name}
+                    {p.name}
                     {p.isCreator && (
-                      <span className="text-xs bg-primary/10 text-primary px-1.5 py-0.5 rounded-md font-medium">You</span>
+                      <span className="text-xs bg-primary/10 text-primary px-1.5 py-0.5 rounded-md font-medium">Me</span>
                     )}
                   </p>
                   <p className="text-sm font-medium text-primary">{formatCurrency(p.finalAmount, 'IDR')}</p>

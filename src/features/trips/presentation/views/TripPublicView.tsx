@@ -130,6 +130,27 @@ export function TripPublicView({ tripId }: { tripId: string }) {
       : null;
   const dateLabel = endDateLabel ? `${startDateLabel} → ${endDateLabel}` : startDateLabel;
 
+  // Get unique payment accounts across all bills and find creator name
+  const uniqueAccounts = new Map<string, { id: string; bankName: string; accountNumber: string }>();
+  let creatorName = 'the creator';
+
+  bills.forEach((bill) => {
+    bill.accounts.forEach((acc) => {
+      const key = `${acc.bankName}-${acc.accountNumber}`;
+      if (!uniqueAccounts.has(key)) {
+        uniqueAccounts.set(key, acc);
+      }
+    });
+
+    // Find creator from participants
+    const creator = bill.participants.find((p) => p.isCreator);
+    if (creator && creatorName === 'the creator') {
+      creatorName = creator.name;
+    }
+  });
+
+  const allPaymentAccounts = Array.from(uniqueAccounts.values());
+
   return (
     <>
       <main className="min-h-screen">
@@ -143,6 +164,28 @@ export function TripPublicView({ tripId }: { tripId: string }) {
             )}
           </div>
 
+          {/* Payment accounts — shared across all bills */}
+          {allPaymentAccounts.length > 0 && (
+            <div className='space-y-3'>
+              <p className='text-sm font-semibold'>Pay to {creatorName}</p>
+              {allPaymentAccounts.map((acc) => (
+                <div key={acc.id} className='rounded-2xl bg-muted/50 ring-1 ring-border p-4 flex items-center justify-between'>
+                  <div>
+                    <p className='text-sm font-medium'>{acc.bankName}</p>
+                    <p className='font-mono text-sm'>{acc.accountNumber}</p>
+                  </div>
+                  <button
+                    onClick={() => copyAccount(acc.accountNumber, acc.id)}
+                    className='flex items-center gap-1.5 text-xs font-medium text-primary hover:underline min-h-[44px] px-2'
+                  >
+                    {copiedAccount === acc.id ? <Check className='w-4 h-4' /> : <Copy className='w-4 h-4' />}
+                    {copiedAccount === acc.id ? 'Copied!' : 'Copy'}
+                  </button>
+                </div>
+              ))}
+            </div>
+          )}
+
           {/* Bills summary */}
           {bills.length > 0 && (
             <div className='space-y-3'>
@@ -155,26 +198,6 @@ export function TripPublicView({ tripId }: { tripId: string }) {
                       <span className='font-medium truncate'>{bill.title}</span>
                       <span className='font-semibold ml-2'>{formatCurrency(billTotal, 'IDR')}</span>
                     </div>
-                    {bill.accounts.length > 0 && (
-                      <div className='space-y-2'>
-                        <p className='text-xs font-semibold text-muted-foreground'>Pay to</p>
-                        {bill.accounts.map((acc) => (
-                          <div key={acc.id} className='flex items-center justify-between'>
-                            <div>
-                              <p className='text-sm font-medium'>{acc.bankName}</p>
-                              <p className='font-mono text-sm'>{acc.accountNumber}</p>
-                            </div>
-                            <button
-                              onClick={() => copyAccount(acc.accountNumber, acc.id)}
-                              className='flex items-center gap-1.5 text-xs font-medium text-primary hover:underline min-h-[44px] px-2'
-                            >
-                              {copiedAccount === acc.id ? <Check className='w-4 h-4' /> : <Copy className='w-4 h-4' />}
-                              {copiedAccount === acc.id ? 'Copied!' : 'Copy'}
-                            </button>
-                          </div>
-                        ))}
-                      </div>
-                    )}
                   </div>
                 );
               })}

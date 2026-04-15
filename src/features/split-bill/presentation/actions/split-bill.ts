@@ -38,6 +38,13 @@ export const getSplitBillsAction = authActionClient
     return container.getSplitBillsUseCase.execute(user.id);
   });
 
+export const getPaymentAccountsAction = authActionClient
+  .schema(z.object({}))
+  .action(async ({ ctx: { user } }) => {
+    const container = createServerContainer();
+    return container.getPaymentAccountsUseCase.execute(user.id);
+  });
+
 export const getSplitBillAction = authActionClient
   .schema(z.object({ id: z.string().uuid() }))
   .action(async ({ parsedInput }) => {
@@ -69,6 +76,8 @@ export const createSplitBillAction = authActionClient
   )
   .action(async ({ parsedInput, ctx: { user } }) => {
     const container = createServerContainer();
+    const userFullName = user.user_metadata?.full_name ?? user.email ?? 'You';
+
     return container.createSplitBillUseCase.execute({
       userId: user.id,
       title: parsedInput.title,
@@ -76,7 +85,9 @@ export const createSplitBillAction = authActionClient
       date: parsedInput.date,
       splitMode: parsedInput.splitMode,
       accounts: parsedInput.accounts,
-      participants: parsedInput.participants,
+      participants: parsedInput.participants.map((p) =>
+        p.isCreator ? { ...p, name: userFullName } : p
+      ),
       items: parsedInput.items,
       adjustments: parsedInput.adjustments,
       participantLocalIds: parsedInput.participantLocalIds,
@@ -113,8 +124,10 @@ export const updateSplitBillAction = authActionClient
       adjustments: z.array(adjustmentSchema).default([]),
     })
   )
-  .action(async ({ parsedInput }) => {
+  .action(async ({ parsedInput, ctx: { user } }) => {
     const container = createServerContainer();
+    const userFullName = user.user_metadata?.full_name ?? user.email ?? 'You';
+
     await container.updateSplitBillUseCase.execute({
       billId: parsedInput.billId,
       title: parsedInput.title,
@@ -122,7 +135,9 @@ export const updateSplitBillAction = authActionClient
       date: parsedInput.date,
       splitMode: parsedInput.splitMode,
       accounts: parsedInput.accounts,
-      participants: parsedInput.participants,
+      participants: parsedInput.participants.map((p) =>
+        p.isCreator ? { ...p, name: userFullName } : p
+      ),
       items: parsedInput.items,
       adjustments: parsedInput.adjustments,
     });

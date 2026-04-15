@@ -1,13 +1,14 @@
 'use client';
 
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAction } from 'next-safe-action/hooks';
-import { createSplitBillAction } from './actions/split-bill';
+import { createSplitBillAction, getPaymentAccountsAction } from './actions/split-bill';
 import { BillAmountCalculationServiceImpl } from '@/features/split-bill/domain/services/BillAmountCalculationService';
 import type { SplitMode } from '@/features/split-bill/domain/entities/SplitBill';
 import type { AdjustmentType, AdjustmentDistribution } from '@/features/split-bill/domain/entities/SplitBillAdjustment';
 import { ROUTES } from '@/shared/presentation/navigation/routes';
+import { createSupabaseBrowserClient } from '@/lib/supabase-browser';
 
 export type FormStep = 0 | 1 | 2 | 3 | 4;
 // 0: bill info + mode
@@ -56,7 +57,9 @@ const newId = () => `local-${++_idCounter}`;
 export function useSplitBillNewViewModel() {
   const router = useRouter();
   const { executeAsync: createBill, isExecuting: isSubmitting } = useAction(createSplitBillAction);
+  const { executeAsync: fetchPaymentAccounts } = useAction(getPaymentAccountsAction);
   const [error, setError] = useState<string | null>(null);
+  const [currentUserName, setCurrentUserName] = useState<string>('You');
 
   // Step
   const [step, setStep] = useState<FormStep>(0);
@@ -69,7 +72,7 @@ export function useSplitBillNewViewModel() {
 
   // Step 1: participants & amounts
   const [participants, setParticipants] = useState<ParticipantForm[]>([
-    { localId: newId(), name: 'You', isCreator: true },
+    { localId: newId(), name: currentUserName, isCreator: true },
   ]);
   const [totalAmount, setTotalAmount] = useState(0); // equal mode
   const [customAmounts, setCustomAmounts] = useState<Record<string, number>>({}); // custom mode
@@ -82,6 +85,40 @@ export function useSplitBillNewViewModel() {
   const [accounts, setAccounts] = useState<AccountForm[]>([
     { localId: newId(), bankName: '', accountNumber: '' },
   ]);
+
+  // Load current user and payment accounts on mount
+  useEffect(() => {
+    const loadInitialData = async () => {
+      // Load current user
+      const supabase = createSupabaseBrowserClient();
+      const { data: { user } } = await supabase.auth.getUser();
+      if (user) {
+        const fullName = user.user_metadata?.full_name ?? user.email ?? 'You';
+        setCurrentUserName(fullName);
+        setParticipants([{ localId: newId(), name: fullName, isCreator: true }]);
+      }
+
+      // Load payment accounts
+      try {
+        const result = await fetchPaymentAccounts({});
+        const savedAccounts = result?.data ?? [];
+        if (savedAccounts.length > 0) {
+          setAccounts(
+            savedAccounts.map((acc) => ({
+              localId: newId(),
+              bankName: acc.bankName,
+              accountNumber: acc.accountNumber,
+            }))
+          );
+        }
+      } catch {
+        // If loading fails, keep the default empty account
+      }
+    };
+
+    loadInitialData();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   // --- Participants helpers ---
   const addParticipant = () =>
