@@ -236,7 +236,12 @@ export function TripPublicView({ tripId }: { tripId: string }) {
                 >
                   <div className="flex items-start justify-between gap-3">
                     <div>
-                      <p className="font-semibold">{displayName}</p>
+                      <p className="font-semibold flex items-center gap-2">
+                        {displayName}
+                        {isCreatorRow && (
+                          <span className="text-xs bg-primary/10 text-primary px-1.5 py-0.5 rounded-md font-medium">Trip creator</span>
+                        )}
+                      </p>
                       {s.participantEmail && (
                         <p className="text-xs text-muted-foreground">{s.participantEmail}</p>
                       )}
@@ -289,7 +294,7 @@ export function TripPublicView({ tripId }: { tripId: string }) {
       {/* Upload proof modal */}
       {selectedSettlement && (
         <div className="fixed inset-0 bg-black/60 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4">
-          <div className="bg-background w-full sm:max-w-md rounded-t-2xl sm:rounded-2xl p-5 space-y-5">
+          <div className="bg-background w-full sm:max-w-md rounded-t-2xl sm:rounded-2xl p-5 space-y-5 max-h-[90vh] overflow-y-auto">
 
             {/* Loading state */}
             {isUploading && (
