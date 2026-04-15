@@ -51,7 +51,7 @@ export function ManageParticipantCard({
     <div className="rounded-xl ring-1 ring-border p-4 space-y-3">
       <div className="flex items-start justify-between gap-3">
         <div>
-          <p className="font-semibold flex items-center gap-2">
+          <p className="font-semibold flex items-center gap-2 capitalize">
             {name}
             {isCreator && (
               <span className="text-xs bg-primary/10 text-primary px-1.5 py-0.5 rounded-md font-medium">
