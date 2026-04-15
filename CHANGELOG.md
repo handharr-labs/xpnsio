@@ -1,5 +1,15 @@
 # Changelog
 
+## [2.7.0](https://github.com/handharr-labs/xpnsio/compare/v2.6.0...v2.7.0) (2026-04-15)
+
+### Refactor
+
+* **shared:** extract `PublicParticipantCard` organism for public bill/trip pages — handles all five participant states with correct green styling for creator rows
+
+### Bug Fixes
+
+* **trips:** trip creator no longer receives an "I'm [name]" button on the public trip settlement page
+
 ## [2.6.0](https://github.com/handharr-labs/xpnsio/compare/v2.5.0...v2.6.0) (2026-04-15)
 
 ### Features
