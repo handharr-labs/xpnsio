@@ -2,27 +2,17 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { ArrowLeft, Copy, Check, ExternalLink, ImageIcon, Plus, Trash2 } from 'lucide-react';
+import { ArrowLeft, Plus, Trash2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useTripDetailViewModel } from '../state/useTripDetailViewModel';
 import { getStandaloneBillsAction } from '../actions/trips';
 import { formatCurrency } from '@/shared/presentation/utils/formatCurrency';
 import { ROUTES } from '@/shared/presentation/navigation/routes';
-import type { SettlementStatus } from '../../domain/entities/TripParticipantSettlement';
-
-const STATUS_STYLES: Record<SettlementStatus, string> = {
-  pending: 'bg-muted text-muted-foreground',
-  proof_uploaded: 'bg-yellow-500/10 text-yellow-700 dark:text-yellow-400',
-  approved: 'bg-green-500/10 text-green-700 dark:text-green-400',
-  rejected: 'bg-red-500/10 text-red-700 dark:text-red-400',
-};
-
-const STATUS_LABEL: Record<SettlementStatus, string> = {
-  pending: 'Pending',
-  proof_uploaded: 'Proof uploaded',
-  approved: 'Approved',
-  rejected: 'Rejected',
-};
+import { ShareLinkRow } from '@/shared/presentation/common/organisms/ShareLinkRow';
+import { ProofImageModal } from '@/shared/presentation/common/organisms/ProofImageModal';
+import { DeleteConfirmDialog } from '@/shared/presentation/common/organisms/DeleteConfirmDialog';
+import { PaymentAccountList } from '@/shared/presentation/common/organisms/PaymentAccountList';
+import { ManageParticipantCard } from '@/shared/presentation/common/organisms/ManageParticipantCard';
 
 export function TripDetailView({ tripId }: { tripId: string }) {
   const router = useRouter();
@@ -44,17 +34,10 @@ export function TripDetailView({ tripId }: { tripId: string }) {
   const [selectedBillIds, setSelectedBillIds] = useState<string[]>([]);
   const [isFetchingBills, setIsFetchingBills] = useState(false);
   const [proofModal, setProofModal] = useState<string | null>(null);
-  const [copiedLink, setCopiedLink] = useState(false);
 
   const publicUrl = typeof window !== 'undefined'
     ? `${window.location.origin}${ROUTES.tripPublic(tripId)}`
     : ROUTES.tripPublic(tripId);
-
-  const copyPublicLink = () => {
-    navigator.clipboard.writeText(publicUrl);
-    setCopiedLink(true);
-    setTimeout(() => setCopiedLink(false), 2000);
-  };
 
   const totalAmount = tripDetail
     ? tripDetail.bills.reduce(
@@ -93,11 +76,11 @@ export function TripDetailView({ tripId }: { tripId: string }) {
 
   if (isLoading) {
     return (
-      <main className="min-h-screen px-4 pt-4 max-w-lg mx-auto">
+      <main className="px-4 pt-4 pb-8 max-w-lg mx-auto">
         <div className="h-8 w-48 bg-muted rounded-xl animate-pulse mb-4" />
         <div className="space-y-3">
           {[1, 2, 3].map((i) => (
-            <div key={i} className="h-24 rounded-2xl bg-muted animate-pulse" />
+            <div key={i} className="h-24 w-full rounded-2xl bg-muted animate-pulse" />
           ))}
         </div>
       </main>
@@ -117,6 +100,15 @@ export function TripDetailView({ tripId }: { tripId: string }) {
   const startDateLabel = trip.startDate.toISOString().split('T')[0];
   const endDateLabel = trip.endDate ? trip.endDate.toISOString().split('T')[0] : null;
   const dateLabel = endDateLabel ? `${startDateLabel} → ${endDateLabel}` : startDateLabel;
+
+  // Deduplicate payment accounts across all bills by bankName-accountNumber
+  const seen = new Set<string>();
+  const uniqueAccounts = bills.flatMap((bill) => bill.accounts).filter((acc) => {
+    const key = `${acc.bankName}-${acc.accountNumber}`;
+    if (seen.has(key)) return false;
+    seen.add(key);
+    return true;
+  });
 
   return (
     <main className="min-h-screen">
@@ -161,31 +153,15 @@ export function TripDetailView({ tripId }: { tripId: string }) {
         </div>
 
         {/* Public share link */}
-        <div className="rounded-2xl bg-muted/50 ring-1 ring-border p-4 space-y-2">
-          <p className="text-sm font-medium">Share with participants</p>
-          <div className="flex gap-2">
-            <input
-              readOnly
-              value={publicUrl}
-              className="flex-1 h-10 px-3 rounded-xl bg-background ring-1 ring-border text-sm text-muted-foreground focus:outline-none"
-            />
-            <button
-              onClick={copyPublicLink}
-              className="h-10 px-3 rounded-xl bg-primary text-primary-foreground text-sm font-medium flex items-center gap-1.5 hover:opacity-90 transition-opacity"
-            >
-              {copiedLink ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
-              {copiedLink ? 'Copied' : 'Copy'}
-            </button>
-            <a
-              href={ROUTES.tripPublic(tripId)}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="h-10 w-10 rounded-xl bg-muted hover:bg-muted/80 flex items-center justify-center ring-1 ring-border"
-            >
-              <ExternalLink className="w-4 h-4" />
-            </a>
-          </div>
-        </div>
+        <ShareLinkRow
+          url={publicUrl}
+          href={ROUTES.tripPublic(tripId)}
+        />
+
+        {/* Payment accounts */}
+        {uniqueAccounts.length > 0 && (
+          <PaymentAccountList accounts={uniqueAccounts} />
+        )}
 
         {/* Bills breakdown */}
         <div className="space-y-2">
@@ -238,65 +214,27 @@ export function TripDetailView({ tripId }: { tripId: string }) {
           )}
 
           {settlements.map((s) => (
-            <div key={s.id} className="rounded-xl ring-1 ring-border p-4 space-y-3">
-              <div className="flex items-start justify-between gap-3">
-                <div>
-                  <p className="font-semibold capitalize">{s.participantName}</p>
-                  {s.participantEmail && (
-                    <p className="text-xs text-muted-foreground">{s.participantEmail}</p>
-                  )}
-                  <p className="text-sm font-medium text-primary">
-                    {formatCurrency(s.totalNetAmount, 'IDR')}
-                  </p>
-                </div>
-                <span className={`text-xs font-medium px-2.5 py-1 rounded-full ${STATUS_STYLES[s.status]}`}>
-                  {STATUS_LABEL[s.status]}
-                </span>
-              </div>
-
-              {s.proofImageUrl && (
-                <button
-                  onClick={() => setProofModal(s.proofImageUrl!)}
-                  className="flex items-center gap-2 text-sm text-primary hover:underline"
-                >
-                  <ImageIcon className="w-4 h-4" /> View proof
-                </button>
-              )}
-
-              {s.status === 'proof_uploaded' && (
-                <div className="flex gap-2">
-                  <Button
-                    size="sm"
-                    className="flex-1 rounded-xl bg-green-500/15 text-green-700 dark:text-green-400 hover:bg-green-500/25"
-                    disabled={isUpdatingStatus}
-                    onClick={() => updateSettlementStatus(s.id, 'approved')}
-                  >
-                    Approve
-                  </Button>
-                  <Button
-                    size="sm"
-                    className="flex-1 rounded-xl bg-red-500/15 text-red-700 dark:text-red-400 hover:bg-red-500/25"
-                    disabled={isUpdatingStatus}
-                    onClick={() => updateSettlementStatus(s.id, 'rejected')}
-                  >
-                    Reject
-                  </Button>
-                </div>
-              )}
-            </div>
+            <ManageParticipantCard
+              key={s.id}
+              name={s.participantName}
+              amount={s.totalNetAmount}
+              status={s.status}
+              isCreator={s.participantName.toLowerCase() === 'you'}
+              creatorBadgeLabel="Trip creator"
+              proofImageUrl={s.proofImageUrl}
+              isUpdating={isUpdatingStatus}
+              onViewProof={s.proofImageUrl ? () => setProofModal(s.proofImageUrl!) : undefined}
+              onApprove={() => updateSettlementStatus(s.id, 'approved')}
+              onReject={() => updateSettlementStatus(s.id, 'rejected')}
+            />
           ))}
         </div>
       </div>
 
-      {/* Proof image modal */}
-      {proofModal && (
-        <div
-          className="fixed inset-0 bg-black/80 z-50 flex items-center justify-center p-4"
-          onClick={() => setProofModal(null)}
-        >
-          <img src={proofModal} alt="Settlement proof" className="max-w-full max-h-full rounded-xl object-contain" />
-        </div>
-      )}
+      <ProofImageModal
+        imageUrl={proofModal}
+        onClose={() => setProofModal(null)}
+      />
 
       {/* Add Bills dialog */}
       {showAddBills && (
@@ -361,44 +299,20 @@ export function TripDetailView({ tripId }: { tripId: string }) {
         </div>
       )}
 
-      {/* Delete confirmation */}
-      {showDeleteConfirm && (
-        <div
-          className="fixed inset-0 bg-black/60 z-50 flex items-end sm:items-center justify-center p-4"
-          onClick={() => setShowDeleteConfirm(false)}
-        >
-          <div
-            className="bg-background rounded-2xl p-6 w-full max-w-sm space-y-4 shadow-xl"
-            onClick={(e) => e.stopPropagation()}
-          >
-            <div className="space-y-1.5">
-              <h2 className="text-base font-semibold">Delete trip?</h2>
-              <p className="text-sm text-muted-foreground">
-                This will permanently delete{' '}
-                <span className="font-medium text-foreground">{trip.name}</span> and all
-                settlement data. Bills will become standalone again. This cannot be undone.
-              </p>
-            </div>
-            <div className="flex gap-2">
-              <Button
-                variant="outline"
-                className="flex-1 rounded-xl"
-                onClick={() => setShowDeleteConfirm(false)}
-                disabled={isDeleting}
-              >
-                Cancel
-              </Button>
-              <Button
-                className="flex-1 rounded-xl bg-red-600 hover:bg-red-700 text-white"
-                disabled={isDeleting}
-                onClick={() => deleteTrip(() => router.push(ROUTES.splitBills))}
-              >
-                {isDeleting ? 'Deleting…' : 'Delete'}
-              </Button>
-            </div>
-          </div>
-        </div>
-      )}
+      <DeleteConfirmDialog
+        open={showDeleteConfirm}
+        onClose={() => setShowDeleteConfirm(false)}
+        title="Delete trip?"
+        description={
+          <>
+            This will permanently delete{' '}
+            <span className="font-medium text-foreground">{trip.name}</span> and all
+            settlement data. Bills will become standalone again. This cannot be undone.
+          </>
+        }
+        isDeleting={isDeleting}
+        onConfirm={() => deleteTrip(() => router.push(ROUTES.splitBills))}
+      />
     </main>
   );
 }
