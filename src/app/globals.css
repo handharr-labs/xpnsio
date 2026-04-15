@@ -2,6 +2,14 @@
 @import "tw-animate-css";
 @import "shadcn/tailwind.css";
 
+/*
+ * Explicit source scanning for the webpack/PostCSS production build.
+ * `next dev` uses Turbopack which generates all Tailwind classes on-the-fly.
+ * `next build --webpack` uses @tailwindcss/postcss which statically scans files;
+ * without these directives it may only scan src/app/ and miss the rest of the src tree.
+ */
+@source "../**/*.{tsx,ts,jsx,js}";
+
 @custom-variant dark (&:is(.dark *));
 
 @theme inline {
@@ -135,3 +143,13 @@
     font-size: 16px !important;
   }
 }
+
+/*
+ * Base UI Select (@base-ui/react) uses CSS variables set inline by its Positioner component.
+ * Tailwind v4's PostCSS scanner may not recognise the `(--var-name)` arbitrary-value syntax
+ * as class names, so these utilities are defined explicitly as plain CSS rules to guarantee
+ * they survive the webpack/LightningCSS production build.
+ */
+.w-\(--anchor-width\)         { width: var(--anchor-width); }
+.max-h-\(--available-height\) { max-height: var(--available-height); }
+.origin-\(--transform-origin\) { transform-origin: var(--transform-origin); }
