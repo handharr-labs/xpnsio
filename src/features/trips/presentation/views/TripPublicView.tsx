@@ -3,7 +3,7 @@
 import { useState, useRef } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useAction } from 'next-safe-action/hooks';
-import { Upload, X, ImageIcon, Check, Copy } from 'lucide-react';
+import { Upload, X, ImageIcon, Check, Copy, Loader2, CheckCircle2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { getTripDetailPublicAction, uploadTripSettlementProofAction } from '../actions/trips';
 import { formatCurrency } from '@/shared/presentation/utils/formatCurrency';
@@ -34,6 +34,7 @@ export function TripPublicView({ tripId }: { tripId: string }) {
   const [proofPreview, setProofPreview] = useState<string | null>(null);
   const [uploadError, setUploadError] = useState<string | null>(null);
   const [localError, setLocalError] = useState<string | null>(null);
+  const [uploadSuccess, setUploadSuccess] = useState(false);
   const [copiedAccount, setCopiedAccount] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -83,7 +84,7 @@ export function TripPublicView({ tripId }: { tripId: string }) {
 
       await submitProof({ settlementId: selectedSettlement.id, proofImageUrl });
       queryClient.invalidateQueries({ queryKey: ['trip-public', tripId] });
-      closeModal();
+      setUploadSuccess(true);
     } catch (err) {
       setUploadError(err instanceof Error ? err.message : 'Upload failed');
     }
@@ -95,6 +96,7 @@ export function TripPublicView({ tripId }: { tripId: string }) {
     setProofPreview(null);
     setLocalError(null);
     setUploadError(null);
+    setUploadSuccess(false);
   };
 
   if (isLoading) {
@@ -288,69 +290,102 @@ export function TripPublicView({ tripId }: { tripId: string }) {
       {selectedSettlement && (
         <div className="fixed inset-0 bg-black/60 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4">
           <div className="bg-background w-full sm:max-w-md rounded-t-2xl sm:rounded-2xl p-5 space-y-5">
-            <div className="flex items-center justify-between">
-              <h2 className="font-bold text-lg">Upload payment proof</h2>
-              <button
-                onClick={closeModal}
-                className="w-9 h-9 flex items-center justify-center rounded-xl bg-muted hover:bg-muted/80"
-              >
-                <X className="w-4 h-4" />
-              </button>
-            </div>
 
-            {/* Settlement summary */}
-            <div className="rounded-xl bg-muted/50 ring-1 ring-border p-3 space-y-1">
-              <p className="font-medium capitalize">{selectedSettlement.participantName}</p>
-              <p className="text-sm font-semibold text-primary">
-                {formatCurrency(selectedSettlement.totalNetAmount, 'IDR')}
-              </p>
-            </div>
+            {/* Loading state */}
+            {isUploading && (
+              <div className="flex flex-col items-center justify-center py-10 gap-4">
+                <Loader2 className="w-10 h-10 animate-spin text-primary" />
+                <p className="text-sm font-medium text-muted-foreground">Uploading your proof…</p>
+              </div>
+            )}
 
-            {/* File upload */}
-            <div>
-              <p className="text-xs font-medium text-muted-foreground mb-2">
-                Attach proof (JPG/PNG, max 5MB)
-              </p>
-              <input
-                ref={fileInputRef}
-                type="file"
-                accept="image/jpeg,image/png,image/webp"
-                className="hidden"
-                onChange={handleFileChange}
-              />
-              {proofPreview ? (
-                <div className="relative rounded-xl overflow-hidden ring-1 ring-border">
-                  <img src={proofPreview} alt="Preview" className="w-full max-h-48 object-cover" />
+            {/* Success state */}
+            {!isUploading && uploadSuccess && (
+              <div className="flex flex-col items-center justify-center py-8 gap-4">
+                <div className="w-16 h-16 rounded-full bg-green-500/15 flex items-center justify-center">
+                  <CheckCircle2 className="w-8 h-8 text-green-500" />
+                </div>
+                <div className="text-center space-y-1">
+                  <p className="font-semibold text-lg">Proof submitted!</p>
+                  <p className="text-sm text-muted-foreground">
+                    The trip creator will review and approve your payment.
+                  </p>
+                </div>
+                <Button className="w-full h-12 rounded-xl mt-2" onClick={closeModal}>
+                  Done
+                </Button>
+              </div>
+            )}
+
+            {/* Upload form */}
+            {!isUploading && !uploadSuccess && (
+              <>
+                <div className="flex items-center justify-between">
+                  <h2 className="font-bold text-lg">Upload payment proof</h2>
                   <button
-                    onClick={() => { setProofFile(null); setProofPreview(null); }}
-                    className="absolute top-2 right-2 w-8 h-8 bg-black/60 rounded-full flex items-center justify-center text-white"
+                    onClick={closeModal}
+                    className="w-9 h-9 flex items-center justify-center rounded-xl bg-muted hover:bg-muted/80"
                   >
                     <X className="w-4 h-4" />
                   </button>
                 </div>
-              ) : (
-                <button
-                  onClick={() => fileInputRef.current?.click()}
-                  className="w-full h-24 rounded-xl border-2 border-dashed border-border flex flex-col items-center justify-center gap-2 text-muted-foreground hover:border-primary hover:text-primary transition-colors"
-                >
-                  <ImageIcon className="w-6 h-6" />
-                  <span className="text-sm">Tap to select image</span>
-                </button>
-              )}
-            </div>
 
-            {(localError || uploadError) && (
-              <p className="text-sm text-red-600 dark:text-red-400">{localError ?? uploadError}</p>
+                {/* Settlement summary */}
+                <div className="rounded-xl bg-muted/50 ring-1 ring-border p-3 space-y-1">
+                  <p className="font-medium">{resolveDisplayName(selectedSettlement.participantName)}</p>
+                  <p className="text-sm font-semibold text-primary">
+                    {formatCurrency(selectedSettlement.totalNetAmount, 'IDR')}
+                  </p>
+                </div>
+
+                {/* File upload */}
+                <div>
+                  <p className="text-xs font-medium text-muted-foreground mb-2">
+                    Attach proof (JPG/PNG, max 5MB)
+                  </p>
+                  <input
+                    ref={fileInputRef}
+                    type="file"
+                    accept="image/jpeg,image/png,image/webp"
+                    className="hidden"
+                    onChange={handleFileChange}
+                  />
+                  {proofPreview ? (
+                    <div className="relative rounded-xl overflow-hidden ring-1 ring-border">
+                      <img src={proofPreview} alt="Preview" className="w-full max-h-48 object-cover" />
+                      <button
+                        onClick={() => { setProofFile(null); setProofPreview(null); }}
+                        className="absolute top-2 right-2 w-8 h-8 bg-black/60 rounded-full flex items-center justify-center text-white"
+                      >
+                        <X className="w-4 h-4" />
+                      </button>
+                    </div>
+                  ) : (
+                    <button
+                      onClick={() => fileInputRef.current?.click()}
+                      className="w-full h-24 rounded-xl border-2 border-dashed border-border flex flex-col items-center justify-center gap-2 text-muted-foreground hover:border-primary hover:text-primary transition-colors"
+                    >
+                      <ImageIcon className="w-6 h-6" />
+                      <span className="text-sm">Tap to select image</span>
+                    </button>
+                  )}
+                </div>
+
+                {(localError || uploadError) && (
+                  <p className="text-sm text-red-600 dark:text-red-400">{localError ?? uploadError}</p>
+                )}
+
+                <Button
+                  className="w-full h-12 rounded-xl gap-2"
+                  disabled={!proofFile}
+                  onClick={handleSubmitProof}
+                >
+                  <Upload className="w-4 h-4" />
+                  Submit proof
+                </Button>
+              </>
             )}
 
-            <Button
-              className="w-full h-12 rounded-xl gap-2"
-              disabled={!proofFile || isUploading}
-              onClick={handleSubmitProof}
-            >
-              <Upload className="w-4 h-4" />
-              {isUploading ? 'Uploading...' : 'Submit proof'}
-            </Button>
           </div>
         </div>
       )}
