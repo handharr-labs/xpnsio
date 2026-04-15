@@ -1,5 +1,74 @@
 # Changelog
 
+## [2.6.0](https://github.com/handharr-labs/xpnsio/compare/v2.5.0...v2.6.0) (2026-04-15)
+
+### Features
+
+* **shared:** extract reusable organisms — `ShareLinkRow`, `PaymentAccountItem`, `PaymentAccountList`, `ProofImageModal`, `DeleteConfirmDialog`, `ProofActionsRow`, `ManageParticipantCard` — shared across bill and trip detail manage views
+
+### Bug Fixes
+
+* **trips:** upload proof bottom sheet no longer fills the entire screen on iOS — cap modal height at 90 vh with scroll
+* **trips:** show "Trip creator" badge on the creator's settlement row in the public trip settlement page
+* **mobile:** skeleton items in trip/bill detail and split bill list now render at full width on iOS
+* **ui:** participant names in `ManageParticipantCard` are capitalized — fixes lowercase trip settlement names stored in DB
+* **ui:** "Me" badge renamed to "Bill creator" / "Trip creator" across manage views
+* **ui:** trip detail now shows a grouped payment accounts section (deduped across all bills)
+* **ui:** trip creator settlement is force-displayed as "Approved" (they pay upfront)
+* **ui:** external link icon button no longer shrinks on narrow mobile viewports (`shrink-0`)
+
+## [2.5.0](https://github.com/handharr-labs/xpnsio/compare/v2.4.0...v2.5.0) (2026-04-14)
+
+### Features
+
+* **trips:** show payment accounts on trip public settlement link
+* **trips:** replace raw bill ID input with a bill picker dialog when adding bills to a trip
+* **trips:** add loading spinner and success screen after proof upload on public trip settlement page
+
+### Bug Fixes
+
+* **trips:** settlement UX improvements — approve/reject button colors, creator auto-approve, display name fix
+* **trips:** merge duplicate payment accounts, fix payment_accounts table references
+* **split-bill:** sort standalone bill list by latest first
+* **css:** add Tailwind v4 `@source` directive and Base UI position utilities for production build
+
+## [2.4.0](https://github.com/handharr-labs/xpnsio/compare/v2.3.0...v2.4.0) (2026-04-07)
+
+### Features
+
+* **trips:** add full Trips feature — domain entities, use cases, data layer, DI wiring, presentation views, actions, and app routes
+* **trips:** add `trips` and `trip_participant_settlements` tables to DB schema
+* **split-bill:** integrate Trips section into the split bill list with section descriptions
+* **split-bill:** add `is_creator` column and propagate `isCreator` through domain, data, and presentation layers; seed creator participant on bill creation
+
+## [2.3.0](https://github.com/handharr-labs/xpnsio/compare/v2.2.0...v2.3.0) (2026-03-31)
+
+### Features
+
+* **split-bill:** full Split Bill MVP — domain, data, presentation, and app routes
+* **split-bill:** add DB schema for split bill tables
+* **split-bill:** add edit bill flow with shared form component
+* **split-bill:** add delete bill with confirmation dialog
+* **split-bill:** add custom split mode — total bill amount input, remaining balance indicator, rounding remainder distributed to last participant
+* **split-bill:** replace raw number inputs with `CurrencyInput` in split bill form
+* **split-bill:** replace native select with shadcn `Select` in adjustments step
+* **split-bill:** swap `BottomNav` active tab to Split Bill
+
+### Bug Fixes
+
+* **split-bill:** fix tax/service dropdown and value input layout
+
+## [2.2.0](https://github.com/handharr-labs/xpnsio/compare/v2.1.0...v2.2.0) (2026-03-28)
+
+### Bug Fixes
+
+* **architecture:** resolve cross-layer violations — move service implementations out of domain, enforce `readonly` / `ReadonlyArray` across all entities
+* **presentation:** extract ViewModels from Views across all features; resolve cross-feature imports
+* **presentation:** add missing `'use client'` directives; propagate currency; fix dashboard logic
+* **auth:** rename DataSource interfaces to `Db` suffix convention; introduce `ProfileUpsertUseCase`
+* **routing:** add root redirect and use-case-driven onboarding check
+* **utils:** relocate presentation utilities; remove stale dead code
+
 ## [2.1.0](https://github.com/handharr-labs/xpnsio/compare/v2.0.2...v2.1.0) (2026-03-27)
 
 ### Bug Fixes
