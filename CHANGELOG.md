@@ -1,5 +1,13 @@
 # Changelog
 
+## [2.8.0](https://github.com/handharr-labs/xpnsio/compare/v2.7.0...v2.8.0) (2026-04-16)
+
+### Bug Fixes
+
+* **split-bill:** share URL input now shrinks on mobile so Copy and Open buttons stay in-row without overflowing
+* **split-bill:** "Bill Creator" / "Trip Creator" badge now matches the padding and pill shape of Pending/Approved status badges
+* **split-bill:** proof submission no longer fails with an RLS error on iOS PWA — added Supabase Storage INSERT policy for unauthenticated participants on the `payment-proofs` bucket
+
 ## [2.7.0](https://github.com/handharr-labs/xpnsio/compare/v2.6.0...v2.7.0) (2026-04-15)
 
 ### Refactor
