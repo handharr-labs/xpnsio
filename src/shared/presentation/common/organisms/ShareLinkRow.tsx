@@ -24,7 +24,7 @@ export function ShareLinkRow({ url, href }: ShareLinkRowProps) {
         <input
           readOnly
           value={url}
-          className="flex-1 h-10 px-3 rounded-xl bg-background ring-1 ring-border text-sm text-muted-foreground focus:outline-none"
+          className="flex-1 min-w-0 h-10 px-3 rounded-xl bg-background ring-1 ring-border text-sm text-muted-foreground focus:outline-none"
         />
         <button
           onClick={copyLink}
