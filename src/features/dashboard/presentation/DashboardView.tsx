@@ -75,11 +75,11 @@ export function DashboardView() {
           {/* Loading State */}
           {isLoading ? (
             <div className="space-y-4">
-              <div className="h-48 rounded-2xl bg-zinc-800/50 animate-pulse" />
+              <div className="h-48 w-full rounded-2xl bg-zinc-800/50 animate-pulse" />
               <div className="h-8 w-32 rounded-lg bg-zinc-800/50 animate-pulse" />
               <div className="grid gap-3 md:grid-cols-2">
                 {[1, 2, 3, 4].map((i) => (
-                  <div key={i} className="h-32 rounded-xl bg-zinc-800/50 animate-pulse" />
+                  <div key={i} className="h-32 w-full rounded-xl bg-zinc-800/50 animate-pulse" />
                 ))}
               </div>
             </div>

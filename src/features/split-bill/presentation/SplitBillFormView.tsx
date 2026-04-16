@@ -74,8 +74,8 @@ export function SplitBillFormView({ vm }: { vm: SplitBillFormVm }) {
     return (
       <main className="min-h-screen px-4 pt-4 max-w-lg mx-auto space-y-4">
         <div className="h-11 w-40 rounded-xl bg-muted animate-pulse" />
-        <div className="h-2 rounded-full bg-muted animate-pulse" />
-        {[1, 2, 3].map((i) => <div key={i} className="h-14 rounded-xl bg-muted animate-pulse" />)}
+        <div className="h-2 w-full rounded-full bg-muted animate-pulse" />
+        {[1, 2, 3].map((i) => <div key={i} className="h-14 w-full rounded-xl bg-muted animate-pulse" />)}
       </main>
     );
   }

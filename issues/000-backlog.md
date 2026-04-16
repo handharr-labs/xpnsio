@@ -2,6 +2,7 @@
 
 | # | Title | Status | Link |
 |---|-------|--------|------|
+| 091 | fix(mobile): extend w-full skeleton fix to all remaining screens | `pending` | [#91](https://github.com/handharr-labs/xpnsio/issues/91) |
 | 089 | feat: split bill — trip awareness improvements | `pending` | [#89](https://github.com/handharr-labs/xpnsio/issues/89) |
 | 087 | fix(split-bill): skeleton loading broken, share button overflow, creator badge styling, and proof submission RLS error | `pending` | [#87](https://github.com/handharr-labs/xpnsio/issues/87) |
 | 085 | refactor: extract reusable components for public bill/trip pages | `pending` | [#85](https://github.com/handharr-labs/xpnsio/issues/85) |

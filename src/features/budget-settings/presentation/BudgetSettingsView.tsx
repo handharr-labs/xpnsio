@@ -107,7 +107,7 @@ export function BudgetSettingsView() {
           {isLoading ? (
             <div className="space-y-4">
               {[1, 2].map((i) => (
-                <div key={i} className="h-48 rounded-2xl bg-muted animate-pulse" />
+                <div key={i} className="h-48 w-full rounded-2xl bg-muted animate-pulse" />
               ))}
             </div>
           ) : budgetSettings.length === 0 ? (
