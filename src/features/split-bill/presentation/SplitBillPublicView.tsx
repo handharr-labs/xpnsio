@@ -1,12 +1,14 @@
 'use client';
 
 import { useState, useRef } from 'react';
-import { Upload, X, ImageIcon } from 'lucide-react';
+import Link from 'next/link';
+import { Upload, X, ImageIcon, Luggage } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useSplitBillPublicViewModel } from './useSplitBillPublicViewModel';
 import { formatCurrency } from '@/shared/presentation/utils/formatCurrency';
 import { PaymentAccountList } from '@/shared/presentation/common/organisms/PaymentAccountList';
 import { PublicParticipantCard } from '@/shared/presentation/common/organisms/PublicParticipantCard';
+import { ROUTES } from '@/shared/presentation/navigation/routes';
 import type { SplitBillParticipant } from '../domain/entities/SplitBillParticipant';
 
 export function SplitBillPublicView({ billId }: { billId: string }) {
@@ -70,6 +72,30 @@ export function SplitBillPublicView({ billId }: { billId: string }) {
     return (
       <main className="min-h-screen flex items-center justify-center px-4">
         <p className="text-muted-foreground text-center">Bill not found or has expired.</p>
+      </main>
+    );
+  }
+
+  if (bill.tripId) {
+    return (
+      <main className="min-h-screen flex items-center justify-center px-4">
+        <div className="max-w-sm w-full text-center space-y-4">
+          <div className="w-14 h-14 rounded-2xl bg-muted flex items-center justify-center mx-auto">
+            <Luggage className="w-7 h-7 text-muted-foreground" />
+          </div>
+          <div className="space-y-2">
+            <h1 className="text-xl font-bold tracking-tight">This bill is part of a trip</h1>
+            <p className="text-sm text-muted-foreground">
+              Paying here only settles this individual bill. To see and pay the full trip total, visit the trip page.
+            </p>
+          </div>
+          <Link
+            href={ROUTES.tripPublic(bill.tripId)}
+            className="inline-block w-full rounded-xl bg-primary text-primary-foreground px-4 py-2 text-center text-sm font-medium"
+          >
+            View trip page
+          </Link>
+        </div>
       </main>
     );
   }
