@@ -62,7 +62,7 @@ export function SplitBillPublicView({ billId }: { billId: string }) {
         <div className="h-7 w-48 bg-muted rounded-xl animate-pulse" />
         <div className="h-4 w-32 bg-muted rounded-xl animate-pulse" />
         <div className="space-y-3 mt-6">
-          {[1, 2, 3].map((i) => <div key={i} className="h-16 rounded-2xl bg-muted animate-pulse" />)}
+          {[1, 2, 3].map((i) => <div key={i} className="h-16 w-full rounded-2xl bg-muted animate-pulse" />)}
         </div>
       </main>
     );
