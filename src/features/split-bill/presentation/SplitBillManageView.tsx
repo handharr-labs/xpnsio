@@ -2,7 +2,7 @@
 
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { ArrowLeft, Luggage, Pencil, Trash2 } from 'lucide-react';
+import { ArrowLeft, ArrowRight, Luggage, Pencil, Trash2 } from 'lucide-react';
 import { useState } from 'react';
 import { useSplitBillManageViewModel } from './useSplitBillManageViewModel';
 import { ROUTES } from '@/shared/presentation/navigation/routes';
@@ -90,9 +90,10 @@ export function SplitBillManageView({ billId }: { billId: string }) {
             <p className="text-sm flex-1">Part of <span className="font-medium">{bill.tripName}</span></p>
             <Link
               href={ROUTES.tripDetail(bill.tripId)}
-              className="text-sm font-medium text-primary hover:underline shrink-0"
+              className="inline-flex items-center gap-1 text-xs font-medium px-2.5 py-1 rounded-lg bg-background ring-1 ring-border hover:bg-muted transition-colors shrink-0"
             >
               Go to trip
+              <ArrowRight className="w-3 h-3" />
             </Link>
           </div>
         )}
