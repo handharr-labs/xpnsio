@@ -1,7 +1,7 @@
 'use client';
 
 import { useRouter } from 'next/navigation';
-import { Plus, Receipt } from 'lucide-react';
+import { Luggage, Plus, Receipt } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useSplitBillListViewModel } from './useSplitBillListViewModel';
 import { TripListView } from '@/features/trips/presentation/views/TripListView';
@@ -80,6 +80,12 @@ export function SplitBillListView() {
                     <p className="text-xs text-muted-foreground mt-0.5">
                       {formatRelativeDate(bill.date)} · <span className="capitalize">{bill.splitMode}</span>
                     </p>
+                    {bill.tripName && (
+                      <span className="inline-flex items-center gap-1 mt-1.5 px-2 py-0.5 rounded-full text-xs font-medium bg-muted text-muted-foreground ring-1 ring-border">
+                        <Luggage className="w-3 h-3 flex-shrink-0" />
+                        {bill.tripName}
+                      </span>
+                    )}
                   </div>
                   <ArrowChevron />
                 </div>
