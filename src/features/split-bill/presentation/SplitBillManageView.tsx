@@ -1,7 +1,8 @@
 'use client';
 
 import { useRouter } from 'next/navigation';
-import { ArrowLeft, Pencil, Trash2 } from 'lucide-react';
+import Link from 'next/link';
+import { ArrowLeft, ArrowRight, Luggage, Pencil, Trash2 } from 'lucide-react';
 import { useState } from 'react';
 import { useSplitBillManageViewModel } from './useSplitBillManageViewModel';
 import { ROUTES } from '@/shared/presentation/navigation/routes';
@@ -19,8 +20,13 @@ export function SplitBillManageView({ billId }: { billId: string }) {
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
 
   const publicUrl = typeof window !== 'undefined'
-    ? `${window.location.origin}${ROUTES.splitBillPublic(billId)}`
+    ? bill?.tripId
+      ? `${window.location.origin}${ROUTES.tripPublic(bill.tripId)}`
+      : `${window.location.origin}${ROUTES.splitBillPublic(billId)}`
     : '';
+  const shareHref = bill?.tripId
+    ? ROUTES.tripPublic(bill.tripId)
+    : ROUTES.splitBillPublic(billId);
 
   if (isLoading) {
     return (
@@ -78,10 +84,24 @@ export function SplitBillManageView({ billId }: { billId: string }) {
           </div>
         )}
 
+        {bill.tripId && (
+          <div className="flex items-center gap-3 rounded-xl ring-1 ring-border bg-muted px-4 py-3">
+            <Luggage className="w-4 h-4 shrink-0 text-muted-foreground" />
+            <p className="text-sm flex-1">Part of <span className="font-medium">{bill.tripName}</span></p>
+            <Link
+              href={ROUTES.tripDetail(bill.tripId)}
+              className="inline-flex items-center gap-1 text-xs font-medium px-2.5 py-1 rounded-lg bg-background ring-1 ring-border hover:bg-muted transition-colors shrink-0"
+            >
+              Go to trip
+              <ArrowRight className="w-3 h-3" />
+            </Link>
+          </div>
+        )}
+
         {/* Share link */}
         <ShareLinkRow
           url={publicUrl}
-          href={ROUTES.splitBillPublic(billId)}
+          href={shareHref}
         />
 
         {/* Payment accounts */}

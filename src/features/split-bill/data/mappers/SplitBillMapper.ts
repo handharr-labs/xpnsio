@@ -16,7 +16,7 @@ import type {
 } from '@/lib/schema';
 
 export class SplitBillMapper {
-  toBill(row: SplitBillRow): SplitBill {
+  toBill(row: SplitBillRow & { tripName?: string | null }): SplitBill {
     return {
       id: row.id,
       userId: row.userId,
@@ -24,6 +24,8 @@ export class SplitBillMapper {
       description: row.description ?? null,
       date: row.date,
       splitMode: row.splitMode,
+      tripId: row.tripId ?? null,
+      tripName: row.tripName ?? null,
       createdAt: row.createdAt,
     };
   }
