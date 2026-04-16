@@ -145,7 +145,7 @@ export function CategoriesView() {
           {isLoading ? (
             <div className="space-y-4">
               {[1, 2, 3].map((i) => (
-                <div key={i} className="h-32 rounded-xl bg-muted animate-pulse" />
+                <div key={i} className="h-32 w-full rounded-xl bg-muted animate-pulse" />
               ))}
             </div>
           ) : categories.length === 0 ? (
