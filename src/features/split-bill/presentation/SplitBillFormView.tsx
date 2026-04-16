@@ -185,7 +185,7 @@ export function SplitBillFormView({ vm }: { vm: SplitBillFormVm }) {
                       {p.isCreator ? (
                         <div className={`${inputCls} flex-1 flex items-center gap-2 cursor-default select-none`}>
                           <span className="font-medium">{p.name}</span>
-                          <span className="text-xs bg-primary/10 text-primary px-1.5 py-0.5 rounded-md font-medium">Me</span>
+                          <span className="text-xs bg-primary/10 text-primary px-2.5 py-1 rounded-full font-medium">Me</span>
                         </div>
                       ) : (
                         <input
@@ -409,7 +409,7 @@ export function SplitBillFormView({ vm }: { vm: SplitBillFormVm }) {
                       onValueChange={(v) => vm.updateAdjustment(adj.localId, { type: v as AdjustmentForm['type'] })}
                     >
                       <SelectTrigger className="w-44 flex-none !h-11 rounded-xl bg-muted/50 ring-1 ring-border px-4 text-sm">
-                        <SelectValue />
+                        <SelectValue>{adj.type === 'percentage' ? 'Percentage (%)' : 'Fixed (IDR)'}</SelectValue>
                       </SelectTrigger>
                       <SelectContent>
                         <SelectItem value="percentage">Percentage (%)</SelectItem>
@@ -493,7 +493,7 @@ export function SplitBillFormView({ vm }: { vm: SplitBillFormVm }) {
                 <div key={p.localId} className="flex items-center justify-between py-3 px-4 rounded-xl bg-muted/50 ring-1 ring-border">
                   <span className="font-medium flex items-center gap-2">
                     {p.name}
-                    {p.isCreator && <span className="text-xs bg-primary/10 text-primary px-1.5 py-0.5 rounded-md font-medium">Me</span>}
+                    {p.isCreator && <span className="text-xs bg-primary/10 text-primary px-2.5 py-1 rounded-full font-medium">Me</span>}
                   </span>
                   <span className="font-semibold">{formatCurrency(finalAmounts[p.localId] ?? 0, 'IDR')}</span>
                 </div>
