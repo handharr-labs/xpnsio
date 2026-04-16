@@ -79,8 +79,8 @@ export function TransactionDetailView({ id }: { id: string }) {
         <div className="px-4 pt-4 pb-8 md:px-6 md:pt-6">
           <div className="max-w-lg mx-auto space-y-6">
             <div className="h-11 w-32 rounded-xl bg-muted animate-pulse" />
-            <div className="h-48 rounded-2xl bg-muted animate-pulse" />
-            <div className="h-32 rounded-xl bg-muted animate-pulse" />
+            <div className="h-48 w-full rounded-2xl bg-muted animate-pulse" />
+            <div className="h-32 w-full rounded-xl bg-muted animate-pulse" />
           </div>
         </div>
       </main>

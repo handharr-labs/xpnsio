@@ -138,7 +138,7 @@ export function TransactionsView() {
           {isLoading ? (
             <div className="space-y-3">
               {[1, 2, 3, 4, 5].map((i) => (
-                <div key={i} className="h-16 rounded-xl bg-zinc-800/50 animate-pulse" />
+                <div key={i} className="h-16 w-full rounded-xl bg-zinc-800/50 animate-pulse" />
               ))}
             </div>
           ) : transactions.length === 0 ? (
