@@ -54,7 +54,7 @@ export function ManageParticipantCard({
           <p className="font-semibold flex items-center gap-2 capitalize">
             {name}
             {isCreator && (
-              <span className="text-xs bg-primary/10 text-primary px-1.5 py-0.5 rounded-md font-medium">
+              <span className="text-xs bg-primary/10 text-primary px-2.5 py-1 rounded-full font-medium">
                 {creatorBadgeLabel}
               </span>
             )}
