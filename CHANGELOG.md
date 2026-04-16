@@ -1,5 +1,13 @@
 # Changelog
 
+## [2.9.0](https://github.com/handharr-labs/xpnsio/compare/v2.8.0...v2.9.0) (2026-04-16)
+
+### Features
+
+* **split-bill:** bills added to a trip now show a trip name badge on the bill list
+* **split-bill:** visiting a trip-linked bill's public link now redirects to the trip's public page instead of showing the individual payment UI — prevents participants from accidentally paying only one bill out of a multi-bill trip
+* **split-bill:** bill manage page now shows a trip info banner with a "Go to trip" button and swaps the share link to the trip's public URL when the bill belongs to a trip
+
 ## [2.8.0](https://github.com/handharr-labs/xpnsio/compare/v2.7.0...v2.8.0) (2026-04-16)
 
 ### Bug Fixes
