@@ -7,5 +7,7 @@ export interface SplitBill {
   readonly description: string | null;
   readonly date: string; // YYYY-MM-DD
   readonly splitMode: SplitMode;
+  readonly tripId: string | null;
+  readonly tripName: string | null;
   readonly createdAt: Date;
 }

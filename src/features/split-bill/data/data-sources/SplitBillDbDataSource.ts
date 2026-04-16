@@ -6,7 +6,11 @@ import type {
   SplitBillAdjustmentRow,
 } from '@/lib/schema';
 
-export interface SplitBillDetailRecord extends SplitBillRow {
+export interface SplitBillRowWithTrip extends SplitBillRow {
+  tripName: string | null;
+}
+
+export interface SplitBillDetailRecord extends SplitBillRowWithTrip {
   accounts: SplitBillAccountRow[];
   participants: (SplitBillParticipantRow & { assignedItemIds: string[] })[];
   items: (SplitBillItemRow & { assignedParticipantIds: string[] })[];
@@ -47,7 +51,7 @@ export interface UpdateBillDataParams {
 
 export interface SplitBillDbDataSource {
   findById(id: string): Promise<SplitBillDetailRecord | null>;
-  findByUserId(userId: string): Promise<SplitBillRow[]>;
+  findByUserId(userId: string): Promise<SplitBillRowWithTrip[]>;
   findStandaloneByUserId(userId: string): Promise<SplitBillRow[]>;
   createBill(params: CreateBillDataParams): Promise<SplitBillDetailRecord>;
   updateBill(params: UpdateBillDataParams): Promise<void>;

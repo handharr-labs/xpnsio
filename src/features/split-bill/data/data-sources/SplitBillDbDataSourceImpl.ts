@@ -7,21 +7,28 @@ import {
   splitBillItems,
   splitBillItemAssignments,
   splitBillAdjustments,
+  trips,
   type SplitBillRow,
   type SplitBillParticipantRow,
 } from '@/lib/schema';
 import type {
   SplitBillDbDataSource,
   SplitBillDetailRecord,
+  SplitBillRowWithTrip,
   CreateBillDataParams,
   UpdateBillDataParams,
 } from './SplitBillDbDataSource';
 
 export class SplitBillDbDataSourceImpl implements SplitBillDbDataSource {
   async findById(id: string): Promise<SplitBillDetailRecord | null> {
-    const bills = await db.select().from(splitBills).where(eq(splitBills.id, id)).limit(1);
-    if (!bills[0]) return null;
-    const bill = bills[0];
+    const rows = await db
+      .select({ bill: splitBills, tripName: trips.name })
+      .from(splitBills)
+      .leftJoin(trips, eq(splitBills.tripId, trips.id))
+      .where(eq(splitBills.id, id))
+      .limit(1);
+    if (!rows[0]) return null;
+    const bill = { ...rows[0].bill, tripName: rows[0].tripName ?? null };
 
     const [accounts, participants, items, adjustments] = await Promise.all([
       db.select().from(splitBillAccounts).where(eq(splitBillAccounts.billId, id)),
@@ -58,12 +65,14 @@ export class SplitBillDbDataSourceImpl implements SplitBillDbDataSource {
     return { ...bill, accounts, participants: participantsWithItems, items: itemsWithAssignees, adjustments };
   }
 
-  async findByUserId(userId: string): Promise<SplitBillRow[]> {
-    return db
-      .select()
+  async findByUserId(userId: string): Promise<SplitBillRowWithTrip[]> {
+    const rows = await db
+      .select({ bill: splitBills, tripName: trips.name })
       .from(splitBills)
+      .leftJoin(trips, eq(splitBills.tripId, trips.id))
       .where(eq(splitBills.userId, userId))
       .orderBy(desc(splitBills.createdAt));
+    return rows.map((r) => ({ ...r.bill, tripName: r.tripName ?? null }));
   }
 
   async findStandaloneByUserId(userId: string): Promise<SplitBillRow[]> {
@@ -163,7 +172,7 @@ export class SplitBillDbDataSourceImpl implements SplitBillDbDataSource {
         assignedItemIds: assignmentRows.filter((a) => a.participantId === p.id).map((a) => a.itemId),
       }));
 
-      return { ...bill, accounts, participants: participantsWithItems, items: itemsWithAssignees, adjustments: insertedAdjustments };
+      return { ...bill, tripName: null, accounts, participants: participantsWithItems, items: itemsWithAssignees, adjustments: insertedAdjustments };
     });
   }
 
