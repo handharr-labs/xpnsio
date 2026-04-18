@@ -5,6 +5,8 @@ import { useAction } from 'next-safe-action/hooks';
 import { useState, useEffect } from 'react';
 import { getSplitBillsAction } from './actions/split-bill';
 
+const t = () => new Date().toISOString();
+
 export function useSplitBillListViewModel() {
   const { executeAsync: fetchBills } = useAction(getSplitBillsAction);
   const queryClient = useQueryClient();
@@ -12,23 +14,23 @@ export function useSplitBillListViewModel() {
   const { data: bills = [], status } = useQuery({
     queryKey: ['split-bills'],
     queryFn: async () => {
-      console.log('[SplitBillList] queryFn called');
+      console.log(`[SplitBillList][${t()}] queryFn called`);
       const res = await fetchBills({});
-      console.log('[SplitBillList] queryFn resolved, data length:', res?.data?.length ?? 0);
+      console.log(`[SplitBillList][${t()}] queryFn resolved, data length:`, res?.data?.length ?? 0);
       return res?.data ?? [];
     },
   });
 
   const initialStatus = status;
   const [isLoading, setIsLoading] = useState(() => {
-    console.log('[SplitBillList] useState init — status:', initialStatus);
+    console.log(`[SplitBillList][${t()}] useState init — status:`, initialStatus);
     return initialStatus === 'pending';
   });
 
-  console.log('[SplitBillList] render — status:', status, '| isLoading:', isLoading, '| bills:', bills.length);
+  console.log(`[SplitBillList][${t()}] render — status:`, status, '| isLoading:', isLoading, '| bills:', bills.length);
 
   useEffect(() => {
-    console.log('[SplitBillList] useEffect status change:', status, '| setting isLoading:', status === 'pending');
+    console.log(`[SplitBillList][${t()}] useEffect status change:`, status, '| setting isLoading:', status === 'pending');
     if (status !== 'pending') setIsLoading(false);
   }, [status]);
 
