@@ -2,6 +2,7 @@
 
 | # | Title | Status | Link |
 |---|-------|--------|------|
+| 095 | fix: skeleton loading missing for standalone bills section on split-bill page in production | `pending` | [#95](https://github.com/handharr-labs/xpnsio/issues/95) |
 | 093 | fix(split-bill): multiple UI bugs in new split bill flow | `pending` | [#93](https://github.com/handharr-labs/xpnsio/issues/93) |
 | 091 | fix(mobile): extend w-full skeleton fix to all remaining screens | `pending` | [#91](https://github.com/handharr-labs/xpnsio/issues/91) |
 | 089 | feat: split bill — trip awareness improvements | `pending` | [#89](https://github.com/handharr-labs/xpnsio/issues/89) |
