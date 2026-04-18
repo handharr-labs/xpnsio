@@ -12,6 +12,8 @@ export function SplitBillListView() {
   const router = useRouter();
   const { bills, isLoading } = useSplitBillListViewModel();
 
+  console.log(`[SplitBillListView][${new Date().toISOString()}] render — isLoading:`, isLoading, '| bills:', bills.length);
+
   return (
     <main className="min-h-screen">
       <div className="px-4 pt-4 pb-8 md:px-6 md:pt-6 max-w-lg mx-auto">
