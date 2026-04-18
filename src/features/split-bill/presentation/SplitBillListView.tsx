@@ -44,7 +44,9 @@ export function SplitBillListView() {
         {isLoading && (
           <div className="space-y-3">
             {[1, 2, 3].map((i) => (
-              <div key={i} style={{ backgroundColor: 'var(--muted)' }} className="h-20 w-full rounded-2xl animate-pulse" />
+              <div key={i} style={{ backgroundColor: 'var(--muted)' }} className="h-20 w-full rounded-2xl animate-pulse flex items-center justify-center">
+                <span className="text-xs text-muted-foreground opacity-50">skeleton {i}</span>
+              </div>
             ))}
           </div>
         )}
