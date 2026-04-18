@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.10.0](https://github.com/handharr-labs/xpnsio/compare/v2.9.0...v2.10.0) (2026-04-19)
+
+### Bug Fixes
+
+* **split-bill:** skeleton loading bars now appear in production on the split bill list — Tailwind v4 PostCSS was purging `h-20` (not used elsewhere in the codebase); replaced with inline style to guarantee the rule survives the production build
+* **split-bill:** skeleton background color now uses `var(--muted)` via inline style — bypasses Tailwind class generation entirely, adapts to light/dark mode via CSS variable
+
 ## [2.9.0](https://github.com/handharr-labs/xpnsio/compare/v2.8.0...v2.9.0) (2026-04-16)
 
 ### Features
