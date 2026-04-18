@@ -12,7 +12,7 @@ export function useSplitBillManageViewModel(billId: string) {
   const queryClient = useQueryClient();
   const [error, setError] = useState<string | null>(null);
 
-  const { data: bill, isLoading } = useQuery({
+  const { data: bill, isPending: isLoading } = useQuery({
     queryKey: ['split-bill', billId],
     queryFn: async () => {
       const res = await fetchBill({ id: billId });

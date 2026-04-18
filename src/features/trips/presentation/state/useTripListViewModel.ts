@@ -12,7 +12,7 @@ export function useTripListViewModel() {
   const queryClient = useQueryClient();
   const [error, setError] = useState<string | null>(null);
 
-  const { data: trips = [], isLoading } = useQuery({
+  const { data: trips = [], isPending } = useQuery({
     queryKey: ['trips'],
     queryFn: async () => {
       const res = await fetchTrips({});
@@ -53,7 +53,7 @@ export function useTripListViewModel() {
 
   return {
     trips,
-    isLoading,
+    isLoading: isPending,
     isCreating,
     isDeleting,
     error,

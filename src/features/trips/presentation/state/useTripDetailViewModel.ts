@@ -21,7 +21,7 @@ export function useTripDetailViewModel(tripId: string) {
   const queryClient = useQueryClient();
   const [error, setError] = useState<string | null>(null);
 
-  const { data: tripDetail, isLoading } = useQuery({
+  const { data: tripDetail, isPending: isLoading } = useQuery({
     queryKey: ['trip', tripId],
     queryFn: async () => {
       const res = await fetchDetail({ tripId });

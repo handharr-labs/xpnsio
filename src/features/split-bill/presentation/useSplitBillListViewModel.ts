@@ -9,7 +9,7 @@ export function useSplitBillListViewModel() {
 
   const queryClient = useQueryClient();
 
-  const { data: bills = [], isLoading } = useQuery({
+  const { data: bills = [], isPending } = useQuery({
     queryKey: ['split-bills'],
     queryFn: async () => {
       const res = await fetchBills({});
@@ -17,5 +17,5 @@ export function useSplitBillListViewModel() {
     },
   });
 
-  return { bills, isLoading };
+  return { bills, isLoading: isPending };
 }
