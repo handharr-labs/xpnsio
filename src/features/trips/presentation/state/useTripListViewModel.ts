@@ -6,7 +6,6 @@ import { useState } from 'react';
 import { listTripsAction, createTripAction, deleteTripAction } from '../actions/trips';
 
 export function useTripListViewModel() {
-  const { executeAsync: fetchTrips } = useAction(listTripsAction);
   const { executeAsync: createTrip, isExecuting: isCreating } = useAction(createTripAction);
   const { executeAsync: deleteTrip, isExecuting: isDeleting } = useAction(deleteTripAction);
   const queryClient = useQueryClient();
@@ -15,7 +14,7 @@ export function useTripListViewModel() {
   const { data: trips = [], isPending } = useQuery({
     queryKey: ['trips'],
     queryFn: async () => {
-      const res = await fetchTrips({});
+      const res = await listTripsAction({});
       return res?.data ?? [];
     },
   });
