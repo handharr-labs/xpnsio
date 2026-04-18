@@ -15,16 +15,12 @@ export function useTripListViewModel() {
   const { data: trips = [], status } = useQuery({
     queryKey: ['trips'],
     queryFn: async () => {
-      console.log(`[TripList][${new Date().toISOString()}] queryFn called`);
       const res = await fetchTrips({});
-      console.log(`[TripList][${new Date().toISOString()}] queryFn resolved, trips:`, res?.data?.length ?? 0);
       return res?.data ?? [];
     },
   });
 
   const [isLoading, setIsLoading] = useState(status === 'pending');
-
-  console.log(`[TripList][${new Date().toISOString()}] render — status:`, status, '| isLoading:', isLoading, '| trips:', trips.length);
 
   useEffect(() => {
     if (status !== 'pending') setIsLoading(false);
