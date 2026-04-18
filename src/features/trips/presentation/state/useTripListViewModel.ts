@@ -2,7 +2,7 @@
 
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useAction } from 'next-safe-action/hooks';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { listTripsAction, createTripAction, deleteTripAction } from '../actions/trips';
 
 export function useTripListViewModel() {
@@ -12,13 +12,19 @@ export function useTripListViewModel() {
   const queryClient = useQueryClient();
   const [error, setError] = useState<string | null>(null);
 
-  const { data: trips = [], isPending } = useQuery({
+  const { data: trips = [], status } = useQuery({
     queryKey: ['trips'],
     queryFn: async () => {
       const res = await fetchTrips({});
       return res?.data ?? [];
     },
   });
+
+  const [isLoading, setIsLoading] = useState(status === 'pending');
+
+  useEffect(() => {
+    if (status !== 'pending') setIsLoading(false);
+  }, [status]);
 
   const handleCreateTrip = async (params: {
     name: string;
@@ -53,7 +59,7 @@ export function useTripListViewModel() {
 
   return {
     trips,
-    isLoading: isPending,
+    isLoading,
     isCreating,
     isDeleting,
     error,
