@@ -74,7 +74,7 @@ export function TripListView() {
         {isLoading && (
           <div className="space-y-2">
             {[1, 2].map((i) => (
-              <div key={i} className="h-16 w-full rounded-2xl bg-accent animate-pulse" />
+              <div key={i} className="h-16 w-full rounded-2xl bg-muted animate-pulse" />
             ))}
           </div>
         )}
