@@ -150,9 +150,6 @@
  * as class names, so these utilities are defined explicitly as plain CSS rules to guarantee
  * they survive the webpack/LightningCSS production build.
  */
-.skeleton { background-color: oklch(0.92 0 0); }
-.dark .skeleton { background-color: oklch(0.35 0 0); }
-
 .w-\(--anchor-width\)         { width: var(--anchor-width); }
 .max-h-\(--available-height\) { max-height: var(--available-height); }
 .origin-\(--transform-origin\) { transform-origin: var(--transform-origin); }
