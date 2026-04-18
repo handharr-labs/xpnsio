@@ -15,7 +15,13 @@ export function SplitBillListView() {
   console.log(`[SplitBillListView][${new Date().toISOString()}] render — isLoading:`, isLoading, '| bills:', bills.length);
 
   return (
-    <main className="min-h-screen">
+    <>
+      {isLoading && (
+        <div className="fixed top-0 left-0 right-0 z-[9999] bg-red-500 text-white text-xs font-bold text-center py-1">
+          LOADING — isLoading: true
+        </div>
+      )}
+      <main className="min-h-screen">
       <div className="px-4 pt-4 pb-8 md:px-6 md:pt-6 max-w-lg mx-auto">
         <header className="flex items-center justify-between mb-8">
           <h1 className="text-2xl font-bold tracking-tight">Split Bills</h1>
@@ -96,7 +102,8 @@ export function SplitBillListView() {
           </div>
         )}
       </div>
-    </main>
+      </main>
+    </>
   );
 }
 
