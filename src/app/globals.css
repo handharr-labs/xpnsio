@@ -13,7 +13,6 @@
 @custom-variant dark (&:is(.dark *));
 
 @theme inline {
-  --color-skeleton: var(--skeleton);
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --font-sans: var(--font-nunito), ui-sans-serif, system-ui, sans-serif;
@@ -81,7 +80,6 @@
   --chart-4: oklch(0.488 0.243 264.376);
   --chart-5: oklch(0.424 0.199 265.638);
   --radius: 0.625rem;
-  --skeleton: oklch(0.92 0 0);
   --sidebar: oklch(0.985 0 0);
   --sidebar-foreground: oklch(0.145 0 0);
   --sidebar-primary: oklch(0.205 0 0);
@@ -111,7 +109,6 @@
   --border: oklch(1 0 0 / 10%);
   --input: oklch(1 0 0 / 15%);
   --ring: oklch(0.556 0 0);
-  --skeleton: oklch(0.35 0 0);
   --chart-1: oklch(0.809 0.105 251.813);
   --chart-2: oklch(0.623 0.214 259.815);
   --chart-3: oklch(0.546 0.245 262.881);
@@ -153,6 +150,9 @@
  * as class names, so these utilities are defined explicitly as plain CSS rules to guarantee
  * they survive the webpack/LightningCSS production build.
  */
+.skeleton { background-color: oklch(0.92 0 0); }
+.dark .skeleton { background-color: oklch(0.35 0 0); }
+
 .w-\(--anchor-width\)         { width: var(--anchor-width); }
 .max-h-\(--available-height\) { max-height: var(--available-height); }
 .origin-\(--transform-origin\) { transform-origin: var(--transform-origin); }

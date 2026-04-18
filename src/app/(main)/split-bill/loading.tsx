@@ -5,8 +5,8 @@ export default function SplitBillLoading() {
     <main className="min-h-screen">
       <div className="px-4 pt-4 pb-8 md:px-6 md:pt-6 max-w-lg mx-auto">
         <header className="flex items-center justify-between mb-8">
-          <div className="h-8 w-32 rounded-lg bg-skeleton animate-pulse" />
-          <div className="h-8 w-24 rounded-xl bg-skeleton animate-pulse" />
+          <div className="h-8 w-32 rounded-lg skeleton animate-pulse" />
+          <div className="h-8 w-24 rounded-xl skeleton animate-pulse" />
         </header>
 
         {/* Trips section skeleton */}
@@ -23,7 +23,7 @@ export default function SplitBillLoading() {
           </div>
           <div className="space-y-2">
             {[1, 2].map((i) => (
-              <div key={i} className="h-16 w-full rounded-2xl bg-skeleton animate-pulse" />
+              <div key={i} className="h-16 w-full rounded-2xl skeleton animate-pulse" />
             ))}
           </div>
         </div>
@@ -39,7 +39,7 @@ export default function SplitBillLoading() {
         </div>
         <div className="space-y-3">
           {[1, 2, 3].map((i) => (
-            <div key={i} className="h-20 w-full rounded-2xl bg-skeleton animate-pulse" />
+            <div key={i} className="h-20 w-full rounded-2xl skeleton animate-pulse" />
           ))}
         </div>
       </div>
