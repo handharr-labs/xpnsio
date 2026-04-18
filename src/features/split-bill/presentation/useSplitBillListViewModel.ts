@@ -12,14 +12,23 @@ export function useSplitBillListViewModel() {
   const { data: bills = [], status } = useQuery({
     queryKey: ['split-bills'],
     queryFn: async () => {
+      console.log('[SplitBillList] queryFn called');
       const res = await fetchBills({});
+      console.log('[SplitBillList] queryFn resolved, data length:', res?.data?.length ?? 0);
       return res?.data ?? [];
     },
   });
 
-  const [isLoading, setIsLoading] = useState(status === 'pending');
+  const initialStatus = status;
+  const [isLoading, setIsLoading] = useState(() => {
+    console.log('[SplitBillList] useState init — status:', initialStatus);
+    return initialStatus === 'pending';
+  });
+
+  console.log('[SplitBillList] render — status:', status, '| isLoading:', isLoading, '| bills:', bills.length);
 
   useEffect(() => {
+    console.log('[SplitBillList] useEffect status change:', status, '| setting isLoading:', status === 'pending');
     if (status !== 'pending') setIsLoading(false);
   }, [status]);
 
