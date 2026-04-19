@@ -77,10 +77,10 @@ export function TripDetailView({ tripId }: { tripId: string }) {
   if (isLoading) {
     return (
       <main className="px-4 pt-4 pb-8 max-w-lg mx-auto">
-        <div className="h-8 w-48 bg-muted rounded-xl animate-pulse mb-4" />
+        <div style={{ height: '2rem' }} className="w-48 bg-muted rounded-xl animate-pulse mb-4" />
         <div className="space-y-3">
           {[1, 2, 3].map((i) => (
-            <div key={i} className="h-24 w-full rounded-2xl bg-muted animate-pulse" />
+            <div key={i} style={{ height: '6rem' }} className="w-full rounded-2xl bg-muted animate-pulse" />
           ))}
         </div>
       </main>
