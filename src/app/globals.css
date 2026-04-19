@@ -153,3 +153,15 @@
 .w-\(--anchor-width\)         { width: var(--anchor-width); }
 .max-h-\(--available-height\) { max-height: var(--available-height); }
 .origin-\(--transform-origin\) { transform-origin: var(--transform-origin); }
+
+/*
+ * `bg-popover` resolves through the @theme inline chain:
+ *   bg-popover → var(--color-popover) → var(--popover)
+ * Under webpack + LightningCSS the intermediate --color-popover variable can be
+ * optimised away, making the popup background transparent in production.
+ * Declare it directly on the data-slot attribute to guarantee it always renders.
+ */
+[data-slot="select-content"] {
+  background-color: var(--popover);
+  color: var(--popover-foreground);
+}
