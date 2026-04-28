@@ -1,5 +1,15 @@
 # Changelog
 
+## [2.11.0] — 2026-04-28
+
+### Fixed
+- **budget-settings:** `SyncBudgetForPeriodUseCase` now guards on existing period application rows instead of row count, preventing false no-op decisions when rows exist but counts differ
+- **budget-settings:** "Apply to This Month" now targets the correct billing period based on `starterDay` instead of always using the calendar month boundary
+- **budget-settings:** new category creation in the budget setting edit form now works correctly — `addItem` was passing the wrong id, causing `updateCategory` to be dispatched instead of `createCategory`
+
+### Added
+- **budget-settings:** unit tests for `SyncBudgetForPeriodUseCaseImpl` covering the corrected period-guard and billing-period logic
+
 ## [2.10.0](https://github.com/handharr-labs/xpnsio/compare/v2.9.0...v2.10.0) (2026-04-19)
 
 ### Bug Fixes
