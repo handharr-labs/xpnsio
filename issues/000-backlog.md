@@ -2,6 +2,7 @@
 
 | # | Title | Status | Link |
 |---|-------|--------|------|
+| 101 | fix: budget settings not persisted across periods — deleted instead of carried forward | `pending` | [#101](https://github.com/handharr-labs/xpnsio/issues/101) |
 | 097 | fix(skeleton): h-24 purged by Tailwind v4 on split-bill detail and trip detail screens | `pending` | [#97](https://github.com/handharr-labs/xpnsio/issues/97) |
 | 095 | fix: skeleton loading missing for standalone bills section on split-bill page in production | `pending` | [#95](https://github.com/handharr-labs/xpnsio/issues/95) |
 | 093 | fix(split-bill): multiple UI bugs in new split bill flow | `pending` | [#93](https://github.com/handharr-labs/xpnsio/issues/93) |
