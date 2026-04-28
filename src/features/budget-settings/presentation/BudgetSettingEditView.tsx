@@ -128,7 +128,7 @@ export function BudgetSettingEditView({ id }: { id: string }) {
               )}
 
               {items.map((item, index) => (
-                <div key={item.id ?? index} className="space-y-2 rounded-lg border p-3">
+                <div key={index} className="space-y-2 rounded-lg border p-3">
                   {removingIndex === index ? (
                     <div className="flex items-center gap-2 rounded-md bg-red-500/10 ring-1 ring-red-500/20 px-3 py-2">
                       <span className="flex-1 text-sm text-red-700 dark:text-red-400">Remove this category?</span>

@@ -20,14 +20,22 @@ export function BudgetSettingsView() {
 
   const handleApply = async (id: string) => {
     const now = new Date();
+    const setting = budgetSettings.find((s) => s.id === id);
+    const starterDay = setting?.starterDay ?? 1;
+    // If today is on or past the starterDay, we've rolled into the next billing period.
+    const calendarMonth = now.getMonth() + 1;
+    const calendarYear = now.getFullYear();
+    const isInNextPeriod = now.getDate() >= starterDay;
+    const month = isInNextPeriod ? (calendarMonth === 12 ? 1 : calendarMonth + 1) : calendarMonth;
+    const year = isInNextPeriod && calendarMonth === 12 ? calendarYear + 1 : calendarYear;
     setApplyingId(id);
     setActionError(null);
     setApplySuccessId(null);
     try {
       await applyBudgetSetting({
         budgetSettingId: id,
-        year: now.getFullYear(),
-        month: now.getMonth() + 1,
+        year,
+        month,
       });
       setApplySuccessId(id);
       setTimeout(() => setApplySuccessId(null), 3000);
