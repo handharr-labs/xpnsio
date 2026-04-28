@@ -18,14 +18,16 @@ export class SyncBudgetForPeriodUseCaseImpl implements SyncBudgetForPeriodUseCas
   ) {}
 
   async execute({ userId, year, month }: SyncBudgetForPeriodParams): Promise<void> {
+    // If this period already has an application, its budgets are authoritative — never overwrite.
+    const existingApp = await this.budgetRepository.getApplication(userId, year, month);
+    if (existingApp) return;
+
+    // No application for this period yet — carry forward from the most recent one.
     const lastApp = await this.budgetRepository.getLastApplication(userId);
     if (!lastApp) return;
 
     const setting = await this.budgetSettingRepository.getById(lastApp.budgetSettingId);
     if (!setting) return;
-
-    const budgets = await this.budgetRepository.getByMonth(userId, year, month);
-    if (budgets.length === setting.items.length) return;
 
     const items = setting.items.map((item) => ({
       categoryId: item.categoryId,
