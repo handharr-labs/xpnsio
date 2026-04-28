@@ -25,11 +25,9 @@ Clean Architecture · DRY · SOLID — apply to all new code.
 
 ## Workflow
 
-Agents: `feature-orchestrator` · `backend-orchestrator` · `debug-worker` · `test-worker` · `arch-review-worker` · `.claude/skills/`
+Use trigger skills as entry points — `/feature-orchestrator`, `/arch-review`, `/debug-orchestrator`, etc.
 
-**Feature work (create or update, any scope) → always delegate to `feature-orchestrator`, never inline.**
-
-**If the delegation guard hook blocks an edit → always stop and ask the user: inline or `feature-orchestrator`? Never resolve it autonomously.**
+**Feature work → always start with `/feature-orchestrator`, never inline.**
 
 ## Agent Spawning Rules
 
@@ -37,6 +35,19 @@ Agents: `feature-orchestrator` · `backend-orchestrator` · `debug-worker` · `t
 > Use Grep for all symbol and pattern discovery before deciding which files to Read. Only Read a file in full after Grep confirms it is the right target. Do not speculatively read large view or component files.
 
 Pass Explore output as a structured path list to the next agent — never raw file contents. This prevents duplicate reads in the receiving agent.
+
+## Stack
+
+Fill in your project's decisions here. Agents read this file every session — once filled, they pick up your choices automatically.
+
+| Concern | Decision |
+|---|---|
+| Backend type | <!-- local-db (Next.js owns the DB) / remote-api (external API you don't control) --> |
+| ORM | <!-- Prisma / Drizzle / Kysely / none --> |
+| Auth | <!-- NextAuth / Clerk / Lucia / Better Auth / none --> |
+| Styling | <!-- Tailwind+shadcn / Tailwind / Chakra / MUI / CSS Modules --> |
+| Testing | <!-- Vitest / Jest --> |
+| Deployment | <!-- Vercel / Docker / AWS --> |
 
 ## Known Configurations
 

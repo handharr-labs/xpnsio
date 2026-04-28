@@ -1,1 +1,0 @@
-../software-dev-agentic/lib/core/agents/detective/prompt-debug-worker.md
