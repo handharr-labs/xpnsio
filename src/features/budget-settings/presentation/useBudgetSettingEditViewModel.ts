@@ -112,7 +112,7 @@ export function useBudgetSettingEditViewModel(budgetSettingId: string) {
   const addItem = () => {
     setItems((prev) => [
       ...prev,
-      { id: crypto.randomUUID(), name: '', masterCategory: 'monthly', color: '#6366f1', icon: 'circle', monthlyAmount: 0 },
+      { id: undefined, name: '', masterCategory: 'monthly', color: '#6366f1', icon: 'circle', monthlyAmount: 0 },
     ]);
   };
 
