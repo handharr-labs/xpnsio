@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { Inter, Geist_Mono } from "next/font/google";
-import { QueryClientProvider } from "@/shared/presentation/providers/QueryClientProvider";
+import { QueryProvider } from "@handharr-labs/web-client";
 import { ThemeProvider } from "@handharr-labs/ui-xpnsio";
 import "./globals.css";
 
@@ -35,9 +35,9 @@ export default function RootLayout({
     <html lang="en" suppressHydrationWarning className={`${inter.variable} ${geistMono.variable}`}>
       <body className="antialiased">
         <ThemeProvider>
-          <QueryClientProvider>
+          <QueryProvider>
             {children}
-          </QueryClientProvider>
+          </QueryProvider>
         </ThemeProvider>
       </body>
     </html>
