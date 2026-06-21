@@ -3,12 +3,11 @@
 import { useRouter } from 'next/navigation';
 import { Layers, Wallet, Settings, CheckCircle2, Plus, Trash2, Check } from 'lucide-react';
 import { Button, CurrencyInput } from '@handharr-labs/ui-xpnsio';
-import { formatCurrency } from '@handharr-labs/core';
+import { formatCurrency, getOrdinalSuffix } from '@handharr-labs/core';
 import { ROUTES } from '@/shared/presentation/navigation/routes';
 import { CURRENCY_OPTIONS } from '@/shared/presentation/constants/currencyOptions';
 import { useSetupViewModel } from '../hooks/useSetupViewModel';
 import type { SetupCategory } from '../hooks/useSetupViewModel';
-import { getOrdinalSuffix } from '@/shared/core/utils/formatOrdinal';
 
 const COLOR_OPTIONS = [
   '#6366f1', '#ec4899', '#f59e0b', '#10b981', '#3b82f6',
