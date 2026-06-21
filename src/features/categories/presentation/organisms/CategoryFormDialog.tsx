@@ -1,25 +1,14 @@
 'use client';
 
-import { X, Check, UtensilsCrossed, Car, Home, ShoppingBag, Heart, BookOpen, Tv, Plane, Circle } from 'lucide-react';
+import type { ComponentType } from 'react';
+import { X, Check } from 'lucide-react';
 import { Button } from '@handharr-labs/ui-xpnsio';
 
-const COLOR_OPTIONS = [
-  '#6366f1', '#ec4899', '#f59e0b', '#10b981', '#3b82f6',
-  '#8b5cf6', '#ef4444', '#14b8a6', '#f97316', '#84cc16',
-];
-
-const ICON_OPTIONS = [
-  { id: 'circle', label: 'Default', Icon: Circle },
-  { id: 'food', label: 'Food', Icon: UtensilsCrossed },
-  { id: 'car', label: 'Transport', Icon: Car },
-  { id: 'home', label: 'Home', Icon: Home },
-  { id: 'shopping', label: 'Shopping', Icon: ShoppingBag },
-  { id: 'health', label: 'Health', Icon: Heart },
-  { id: 'education', label: 'Education', Icon: BookOpen },
-  { id: 'entertainment', label: 'Entertainment', Icon: Tv },
-  { id: 'travel', label: 'Travel', Icon: Plane },
-  { id: 'other', label: 'Other', Icon: Circle },
-];
+export interface IconOption {
+  id: string;
+  label: string;
+  Icon: ComponentType<{ className?: string }>;
+}
 
 export interface CategoryFormState {
   name: string;
@@ -31,6 +20,9 @@ export interface CategoryFormState {
 interface CategoryFormDialogProps {
   isEdit: boolean;
   form: CategoryFormState;
+  colorOptions: string[];
+  iconOptions: IconOption[];
+  periodOptions?: { value: 'daily' | 'weekly' | 'monthly'; label: string }[];
   isSaving: boolean;
   error: string | null;
   onFormChange: (patch: Partial<CategoryFormState>) => void;
@@ -38,9 +30,18 @@ interface CategoryFormDialogProps {
   onClose: () => void;
 }
 
+const DEFAULT_PERIODS: { value: 'daily' | 'weekly' | 'monthly'; label: string }[] = [
+  { value: 'daily', label: 'Daily' },
+  { value: 'weekly', label: 'Weekly' },
+  { value: 'monthly', label: 'Monthly' },
+];
+
 export function CategoryFormDialog({
   isEdit,
   form,
+  colorOptions,
+  iconOptions,
+  periodOptions = DEFAULT_PERIODS,
   isSaving,
   error,
   onFormChange,
@@ -50,7 +51,6 @@ export function CategoryFormDialog({
   return (
     <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/60 backdrop-blur-sm">
       <div className="bg-background rounded-t-2xl sm:rounded-2xl shadow-2xl w-full max-w-md max-h-[90vh] overflow-y-auto">
-        {/* Header */}
         <div className="flex items-center justify-between p-5 border-b border-border">
           <h2 className="text-lg font-semibold">
             {isEdit ? 'Edit Category' : 'New Category'}
@@ -64,16 +64,13 @@ export function CategoryFormDialog({
           </button>
         </div>
 
-        {/* Form */}
         <form onSubmit={onSubmit} className="p-5 space-y-6">
-          {/* Error */}
           {error && (
             <div className="rounded-xl bg-red-500/10 ring-1 ring-red-500/20 p-4 text-sm text-red-700 dark:text-red-400">
               {error}
             </div>
           )}
 
-          {/* Name */}
           <div className="space-y-2">
             <label className="text-sm font-medium">Name</label>
             <input
@@ -85,32 +82,30 @@ export function CategoryFormDialog({
             />
           </div>
 
-          {/* Budget Period */}
           <div className="space-y-3">
             <label className="text-sm font-medium">Budget Period</label>
             <div className="flex gap-2">
-              {(['daily', 'weekly', 'monthly'] as const).map((m) => (
+              {periodOptions.map((p) => (
                 <button
-                  key={m}
+                  key={p.value}
                   type="button"
                   className={`flex-1 h-11 rounded-xl text-sm font-medium capitalize transition-all ${
-                    form.masterCategory === m
+                    form.masterCategory === p.value
                       ? 'bg-primary text-primary-foreground ring-2 ring-primary ring-offset-2 ring-offset-background'
                       : 'bg-muted/50 ring-1 ring-border hover:bg-muted'
                   }`}
-                  onClick={() => onFormChange({ masterCategory: m })}
+                  onClick={() => onFormChange({ masterCategory: p.value })}
                 >
-                  {m}
+                  {p.label}
                 </button>
               ))}
             </div>
           </div>
 
-          {/* Color */}
           <div className="space-y-3">
             <label className="text-sm font-medium">Color</label>
             <div className="flex gap-3 flex-wrap">
-              {COLOR_OPTIONS.map((c) => (
+              {colorOptions.map((c) => (
                 <button
                   key={c}
                   type="button"
@@ -129,11 +124,10 @@ export function CategoryFormDialog({
             </div>
           </div>
 
-          {/* Icon */}
           <div className="space-y-3">
             <label className="text-sm font-medium">Icon</label>
             <div className="grid grid-cols-5 gap-2">
-              {ICON_OPTIONS.map(({ id, label, Icon }) => (
+              {iconOptions.map(({ id, label, Icon }) => (
                 <button
                   key={id}
                   type="button"
@@ -152,7 +146,6 @@ export function CategoryFormDialog({
             </div>
           </div>
 
-          {/* Actions */}
           <div className="flex gap-3 pt-2">
             <Button
               type="button"

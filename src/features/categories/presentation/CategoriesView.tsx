@@ -1,19 +1,38 @@
 'use client';
 
 import { useState } from 'react';
-import { Plus, Layers } from 'lucide-react';
+import { Plus, Layers, UtensilsCrossed, Car, Home, ShoppingBag, Heart, BookOpen, Tv, Plane, Circle } from 'lucide-react';
 import { Button } from '@handharr-labs/ui-xpnsio';
 import { useCategoriesViewModel } from './useCategoriesViewModel';
 import { CategoryFormDialog } from './organisms/CategoryFormDialog';
+import type { IconOption, CategoryFormState } from './organisms/CategoryFormDialog';
 import { CategoryGroupSection } from './organisms/CategoryGroupSection';
 import type { Category } from '@/features/categories/domain/entities/Category';
-import type { CategoryFormState } from './organisms/CategoryFormDialog';
+import { getCategoryIcon } from './utils/getCategoryIcon';
 
 const MASTER_LABELS: Record<string, string> = {
   daily: 'Daily Spend',
   weekly: 'Weekly Spend',
   monthly: 'Monthly Spend',
 };
+
+const COLOR_OPTIONS = [
+  '#6366f1', '#ec4899', '#f59e0b', '#10b981', '#3b82f6',
+  '#8b5cf6', '#ef4444', '#14b8a6', '#f97316', '#84cc16',
+];
+
+const ICON_OPTIONS: IconOption[] = [
+  { id: 'circle', label: 'Default', Icon: Circle },
+  { id: 'food', label: 'Food', Icon: UtensilsCrossed },
+  { id: 'car', label: 'Transport', Icon: Car },
+  { id: 'home', label: 'Home', Icon: Home },
+  { id: 'shopping', label: 'Shopping', Icon: ShoppingBag },
+  { id: 'health', label: 'Health', Icon: Heart },
+  { id: 'education', label: 'Education', Icon: BookOpen },
+  { id: 'entertainment', label: 'Entertainment', Icon: Tv },
+  { id: 'travel', label: 'Travel', Icon: Plane },
+  { id: 'other', label: 'Other', Icon: Circle },
+];
 
 const DEFAULT_FORM: CategoryFormState = {
   name: '',
@@ -33,6 +52,8 @@ export function CategoriesView() {
   const [isSaving, setIsSaving] = useState(false);
   const [formError, setFormError] = useState<string | null>(null);
 
+  const categoryById = new Map(categories.map((c) => [c.id, c]));
+
   const openCreate = () => {
     setEditingCategory(null);
     setForm(DEFAULT_FORM);
@@ -40,7 +61,9 @@ export function CategoriesView() {
     setShowDialog(true);
   };
 
-  const openEdit = (cat: Category) => {
+  const openEdit = (id: string) => {
+    const cat = categoryById.get(id);
+    if (!cat) return;
     setEditingCategory(cat);
     setForm({
       name: cat.name,
@@ -81,8 +104,9 @@ export function CategoriesView() {
     }
   };
 
-  const handleDelete = (cat: Category) => {
-    setDeletingCategory(cat);
+  const handleDelete = (id: string) => {
+    const cat = categoryById.get(id);
+    if (cat) setDeletingCategory(cat);
   };
 
   const handleDeleteConfirm = async () => {
@@ -99,10 +123,8 @@ export function CategoriesView() {
 
   return (
     <main className="min-h-screen bg-background">
-      {/* Content Container - PWA safe area padding */}
       <div className="px-4 pt-4 pb-[calc(5rem+env(safe-area-inset-bottom))] md:px-6 md:pt-6 md:pb-6">
         <div className="max-w-3xl mx-auto space-y-6">
-          {/* Header */}
           <header className="flex items-center justify-between min-h-[44px]">
             <h1 className="text-xl md:text-2xl font-bold tracking-tight">Categories</h1>
             <Button onClick={openCreate} className="h-11 rounded-xl gap-2">
@@ -111,14 +133,12 @@ export function CategoriesView() {
             </Button>
           </header>
 
-          {/* Error State */}
           {error && (
             <div className="rounded-xl bg-red-500/10 ring-1 ring-red-500/20 p-4 text-sm text-red-700 dark:text-red-400">
               {error}
             </div>
           )}
 
-          {/* Delete Confirmation Banner */}
           {deletingCategory && (
             <div className="rounded-xl bg-yellow-500/10 ring-1 ring-yellow-500/20 p-4 text-sm space-y-3">
               <p className="text-yellow-700 dark:text-yellow-400">
@@ -141,7 +161,6 @@ export function CategoriesView() {
             </div>
           )}
 
-          {/* Loading State */}
           {isLoading ? (
             <div className="space-y-4">
               {[1, 2, 3].map((i) => (
@@ -149,7 +168,6 @@ export function CategoriesView() {
               ))}
             </div>
           ) : categories.length === 0 ? (
-            /* Empty State */
             <div className="rounded-2xl ring-1 ring-border border-dashed p-12 text-center space-y-4">
               <div className="w-16 h-16 rounded-full bg-muted mx-auto flex items-center justify-center">
                 <Layers className="w-7 h-7 text-muted-foreground" />
@@ -165,7 +183,6 @@ export function CategoriesView() {
               </Button>
             </div>
           ) : (
-            /* Category Groups */
             <div className="space-y-6">
               {(['daily', 'weekly', 'monthly'] as const).map((group) => {
                 const items = grouped[group];
@@ -174,7 +191,12 @@ export function CategoriesView() {
                   <CategoryGroupSection
                     key={group}
                     masterLabel={MASTER_LABELS[group]}
-                    categories={items}
+                    items={items.map((cat) => ({
+                      id: cat.id,
+                      name: cat.name,
+                      color: cat.color,
+                      icon: getCategoryIcon(cat.icon),
+                    }))}
                     onEdit={openEdit}
                     onDelete={handleDelete}
                   />
@@ -185,11 +207,12 @@ export function CategoriesView() {
         </div>
       </div>
 
-      {/* Dialog */}
       {showDialog && (
         <CategoryFormDialog
           isEdit={editingCategory !== null}
           form={form}
+          colorOptions={COLOR_OPTIONS}
+          iconOptions={ICON_OPTIONS}
           isSaving={isSaving}
           error={formError}
           onFormChange={(patch) => setForm((f) => ({ ...f, ...patch }))}
