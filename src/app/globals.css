@@ -1,14 +1,10 @@
 @import "tailwindcss";
 @import "tw-animate-css";
 @import "shadcn/tailwind.css";
+@import "@handharr-labs/ui-xpnsio/tokens/globals.css";
 
-/*
- * Explicit source scanning for the webpack/PostCSS production build.
- * `next dev` uses Turbopack which generates all Tailwind classes on-the-fly.
- * `next build --webpack` uses @tailwindcss/postcss which statically scans files;
- * without these directives it may only scan src/app/ and miss the rest of the src tree.
- */
 @source "../**/*.{tsx,ts,jsx,js}";
+@source "../../node_modules/@handharr-labs/*/src/**/*.{tsx,ts}";
 
 @custom-variant dark (&:is(.dark *));
 
@@ -55,75 +51,6 @@
   --radius-4xl: calc(var(--radius) * 2.6);
 }
 
-:root {
-  --background: oklch(1 0 0);
-  --foreground: oklch(0.145 0 0);
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.145 0 0);
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.145 0 0);
-  --primary: oklch(0.205 0 0);
-  --primary-foreground: oklch(0.985 0 0);
-  --secondary: oklch(0.97 0 0);
-  --secondary-foreground: oklch(0.205 0 0);
-  --muted: oklch(0.97 0 0);
-  --muted-foreground: oklch(0.556 0 0);
-  --accent: oklch(0.97 0 0);
-  --accent-foreground: oklch(0.205 0 0);
-  --destructive: oklch(0.58 0.22 27);
-  --border: oklch(0.922 0 0);
-  --input: oklch(0.922 0 0);
-  --ring: oklch(0.708 0 0);
-  --chart-1: oklch(0.809 0.105 251.813);
-  --chart-2: oklch(0.623 0.214 259.815);
-  --chart-3: oklch(0.546 0.245 262.881);
-  --chart-4: oklch(0.488 0.243 264.376);
-  --chart-5: oklch(0.424 0.199 265.638);
-  --radius: 0.625rem;
-  --sidebar: oklch(0.985 0 0);
-  --sidebar-foreground: oklch(0.145 0 0);
-  --sidebar-primary: oklch(0.205 0 0);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.97 0 0);
-  --sidebar-accent-foreground: oklch(0.205 0 0);
-  --sidebar-border: oklch(0.922 0 0);
-  --sidebar-ring: oklch(0.708 0 0);
-}
-
-.dark {
-  --background: oklch(0.145 0 0);
-  --foreground: oklch(0.985 0 0);
-  --card: oklch(0.205 0 0);
-  --card-foreground: oklch(0.985 0 0);
-  --popover: oklch(0.205 0 0);
-  --popover-foreground: oklch(0.985 0 0);
-  --primary: oklch(0.87 0.00 0);
-  --primary-foreground: oklch(0.205 0 0);
-  --secondary: oklch(0.269 0 0);
-  --secondary-foreground: oklch(0.985 0 0);
-  --muted: oklch(0.269 0 0);
-  --muted-foreground: oklch(0.708 0 0);
-  --accent: oklch(0.371 0 0);
-  --accent-foreground: oklch(0.985 0 0);
-  --destructive: oklch(0.704 0.191 22.216);
-  --border: oklch(1 0 0 / 10%);
-  --input: oklch(1 0 0 / 15%);
-  --ring: oklch(0.556 0 0);
-  --chart-1: oklch(0.809 0.105 251.813);
-  --chart-2: oklch(0.623 0.214 259.815);
-  --chart-3: oklch(0.546 0.245 262.881);
-  --chart-4: oklch(0.488 0.243 264.376);
-  --chart-5: oklch(0.424 0.199 265.638);
-  --sidebar: oklch(0.205 0 0);
-  --sidebar-foreground: oklch(0.985 0 0);
-  --sidebar-primary: oklch(0.488 0.243 264.376);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.269 0 0);
-  --sidebar-accent-foreground: oklch(0.985 0 0);
-  --sidebar-border: oklch(1 0 0 / 10%);
-  --sidebar-ring: oklch(0.556 0 0);
-}
-
 @layer base {
   * {
     @apply border-border outline-ring/50;
@@ -134,34 +61,4 @@
   html {
     @apply font-sans;
   }
-}
-
-/* Prevent iOS Safari from zooming in on focused inputs.
-   Must be outside @layer base so it overrides Tailwind utility classes (e.g. text-sm). */
-@media screen and (max-width: 1024px) {
-  input, select, textarea {
-    font-size: 16px !important;
-  }
-}
-
-/*
- * Base UI Select (@base-ui/react) uses CSS variables set inline by its Positioner component.
- * Tailwind v4's PostCSS scanner may not recognise the `(--var-name)` arbitrary-value syntax
- * as class names, so these utilities are defined explicitly as plain CSS rules to guarantee
- * they survive the webpack/LightningCSS production build.
- */
-.w-\(--anchor-width\)         { width: var(--anchor-width); }
-.max-h-\(--available-height\) { max-height: var(--available-height); }
-.origin-\(--transform-origin\) { transform-origin: var(--transform-origin); }
-
-/*
- * `bg-popover` resolves through the @theme inline chain:
- *   bg-popover → var(--color-popover) → var(--popover)
- * Under webpack + LightningCSS the intermediate --color-popover variable can be
- * optimised away, making the popup background transparent in production.
- * Declare it directly on the data-slot attribute to guarantee it always renders.
- */
-[data-slot="select-content"] {
-  background-color: var(--popover);
-  color: var(--popover-foreground);
 }

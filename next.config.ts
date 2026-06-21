@@ -2,6 +2,7 @@ import type { NextConfig } from "next";
 import withPWA from "@ducanh2912/next-pwa";
 
 const nextConfig: NextConfig = {
+  transpilePackages: ["@handharr-labs/core", "@handharr-labs/web-client", "@handharr-labs/ui-xpnsio"],
   turbopack: {},
 };
 
