@@ -96,7 +96,7 @@ export function TransactionDetailView({ id }: { id: string }) {
                 <FileText className="w-7 h-7 text-muted-foreground" />
               </div>
               <div className="space-y-2">
-                <p className="text-lg font-semibold">Transaction not found</p>
+                <p className="typo-section-title">Transaction not found</p>
                 <p className="text-muted-foreground text-sm">
                   This transaction may have been deleted.
                 </p>
@@ -126,7 +126,7 @@ export function TransactionDetailView({ id }: { id: string }) {
             >
               <ArrowLeft className="w-5 h-5" />
             </button>
-            <h1 className="text-xl font-bold tracking-tight">Transaction Detail</h1>
+            <h1 className="typo-page-title">Transaction Detail</h1>
           </header>
 
           {/* Error */}

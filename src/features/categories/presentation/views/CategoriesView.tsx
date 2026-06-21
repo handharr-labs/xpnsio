@@ -124,7 +124,7 @@ export function CategoriesView() {
       <div className="px-4 pt-4 pb-[calc(5rem+env(safe-area-inset-bottom))] md:px-6 md:pt-6 md:pb-6">
         <div className="max-w-3xl mx-auto space-y-6">
           <header className="flex items-center justify-between min-h-[44px]">
-            <h1 className="text-xl md:text-2xl font-bold tracking-tight">Categories</h1>
+            <h1 className="typo-page-title">Categories</h1>
             <Button onClick={openCreate} className="h-11 rounded-xl gap-2">
               <Plus className="w-4 h-4" />
               <span className="hidden sm:inline">Add Category</span>
@@ -171,7 +171,7 @@ export function CategoriesView() {
                 <Layers className="w-7 h-7 text-muted-foreground" />
               </div>
               <div className="space-y-2">
-                <p className="text-lg font-semibold">No categories yet</p>
+                <p className="typo-section-title">No categories yet</p>
                 <p className="text-muted-foreground text-sm max-w-sm mx-auto">
                   Create categories to organize your spending and track budgets more effectively.
                 </p>

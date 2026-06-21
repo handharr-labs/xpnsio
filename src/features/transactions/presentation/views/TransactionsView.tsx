@@ -81,7 +81,7 @@ export function TransactionsView() {
         <div className="max-w-3xl mx-auto space-y-4">
           {/* Header */}
           <header className="flex items-center justify-between min-h-[44px]">
-            <h1 className="text-xl md:text-2xl font-bold tracking-tight">Transactions</h1>
+            <h1 className="typo-page-title">Transactions</h1>
             <Button
               onClick={() => setShowFilters(!showFilters)}
               variant={showFilters || hasActiveFilters ? 'default' : 'outline'}
@@ -147,7 +147,7 @@ export function TransactionsView() {
                 <Search className="w-7 h-7 text-zinc-400" />
               </div>
               <div className="space-y-2">
-                <p className="text-lg font-semibold text-white">No transactions found</p>
+                <p className="typo-section-title text-white">No transactions found</p>
                 <p className="text-zinc-400 text-sm max-w-xs mx-auto">
                   {hasActiveFilters || localFilters.description
                     ? 'Try adjusting your filters or search term.'

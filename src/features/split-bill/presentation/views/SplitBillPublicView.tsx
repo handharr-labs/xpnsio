@@ -82,7 +82,7 @@ export function SplitBillPublicView({ billId }: { billId: string }) {
             <Luggage className="w-7 h-7 text-muted-foreground" />
           </div>
           <div className="space-y-2">
-            <h1 className="text-xl font-bold tracking-tight">This bill is part of a trip</h1>
+            <h1 className="typo-page-title">This bill is part of a trip</h1>
             <p className="text-sm text-muted-foreground">
               Paying here only settles this individual bill. To see and pay the full trip total, visit the trip page.
             </p>
@@ -104,7 +104,7 @@ export function SplitBillPublicView({ billId }: { billId: string }) {
         <div className="px-4 pt-8 pb-12 max-w-sm mx-auto space-y-6">
           {/* Bill header */}
           <div>
-            <h1 className="text-2xl font-bold tracking-tight">{bill.title}</h1>
+            <h1 className="typo-page-title">{bill.title}</h1>
             <p className="text-sm text-muted-foreground mt-1">{bill.date}</p>
             {bill.description && <p className="text-sm text-muted-foreground">{bill.description}</p>}
           </div>

@@ -91,7 +91,7 @@ export function SplitBillFormView({ vm }: { vm: SplitBillFormVm }) {
             <ArrowLeft className="w-5 h-5" />
           </button>
           <div className="flex-1">
-            <h1 className="text-xl font-bold tracking-tight">
+            <h1 className="typo-page-title">
               {vm.submitLabel === 'Save Changes' ? 'Edit Split Bill' : 'New Split Bill'}
             </h1>
             <p className="text-xs text-muted-foreground">{STEPS[vm.step]}</p>

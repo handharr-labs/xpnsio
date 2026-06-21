@@ -73,7 +73,7 @@ export function BudgetSettingNewView() {
       <div className="max-w-2xl mx-auto space-y-6">
         <div className="flex items-center gap-4">
           <Button variant="outline" onClick={() => router.back()}>← Back</Button>
-          <h1 className="text-2xl font-bold">New Budget Setting</h1>
+          <h1 className="typo-page-title">New Budget Setting</h1>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-6">

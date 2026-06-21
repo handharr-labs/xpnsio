@@ -59,7 +59,7 @@ export function TransactionNewView() {
             >
               <ArrowLeft className="w-5 h-5" />
             </button>
-            <h1 className="text-xl font-bold tracking-tight">New Expense</h1>
+            <h1 className="typo-page-title">New Expense</h1>
           </header>
 
           <form onSubmit={handleSubmit} className="space-y-8">

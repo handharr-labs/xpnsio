@@ -64,7 +64,7 @@ export function BudgetSettingsView() {
         <div className="max-w-3xl mx-auto space-y-6">
           {/* Header */}
           <header className="flex items-center justify-between min-h-[44px]">
-            <h1 className="text-xl md:text-2xl font-bold tracking-tight">Budget Templates</h1>
+            <h1 className="typo-page-title">Budget Templates</h1>
             <Button
               onClick={() => router.push(ROUTES.budgetSettingNew)}
               className="h-11 rounded-xl gap-2"
@@ -125,7 +125,7 @@ export function BudgetSettingsView() {
                 <FileText className="w-7 h-7 text-muted-foreground" />
               </div>
               <div className="space-y-2">
-                <p className="text-lg font-semibold">No budget templates yet</p>
+                <p className="typo-section-title">No budget templates yet</p>
                 <p className="text-muted-foreground text-sm max-w-sm mx-auto">
                   Create a budget template to quickly apply pre-configured budgets to any month.
                 </p>

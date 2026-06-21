@@ -146,7 +146,7 @@ export function DashboardView() {
         <div className="max-w-3xl mx-auto space-y-6">
           {/* Header */}
           <header className="flex items-center justify-between min-h-[44px]">
-            <h1 className="text-xl md:text-2xl font-bold tracking-tight text-foreground">Dashboard</h1>
+            <h1 className="typo-page-title text-foreground">Dashboard</h1>
             <MonthNavigator
               label={monthLabel}
               onPrev={goToPrevMonth}
@@ -181,7 +181,7 @@ export function DashboardView() {
                   <span className="text-2xl">📊</span>
                 </div>
                 <div className="space-y-2">
-                  <p className="text-lg font-semibold text-white">No budget for this period</p>
+                  <p className="typo-section-title text-white">No budget for this period</p>
                   {isCurrentMonth ? (
                     <p className="text-zinc-400 text-sm max-w-xs mx-auto">
                       Set up a budget to start tracking your spending and stay on top of your finances.

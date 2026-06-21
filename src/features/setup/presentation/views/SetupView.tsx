@@ -113,7 +113,7 @@ export function SetupView() {
           {step === 1 && (
             <div className="rounded-2xl ring-1 ring-border bg-card overflow-hidden">
               <div className="p-5 border-b border-border">
-                <h2 className="text-lg font-semibold">Step 1: Your Categories</h2>
+                <h2 className="typo-section-title">Step 1: Your Categories</h2>
                 <p className="text-sm text-muted-foreground mt-1">
                   {"We've added some defaults. Customize or add your own."}
                 </p>
@@ -197,7 +197,7 @@ export function SetupView() {
           {step === 2 && (
             <div className="rounded-2xl ring-1 ring-border bg-card overflow-hidden">
               <div className="p-5 border-b border-border">
-                <h2 className="text-lg font-semibold">Step 2: Set Budget Amounts</h2>
+                <h2 className="typo-section-title">Step 2: Set Budget Amounts</h2>
                 <p className="text-sm text-muted-foreground mt-1">
                   How much do you want to budget for each category per month?
                 </p>
@@ -242,7 +242,7 @@ export function SetupView() {
           {step === 3 && (
             <div className="rounded-2xl ring-1 ring-border bg-card overflow-hidden">
               <div className="p-5 border-b border-border">
-                <h2 className="text-lg font-semibold">Step 3: Budget Settings</h2>
+                <h2 className="typo-section-title">Step 3: Budget Settings</h2>
                 <p className="text-sm text-muted-foreground mt-1">
                   Name your budget and choose your preferences.
                 </p>
@@ -294,7 +294,7 @@ export function SetupView() {
           {step === 4 && (
             <div className="rounded-2xl ring-1 ring-border bg-card overflow-hidden">
               <div className="p-5 border-b border-border">
-                <h2 className="text-lg font-semibold">Step 4: Review & Confirm</h2>
+                <h2 className="typo-section-title">Step 4: Review & Confirm</h2>
                 <p className="text-sm text-muted-foreground mt-1">
                   {"Here's your budget summary. Ready to get started?"}
                 </p>
@@ -309,7 +309,7 @@ export function SetupView() {
                     </p>
                   </div>
                   <div className="space-y-2">
-                    <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+                    <p className="typo-section-label text-muted-foreground">
                       Categories ({(categories as SetupCategory[]).filter((c) => c.name.trim()).length})
                     </p>
                     {(categories as SetupCategory[]).filter((c) => c.name.trim()).map((cat, i) => (

@@ -149,7 +149,7 @@ export function TripPublicView({ tripId }: { tripId: string }) {
         <div className="px-4 pt-8 pb-12 max-w-sm mx-auto space-y-6">
           {/* Trip header */}
           <div>
-            <h1 className="text-2xl font-bold tracking-tight">{trip.name}</h1>
+            <h1 className="typo-page-title">{trip.name}</h1>
             <p className="text-sm text-muted-foreground mt-1">{dateLabel}</p>
             {trip.description && (
               <p className="text-sm text-muted-foreground">{trip.description}</p>

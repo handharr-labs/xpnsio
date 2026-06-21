@@ -23,7 +23,7 @@ export function SettingsView() {
   return (
     <main className="min-h-screen p-6">
       <div className="max-w-lg mx-auto space-y-6">
-        <h1 className="text-2xl font-bold">Settings</h1>
+        <h1 className="typo-page-title">Settings</h1>
 
         {/* Appearance */}
         <Card>
