@@ -2,8 +2,8 @@
 
 import { useState } from 'react';
 import { Plus, Layers, UtensilsCrossed, Car, Home, ShoppingBag, Heart, BookOpen, Tv, Plane, Circle } from 'lucide-react';
-import { Button, CategoryFormDialog, CategoryGroupSection } from '@handharr-labs/ui-xpnsio';
-import type { IconOption, CategoryFormState } from '@handharr-labs/ui-xpnsio';
+import { Button, FormDialog, ItemGroupSection } from '@handharr-labs/ui-xpnsio';
+import type { IconOption, FormDialogState } from '@handharr-labs/ui-xpnsio';
 import { useCategoriesViewModel } from './useCategoriesViewModel';
 import type { Category } from '@/features/categories/domain/entities/Category';
 import { getCategoryIcon } from './utils/getCategoryIcon';
@@ -32,7 +32,7 @@ const ICON_OPTIONS: IconOption[] = [
   { id: 'other', label: 'Other', Icon: Circle },
 ];
 
-const DEFAULT_FORM: CategoryFormState = {
+const DEFAULT_FORM: FormDialogState = {
   name: '',
   masterCategory: 'monthly',
   color: '#6366f1',
@@ -46,7 +46,7 @@ export function CategoriesView() {
   const [showDialog, setShowDialog] = useState(false);
   const [editingCategory, setEditingCategory] = useState<Category | null>(null);
   const [deletingCategory, setDeletingCategory] = useState<Category | null>(null);
-  const [form, setForm] = useState<CategoryFormState>(DEFAULT_FORM);
+  const [form, setForm] = useState<FormDialogState>(DEFAULT_FORM);
   const [isSaving, setIsSaving] = useState(false);
   const [formError, setFormError] = useState<string | null>(null);
 
@@ -65,7 +65,7 @@ export function CategoriesView() {
     setEditingCategory(cat);
     setForm({
       name: cat.name,
-      masterCategory: cat.masterCategory as CategoryFormState['masterCategory'],
+      masterCategory: cat.masterCategory as FormDialogState['masterCategory'],
       color: cat.color,
       icon: cat.icon,
     });
@@ -186,7 +186,7 @@ export function CategoriesView() {
                 const items = grouped[group];
                 if (items.length === 0) return null;
                 return (
-                  <CategoryGroupSection
+                  <ItemGroupSection
                     key={group}
                     masterLabel={MASTER_LABELS[group]}
                     items={items.map((cat) => ({
@@ -206,7 +206,7 @@ export function CategoriesView() {
       </div>
 
       {showDialog && (
-        <CategoryFormDialog
+        <FormDialog
           isEdit={editingCategory !== null}
           form={form}
           colorOptions={COLOR_OPTIONS}

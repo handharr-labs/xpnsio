@@ -3,9 +3,9 @@
 import { useRouter } from 'next/navigation';
 import {
   Card, CardContent, Button, MonthNavigator,
-  BudgetOverviewCard, CategoryBreakdownSection, RecentTransactionsSection,
+  StatOverviewCard, ProgressCardGrid, ListPreviewSection,
 } from '@handharr-labs/ui-xpnsio';
-import type { CategoryGroupVM, CategoryCardVM, RecentTransactionVM } from '@handharr-labs/ui-xpnsio';
+import type { ProgressGroupVM, ProgressCardVM, ListPreviewItemVM } from '@handharr-labs/ui-xpnsio';
 import { usePullToRefresh } from '@handharr-labs/web-client';
 import { formatCurrency, formatCompactCurrency, formatWeekRange, formatRelativeDate } from '@handharr-labs/core';
 import { ROUTES } from '@/shared/presentation/navigation/routes';
@@ -38,7 +38,7 @@ function toProgressDisplay(p: BudgetProgressData, labelOverride?: string) {
   return { percent: p.percent, status: p.status, label: labelOverride ?? budgetLabel(p.remaining, p.isOverrun) };
 }
 
-function mapCategoryToCardVM(c: CategoryBudgetInfo, isCurrentPeriod: boolean): CategoryCardVM | null {
+function mapCategoryToCardVM(c: CategoryBudgetInfo, isCurrentPeriod: boolean): ProgressCardVM | null {
   if (c.masterCategory === 'daily' && c.dailyBudget != null && c.accumulatedBudgetToDate != null) {
     if (!c.dailyProgress || !c.todayProgress || !c.thisWeekProgress || c.availableToday == null || c.spentToday == null) return null;
     return {
@@ -88,13 +88,13 @@ function mapCategoryToCardVM(c: CategoryBudgetInfo, isCurrentPeriod: boolean): C
   };
 }
 
-function buildCategoryGroups(categories: ReadonlyArray<CategoryBudgetInfo>, isCurrentPeriod: boolean): CategoryGroupVM[] {
-  const groups: CategoryGroupVM[] = [];
+function buildCategoryGroups(categories: ReadonlyArray<CategoryBudgetInfo>, isCurrentPeriod: boolean): ProgressGroupVM[] {
+  const groups: ProgressGroupVM[] = [];
   for (const period of ['daily', 'weekly', 'monthly'] as const) {
     const items = categories
       .filter((c) => c.masterCategory === period)
       .map((c) => mapCategoryToCardVM(c, isCurrentPeriod))
-      .filter((vm): vm is CategoryCardVM => vm !== null);
+      .filter((vm): vm is ProgressCardVM => vm !== null);
     if (items.length > 0) {
       groups.push({ period, label: MASTER_LABELS[period], items });
     }
@@ -200,7 +200,7 @@ export function DashboardView() {
           ) : (
             /* Main Content */
             <div className="space-y-8">
-              <BudgetOverviewCard
+              <StatOverviewCard
                 formattedRemaining={formatCurrency(dashboardData.totalRemaining)}
                 formattedBudget={formatCurrency(dashboardData.totalMonthlyBudget)}
                 formattedSpent={formatCurrency(dashboardData.totalSpent)}
@@ -209,9 +209,9 @@ export function DashboardView() {
                 statusLabel={STATUS_LABELS[budgetStatus]}
                 isOverrun={dashboardData.totalRemaining < 0}
               />
-              <CategoryBreakdownSection title="Categories" groups={buildCategoryGroups(dashboardData.categories, isCurrentMonth)} />
-              <RecentTransactionsSection
-                transactions={dashboardData.recentTransactions.map((tx): RecentTransactionVM => ({
+              <ProgressCardGrid title="Categories" groups={buildCategoryGroups(dashboardData.categories, isCurrentMonth)} />
+              <ListPreviewSection
+                transactions={dashboardData.recentTransactions.map((tx): ListPreviewItemVM => ({
                   id: tx.id,
                   label: tx.categoryName ?? (tx.type === 'income' ? 'Income' : 'Expense'),
                   description: tx.description ?? undefined,

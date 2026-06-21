@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { ArrowLeft, ArrowRight, Luggage, Pencil, Trash2 } from 'lucide-react';
 import { useState } from 'react';
 import { useSplitBillManageViewModel } from './useSplitBillManageViewModel';
-import { ShareLinkRow, PaymentAccountList, ProofImageModal, DeleteConfirmDialog, ManageParticipantCard } from '@handharr-labs/ui-xpnsio';
+import { ShareLink, CopyRowList, ImageModal, DeleteConfirmDialog, StatusCard } from '@handharr-labs/ui-xpnsio';
 import { formatCurrency } from '@handharr-labs/core';
 import { ROUTES } from '@/shared/presentation/navigation/routes';
 
@@ -96,36 +96,36 @@ export function SplitBillManageView({ billId }: { billId: string }) {
         )}
 
         {/* Share link */}
-        <ShareLinkRow
+        <ShareLink
           url={publicUrl}
           href={shareHref}
         />
 
         {/* Payment accounts */}
-        <PaymentAccountList accounts={bill.accounts} />
+        <CopyRowList accounts={bill.accounts} />
 
         {/* Participants */}
         <div className="space-y-2">
           <p className="text-sm font-medium text-muted-foreground">Participants</p>
           {bill.participants.map((p) => (
-            <ManageParticipantCard
+            <StatusCard
               key={p.id}
               name={p.name}
               formattedAmount={formatCurrency(p.finalAmount, 'IDR')}
-              status={p.status}
-              isCreator={p.isCreator}
-              creatorBadgeLabel="Bill creator"
-              proofImageUrl={p.proofImageUrl}
+              variant={p.isCreator || p.status === 'approved' ? 'success' : p.status === 'proof_uploaded' ? 'warning' : p.status === 'rejected' ? 'danger' : 'default'}
+              statusLabel={p.isCreator ? 'Approved' : p.status === 'pending' ? 'Pending' : p.status === 'proof_uploaded' ? 'Proof uploaded' : p.status === 'approved' ? 'Approved' : 'Rejected'}
+              badge={p.isCreator ? 'Bill creator' : undefined}
+              imageUrl={p.proofImageUrl}
+              onViewImage={p.proofImageUrl ? () => setProofModal(p.proofImageUrl!) : undefined}
               isUpdating={isUpdating}
-              onViewProof={p.proofImageUrl ? () => setProofModal(p.proofImageUrl!) : undefined}
-              onApprove={() => approveParticipant(p.id)}
-              onReject={() => rejectParticipant(p.id)}
+              onApprove={p.status === 'proof_uploaded' && !p.isCreator ? () => approveParticipant(p.id) : undefined}
+              onReject={p.status === 'proof_uploaded' && !p.isCreator ? () => rejectParticipant(p.id) : undefined}
             />
           ))}
         </div>
       </div>
 
-      <ProofImageModal
+      <ImageModal
         imageUrl={proofModal}
         onClose={() => setProofModal(null)}
       />

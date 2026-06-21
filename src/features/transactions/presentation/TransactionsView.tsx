@@ -3,14 +3,14 @@
 import { useState, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { Search, SlidersHorizontal, Plus, X } from 'lucide-react';
-import { Button, TransactionFilterPanel, TransactionListSection } from '@handharr-labs/ui-xpnsio';
-import type { TransactionDateGroupVM, TransactionFilters } from '@handharr-labs/ui-xpnsio';
+import { Button, FilterPanel, GroupedListSection } from '@handharr-labs/ui-xpnsio';
+import type { DateGroupVM, FilterState } from '@handharr-labs/ui-xpnsio';
 import { formatCurrency, formatRelativeDate } from '@handharr-labs/core';
 import { ROUTES } from '@/shared/presentation/navigation/routes';
 import { useTransactionsViewModel } from './useTransactionsViewModel';
 import type { Transaction } from '@/features/transactions/domain/entities/Transaction';
 
-const EMPTY_FILTERS: TransactionFilters = {
+const EMPTY_FILTERS: FilterState = {
   startDate: '',
   endDate: '',
   categoryId: '',
@@ -23,7 +23,7 @@ export function TransactionsView() {
   const { transactions, categories, currency, isLoading, error, hasMore, applyFilters, loadMore } =
     useTransactionsViewModel();
 
-  const [localFilters, setLocalFilters] = useState<TransactionFilters>(EMPTY_FILTERS);
+  const [localFilters, setLocalFilters] = useState<FilterState>(EMPTY_FILTERS);
   const [showFilters, setShowFilters] = useState(false);
 
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -43,7 +43,7 @@ export function TransactionsView() {
     applyFilters({});
   };
 
-  const handleFiltersChange = (patch: Partial<TransactionFilters>) => {
+  const handleFiltersChange = (patch: Partial<FilterState>) => {
     const next = { ...localFilters, ...patch };
     setLocalFilters(next);
 
@@ -117,7 +117,7 @@ export function TransactionsView() {
 
           {/* Filter Panel - Collapsible */}
           {showFilters && (
-            <TransactionFilterPanel
+            <FilterPanel
               categoryOptions={categories.map((c) => ({ id: c.id, name: c.name }))}
               filters={localFilters}
               onFiltersChange={handleFiltersChange}
@@ -156,8 +156,8 @@ export function TransactionsView() {
               </div>
             </div>
           ) : (
-            <TransactionListSection
-              groups={dates.map((date): TransactionDateGroupVM => ({
+            <GroupedListSection
+              groups={dates.map((date): DateGroupVM => ({
                 date,
                 formattedDate: formatRelativeDate(date, 'long'),
                 items: grouped[date].map((tx) => {

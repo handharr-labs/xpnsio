@@ -4,7 +4,7 @@ import { useState, useRef } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useAction } from 'next-safe-action/hooks';
 import { Upload, X, ImageIcon, Loader2, CheckCircle2 } from 'lucide-react';
-import { Button, PaymentAccountList, PublicParticipantCard } from '@handharr-labs/ui-xpnsio';
+import { Button, CopyRowList, StatusCard } from '@handharr-labs/ui-xpnsio';
 import { formatCurrency } from '@handharr-labs/core';
 import { getTripDetailPublicAction, uploadTripSettlementProofAction } from '../actions/trips';
 import { createSupabaseBrowserClient } from '@/lib/supabase-browser';
@@ -158,7 +158,7 @@ export function TripPublicView({ tripId }: { tripId: string }) {
 
           {/* Payment accounts — shared across all bills */}
           {allPaymentAccounts.length > 0 && (
-            <PaymentAccountList
+            <CopyRowList
               label={`Pay to ${creatorName || 'the creator'}`}
               accounts={allPaymentAccounts}
             />
@@ -215,18 +215,18 @@ export function TripPublicView({ tripId }: { tripId: string }) {
               ) : null;
 
               return (
-                <PublicParticipantCard
+                <StatusCard
                   key={s.id}
                   name={displayName}
                   formattedAmount={formatCurrency(s.totalNetAmount, 'IDR')}
-                  isCreator={isCreatorRow}
-                  creatorBadgeLabel="Trip creator"
-                  status={s.status}
+                  variant={isCreatorRow || s.status === 'approved' ? 'success' : s.status === 'proof_uploaded' ? 'warning' : s.status === 'rejected' ? 'danger' : 'default'}
+                  statusLabel={isCreatorRow ? 'Paid' : s.status === 'proof_uploaded' ? 'Proof submitted — awaiting approval' : s.status === 'approved' ? 'Paid' : s.status === 'rejected' ? 'Proof rejected — contact the creator' : undefined}
+                  badge={isCreatorRow ? 'Trip creator' : undefined}
                   email={s.participantEmail ?? undefined}
-                  onSelectSelf={!isCreatorRow ? () => setSelectedSettlement(s) : undefined}
+                  actionButton={!isCreatorRow && s.status === 'pending' ? { label: `I'm ${displayName}`, onClick: () => setSelectedSettlement(s) } : undefined}
                 >
                   {perBillBreakdown}
-                </PublicParticipantCard>
+                </StatusCard>
               );
             })}
           </div>

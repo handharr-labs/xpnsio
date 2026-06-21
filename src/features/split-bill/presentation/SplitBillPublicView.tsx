@@ -3,7 +3,7 @@
 import { useState, useRef } from 'react';
 import Link from 'next/link';
 import { Upload, X, ImageIcon, Luggage } from 'lucide-react';
-import { Button, PaymentAccountList, PublicParticipantCard } from '@handharr-labs/ui-xpnsio';
+import { Button, CopyRowList, StatusCard } from '@handharr-labs/ui-xpnsio';
 import { formatCurrency } from '@handharr-labs/core';
 import { ROUTES } from '@/shared/presentation/navigation/routes';
 import { useSplitBillPublicViewModel } from './useSplitBillPublicViewModel';
@@ -110,7 +110,7 @@ export function SplitBillPublicView({ billId }: { billId: string }) {
           </div>
 
           {/* Payment accounts */}
-          <PaymentAccountList
+          <CopyRowList
             label="Pay to"
             accounts={bill.accounts.map((acc) => ({
               id: acc.id,
@@ -123,14 +123,14 @@ export function SplitBillPublicView({ billId }: { billId: string }) {
           <div className="space-y-2">
             <p className="text-sm font-semibold">Who needs to pay</p>
             {bill.participants.map((p) => (
-              <PublicParticipantCard
+              <StatusCard
                 key={p.id}
                 name={p.name}
                 formattedAmount={formatCurrency(p.finalAmount, 'IDR')}
-                isCreator={p.isCreator}
-                creatorBadgeLabel="Bill creator"
-                status={p.status}
-                onSelectSelf={!p.isCreator ? () => setSelectedParticipant(p) : undefined}
+                variant={p.isCreator || p.status === 'approved' ? 'success' : p.status === 'proof_uploaded' ? 'warning' : p.status === 'rejected' ? 'danger' : 'default'}
+                statusLabel={p.isCreator ? 'Paid' : p.status === 'proof_uploaded' ? 'Proof submitted — awaiting approval' : p.status === 'approved' ? 'Paid' : p.status === 'rejected' ? 'Proof rejected — contact the creator' : undefined}
+                badge={p.isCreator ? 'Bill creator' : undefined}
+                actionButton={!p.isCreator && p.status === 'pending' ? { label: `I'm ${p.name}`, onClick: () => setSelectedParticipant(p) } : undefined}
               />
             ))}
           </div>

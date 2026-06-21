@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Plus, FileText } from 'lucide-react';
-import { Button, BudgetSettingCard } from '@handharr-labs/ui-xpnsio';
+import { Button, ActionCard } from '@handharr-labs/ui-xpnsio';
 import { formatCurrency } from '@handharr-labs/core';
 import { ROUTES } from '@/shared/presentation/navigation/routes';
 import { useBudgetSettingsViewModel } from './useBudgetSettingsViewModel';
@@ -142,7 +142,7 @@ export function BudgetSettingsView() {
             /* Budget Settings Grid */
             <div className="grid gap-4 md:grid-cols-2">
               {budgetSettings.map((setting) => (
-                <BudgetSettingCard
+                <ActionCard
                   key={setting.id}
                   setting={{
                     id: setting.id,
