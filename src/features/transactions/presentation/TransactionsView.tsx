@@ -4,10 +4,12 @@ import { useState, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { Search, SlidersHorizontal, Plus, X } from 'lucide-react';
 import { Button } from '@handharr-labs/ui-xpnsio';
+import { formatCurrency, formatRelativeDate } from '@handharr-labs/core';
 import { ROUTES } from '@/shared/presentation/navigation/routes';
 import { useTransactionsViewModel } from './useTransactionsViewModel';
 import { TransactionFilterPanel } from './organisms/TransactionFilterPanel';
 import { TransactionListSection } from './organisms/TransactionListSection';
+import type { TransactionDateGroupVM } from './organisms/TransactionListSection';
 import type { Transaction } from '@/features/transactions/domain/entities/Transaction';
 import type { TransactionFilters } from './organisms/TransactionFilterPanel';
 
@@ -119,7 +121,7 @@ export function TransactionsView() {
           {/* Filter Panel - Collapsible */}
           {showFilters && (
             <TransactionFilterPanel
-              categories={categories}
+              categoryOptions={categories.map((c) => ({ id: c.id, name: c.name }))}
               filters={localFilters}
               onFiltersChange={handleFiltersChange}
               onApply={handleApplyFilters}
@@ -158,10 +160,22 @@ export function TransactionsView() {
             </div>
           ) : (
             <TransactionListSection
-              dates={dates}
-              grouped={grouped}
-              categoryMap={categoryMap}
-              currencyLabel={currency}
+              groups={dates.map((date): TransactionDateGroupVM => ({
+                date,
+                formattedDate: formatRelativeDate(date, 'long'),
+                items: grouped[date].map((tx) => {
+                  const cat = tx.categoryId ? categoryMap.get(tx.categoryId) : null;
+                  const isIncome = tx.type === 'income';
+                  return {
+                    id: tx.id,
+                    label: cat?.name ?? (isIncome ? 'Income' : 'Expense'),
+                    description: tx.description ?? undefined,
+                    formattedAmount: `${isIncome ? '+' : '-'}${formatCurrency(tx.amount, currency)}`,
+                    variant: isIncome ? 'income' as const : 'expense' as const,
+                    categoryColor: cat?.color,
+                  };
+                }),
+              }))}
               hasMore={hasMore}
               onLoadMore={loadMore}
               onSelect={(id) => router.push(ROUTES.transactionDetail(id))}

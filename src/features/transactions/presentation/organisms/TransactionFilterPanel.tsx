@@ -2,7 +2,11 @@
 
 import { Button } from '@handharr-labs/ui-xpnsio';
 import { Calendar, Tag, ArrowDownUp } from 'lucide-react';
-import type { Category } from '@/features/categories/domain/entities/Category';
+
+export interface FilterOption {
+  id: string;
+  name: string;
+}
 
 export interface TransactionFilters {
   startDate: string;
@@ -13,7 +17,7 @@ export interface TransactionFilters {
 }
 
 interface TransactionFilterPanelProps {
-  categories: Category[];
+  categoryOptions: FilterOption[];
   filters: TransactionFilters;
   onFiltersChange: (patch: Partial<TransactionFilters>) => void;
   onApply: () => void;
@@ -21,7 +25,7 @@ interface TransactionFilterPanelProps {
 }
 
 export function TransactionFilterPanel({
-  categories,
+  categoryOptions,
   filters,
   onFiltersChange,
   onApply,
@@ -31,7 +35,6 @@ export function TransactionFilterPanel({
 
   return (
     <div className="rounded-xl ring-1 ring-border bg-card p-4 space-y-4">
-      {/* Date Range */}
       <div className="space-y-2">
         <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
           <Calendar className="w-3.5 h-3.5" />
@@ -59,7 +62,6 @@ export function TransactionFilterPanel({
         </div>
       </div>
 
-      {/* Category & Type */}
       <div className="grid grid-cols-2 gap-3">
         <div className="space-y-2">
           <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
@@ -72,9 +74,9 @@ export function TransactionFilterPanel({
             onChange={(e) => onFiltersChange({ categoryId: e.target.value })}
           >
             <option value="">All Categories</option>
-            {categories.map((cat) => (
-              <option key={cat.id} value={cat.id}>
-                {cat.name}
+            {categoryOptions.map((opt) => (
+              <option key={opt.id} value={opt.id}>
+                {opt.name}
               </option>
             ))}
           </select>
@@ -98,7 +100,6 @@ export function TransactionFilterPanel({
         </div>
       </div>
 
-      {/* Actions */}
       <div className="flex gap-3 pt-2">
         <Button
           size="lg"
