@@ -1,10 +1,8 @@
-import { Button } from '@/components/ui/button';
+import { Button, CategoryColorDot } from '@handharr-labs/ui-xpnsio';
+import { formatCurrency, formatRelativeDate } from '@handharr-labs/core';
 import { ChevronRight } from 'lucide-react';
-import { CategoryColorDot } from '@/shared/presentation/common/atoms/CategoryColorDot';
 import type { Transaction } from '@/features/transactions/domain/entities/Transaction';
 import type { Category } from '@/features/categories/domain/entities/Category';
-import { formatCurrency } from '@/shared/presentation/utils/formatCurrency';
-import { formatRelativeDate } from '@/shared/presentation/utils/formatRelativeDate';
 
 interface TransactionListSectionProps {
   dates: string[];

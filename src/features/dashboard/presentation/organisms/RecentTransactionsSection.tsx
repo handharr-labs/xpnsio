@@ -1,7 +1,6 @@
 import { ChevronRight } from 'lucide-react';
 import type { Transaction } from '@/features/transactions/domain/entities/Transaction';
-import { formatCurrency } from '@/shared/presentation/utils/formatCurrency';
-import { formatRelativeDate } from '@/shared/presentation/utils/formatRelativeDate';
+import { formatCurrency, formatRelativeDate } from '@handharr-labs/core';
 
 interface RecentTransactionsSectionProps {
   transactions: ReadonlyArray<Transaction>;

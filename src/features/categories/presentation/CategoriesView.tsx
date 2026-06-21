@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { Plus, Layers } from 'lucide-react';
-import { Button } from '@/components/ui/button';
+import { Button } from '@handharr-labs/ui-xpnsio';
 import { useCategoriesViewModel } from './useCategoriesViewModel';
 import { CategoryFormDialog } from './organisms/CategoryFormDialog';
 import { CategoryGroupSection } from './organisms/CategoryGroupSection';

@@ -5,12 +5,9 @@ import Link from 'next/link';
 import { ArrowLeft, ArrowRight, Luggage, Pencil, Trash2 } from 'lucide-react';
 import { useState } from 'react';
 import { useSplitBillManageViewModel } from './useSplitBillManageViewModel';
+import { ShareLinkRow, PaymentAccountList, ProofImageModal, DeleteConfirmDialog, ManageParticipantCard } from '@handharr-labs/ui-xpnsio';
+import { formatCurrency } from '@handharr-labs/core';
 import { ROUTES } from '@/shared/presentation/navigation/routes';
-import { ShareLinkRow } from '@/shared/presentation/common/organisms/ShareLinkRow';
-import { PaymentAccountList } from '@/shared/presentation/common/organisms/PaymentAccountList';
-import { ProofImageModal } from '@/shared/presentation/common/organisms/ProofImageModal';
-import { DeleteConfirmDialog } from '@/shared/presentation/common/organisms/DeleteConfirmDialog';
-import { ManageParticipantCard } from '@/shared/presentation/common/organisms/ManageParticipantCard';
 
 export function SplitBillManageView({ billId }: { billId: string }) {
   const router = useRouter();
@@ -114,7 +111,7 @@ export function SplitBillManageView({ billId }: { billId: string }) {
             <ManageParticipantCard
               key={p.id}
               name={p.name}
-              amount={p.finalAmount}
+              formattedAmount={formatCurrency(p.finalAmount, 'IDR')}
               status={p.status}
               isCreator={p.isCreator}
               creatorBadgeLabel="Bill creator"

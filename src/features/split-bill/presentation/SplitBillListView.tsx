@@ -2,11 +2,11 @@
 
 import { useRouter } from 'next/navigation';
 import { Luggage, Plus, Receipt } from 'lucide-react';
-import { Button } from '@/components/ui/button';
+import { Button } from '@handharr-labs/ui-xpnsio';
+import { formatRelativeDate } from '@handharr-labs/core';
+import { ROUTES } from '@/shared/presentation/navigation/routes';
 import { useSplitBillListViewModel } from './useSplitBillListViewModel';
 import { TripListView } from '@/features/trips/presentation/views/TripListView';
-import { ROUTES } from '@/shared/presentation/navigation/routes';
-import { formatRelativeDate } from '@/shared/presentation/utils/formatRelativeDate';
 
 export function SplitBillListView() {
   const router = useRouter();

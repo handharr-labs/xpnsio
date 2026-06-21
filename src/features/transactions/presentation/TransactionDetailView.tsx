@@ -3,12 +3,10 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { ArrowLeft, Calendar, Tag, FileText, Pencil, Trash2, Check } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { useTransactionDetailViewModel } from './useTransactionDetailViewModel';
-import { CurrencyInput } from '@/shared/presentation/common/atoms/CurrencyInput';
-import { formatCurrency } from '@/shared/presentation/utils/formatCurrency';
-import { formatFullDate } from '@/shared/presentation/utils/formatRelativeDate';
+import { Button, CurrencyInput } from '@handharr-labs/ui-xpnsio';
+import { formatCurrency, formatFullDate } from '@handharr-labs/core';
 import { ROUTES } from '@/shared/presentation/navigation/routes';
+import { useTransactionDetailViewModel } from './useTransactionDetailViewModel';
 
 export function TransactionDetailView({ id }: { id: string }) {
   const router = useRouter();
@@ -265,7 +263,7 @@ export function TransactionDetailView({ id }: { id: string }) {
                   <CurrencyInput
                     value={amount}
                     onChange={setAmount}
-                    currency={currency}
+                    currencyLabel={currency}
                     required
                     className="text-lg h-14 rounded-xl"
                   />

@@ -1,5 +1,5 @@
 import { TrendingUp, TrendingDown, AlertTriangle } from 'lucide-react';
-import { formatCurrency } from '@/shared/presentation/utils/formatCurrency';
+import { formatCurrency } from '@handharr-labs/core';
 import type { BudgetStatus } from '@/features/dashboard/domain/entities/BudgetProgressData';
 
 interface BudgetOverviewCardProps {

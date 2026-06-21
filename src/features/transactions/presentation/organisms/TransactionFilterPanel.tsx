@@ -1,6 +1,6 @@
 'use client';
 
-import { Button } from '@/components/ui/button';
+import { Button } from '@handharr-labs/ui-xpnsio';
 import { Calendar, Tag, ArrowDownUp } from 'lucide-react';
 import type { Category } from '@/features/categories/domain/entities/Category';
 

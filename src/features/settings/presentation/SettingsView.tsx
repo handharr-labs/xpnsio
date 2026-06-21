@@ -1,8 +1,7 @@
 'use client';
 
 import { Sun, Moon } from 'lucide-react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle, Button } from '@handharr-labs/ui-xpnsio';
 import { useSettingsViewModel } from './useSettingsViewModel';
 
 export function SettingsView() {

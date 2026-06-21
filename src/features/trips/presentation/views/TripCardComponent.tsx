@@ -2,8 +2,8 @@
 
 import { useRouter } from 'next/navigation';
 import { MapPin } from 'lucide-react';
+import { formatRelativeDate } from '@handharr-labs/core';
 import { ROUTES } from '@/shared/presentation/navigation/routes';
-import { formatRelativeDate } from '@/shared/presentation/utils/formatRelativeDate';
 import type { Trip } from '../../domain/entities/Trip';
 
 interface TripCardComponentProps {

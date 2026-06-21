@@ -3,16 +3,11 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { ArrowLeft, Plus, Trash2 } from 'lucide-react';
-import { Button } from '@/components/ui/button';
+import { Button, ShareLinkRow, ProofImageModal, DeleteConfirmDialog, PaymentAccountList, ManageParticipantCard } from '@handharr-labs/ui-xpnsio';
+import { formatCurrency } from '@handharr-labs/core';
+import { ROUTES } from '@/shared/presentation/navigation/routes';
 import { useTripDetailViewModel } from '../state/useTripDetailViewModel';
 import { getStandaloneBillsAction } from '../actions/trips';
-import { formatCurrency } from '@/shared/presentation/utils/formatCurrency';
-import { ROUTES } from '@/shared/presentation/navigation/routes';
-import { ShareLinkRow } from '@/shared/presentation/common/organisms/ShareLinkRow';
-import { ProofImageModal } from '@/shared/presentation/common/organisms/ProofImageModal';
-import { DeleteConfirmDialog } from '@/shared/presentation/common/organisms/DeleteConfirmDialog';
-import { PaymentAccountList } from '@/shared/presentation/common/organisms/PaymentAccountList';
-import { ManageParticipantCard } from '@/shared/presentation/common/organisms/ManageParticipantCard';
 
 export function TripDetailView({ tripId }: { tripId: string }) {
   const router = useRouter();
@@ -217,7 +212,7 @@ export function TripDetailView({ tripId }: { tripId: string }) {
             <ManageParticipantCard
               key={s.id}
               name={s.participantName}
-              amount={s.totalNetAmount}
+              formattedAmount={formatCurrency(s.totalNetAmount, 'IDR')}
               status={s.status}
               isCreator={s.participantName.toLowerCase() === 'you'}
               creatorBadgeLabel="Trip creator"

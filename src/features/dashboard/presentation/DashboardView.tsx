@@ -1,13 +1,11 @@
 'use client';
 
 import { useRouter } from 'next/navigation';
-import { Card, CardContent } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
+import { Card, CardContent, Button, MonthNavigator } from '@handharr-labs/ui-xpnsio';
+import { usePullToRefresh } from '@handharr-labs/web-client';
+import { ROUTES } from '@/shared/presentation/navigation/routes';
 import { useDashboardViewModel } from './useDashboardViewModel';
 import { BudgetProgressServiceImpl } from '@/features/dashboard/data/services/BudgetProgressServiceImpl';
-import { usePullToRefresh } from '@/shared/presentation/hooks/usePullToRefresh';
-import { ROUTES } from '@/shared/presentation/navigation/routes';
-import { MonthNavigator } from '@/shared/presentation/common/molecules/MonthNavigator';
 import { BudgetOverviewCard } from './organisms/BudgetOverviewCard';
 import { CategoryBreakdownSection } from './organisms/CategoryBreakdownSection';
 import { RecentTransactionsSection } from './organisms/RecentTransactionsSection';

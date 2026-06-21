@@ -1,8 +1,7 @@
 'use client';
 
 import { Pencil, Trash2 } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { CategoryColorDot } from '@/shared/presentation/common/atoms/CategoryColorDot';
+import { Button, CategoryColorDot } from '@handharr-labs/ui-xpnsio';
 import type { Category } from '@/features/categories/domain/entities/Category';
 import { getCategoryIcon } from '@/features/categories/presentation/utils/getCategoryIcon';
 

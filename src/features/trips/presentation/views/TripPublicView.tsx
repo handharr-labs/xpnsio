@@ -4,12 +4,10 @@ import { useState, useRef } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useAction } from 'next-safe-action/hooks';
 import { Upload, X, ImageIcon, Loader2, CheckCircle2 } from 'lucide-react';
-import { Button } from '@/components/ui/button';
+import { Button, PaymentAccountList, PublicParticipantCard } from '@handharr-labs/ui-xpnsio';
+import { formatCurrency } from '@handharr-labs/core';
 import { getTripDetailPublicAction, uploadTripSettlementProofAction } from '../actions/trips';
-import { formatCurrency } from '@/shared/presentation/utils/formatCurrency';
 import { createSupabaseBrowserClient } from '@/lib/supabase-browser';
-import { PaymentAccountList } from '@/shared/presentation/common/organisms/PaymentAccountList';
-import { PublicParticipantCard } from '@/shared/presentation/common/organisms/PublicParticipantCard';
 import type { TripParticipantSettlement } from '../../domain/entities/TripParticipantSettlement';
 
 export function TripPublicView({ tripId }: { tripId: string }) {
@@ -220,7 +218,7 @@ export function TripPublicView({ tripId }: { tripId: string }) {
                 <PublicParticipantCard
                   key={s.id}
                   name={displayName}
-                  amount={s.totalNetAmount}
+                  formattedAmount={formatCurrency(s.totalNetAmount, 'IDR')}
                   isCreator={isCreatorRow}
                   creatorBadgeLabel="Trip creator"
                   status={s.status}

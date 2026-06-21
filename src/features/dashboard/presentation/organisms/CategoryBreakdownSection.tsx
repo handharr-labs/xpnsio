@@ -1,9 +1,8 @@
-import { Card, CardContent } from '@/components/ui/card';
+import { Card, CardContent } from '@handharr-labs/ui-xpnsio';
+import { formatCurrency, formatCompactCurrency, formatWeekRange } from '@handharr-labs/core';
 import { ChevronRight } from 'lucide-react';
 import type { CategoryBudgetInfo } from '@/features/dashboard/domain/entities/CategoryBudgetInfo';
 import type { BudgetStatus } from '@/features/dashboard/domain/services/BudgetProgressService';
-import { formatCurrency, formatCompactCurrency } from '@/shared/presentation/utils/formatCurrency';
-import { formatWeekRange } from '@/shared/presentation/utils/formatWeekRange';
 
 const formatCompact = (amount: number) => formatCompactCurrency(amount, 'IDR');
 const formatBudgetLabel = (remaining: number, isOverrun: boolean) =>

@@ -1,7 +1,7 @@
 import { Play, Pencil, Trash2, Layers } from 'lucide-react';
-import { Button } from '@/components/ui/button';
+import { Button } from '@handharr-labs/ui-xpnsio';
+import { formatCurrency } from '@handharr-labs/core';
 import type { BudgetSetting } from '@/features/budget-settings/domain/entities/BudgetSetting';
-import { formatCurrency } from '@/shared/presentation/utils/formatCurrency';
 
 interface BudgetSettingCardProps {
   setting: BudgetSetting;

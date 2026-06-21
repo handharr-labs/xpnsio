@@ -1,7 +1,7 @@
 'use client';
 
 import { X, Check, UtensilsCrossed, Car, Home, ShoppingBag, Heart, BookOpen, Tv, Plane, Circle } from 'lucide-react';
-import { Button } from '@/components/ui/button';
+import { Button } from '@handharr-labs/ui-xpnsio';
 
 const COLOR_OPTIONS = [
   '#6366f1', '#ec4899', '#f59e0b', '#10b981', '#3b82f6',

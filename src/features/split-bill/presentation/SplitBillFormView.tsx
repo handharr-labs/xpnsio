@@ -2,12 +2,10 @@
 
 import { useRouter } from 'next/navigation';
 import { ArrowLeft, ArrowRight, Plus, Trash2, Check, Lock } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { formatCurrency } from '@/shared/presentation/utils/formatCurrency';
+import { Button, CurrencyInput, Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@handharr-labs/ui-xpnsio';
+import { formatCurrency } from '@handharr-labs/core';
 import type { SplitMode } from '../domain/entities/SplitBill';
 import type { ParticipantForm, ItemForm, AdjustmentForm, AccountForm, FormStep } from './useSplitBillNewViewModel';
-import { CurrencyInput } from '@/shared/presentation/common/atoms/CurrencyInput';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 
 const STEPS = ['Bill Info', 'Participants', 'Adjustments', 'Review', 'Payment'];
 
@@ -232,7 +230,7 @@ export function SplitBillFormView({ vm }: { vm: SplitBillFormVm }) {
                 <CurrencyInput
                   value={vm.totalAmount}
                   onChange={vm.setTotalAmount}
-                  currency="IDR"
+                  currencyLabel="IDR"
                   className="w-full h-11 rounded-xl bg-muted/50"
                 />
                 {vm.totalAmount > 0 && vm.participants.length > 0 && (
@@ -250,7 +248,7 @@ export function SplitBillFormView({ vm }: { vm: SplitBillFormVm }) {
                   <CurrencyInput
                     value={vm.totalAmount}
                     onChange={vm.setTotalAmount}
-                    currency="IDR"
+                    currencyLabel="IDR"
                     className="w-full h-11 rounded-xl bg-muted/50"
                   />
                 </Field>
@@ -262,7 +260,7 @@ export function SplitBillFormView({ vm }: { vm: SplitBillFormVm }) {
                         <CurrencyInput
                           value={vm.customAmounts[p.localId] ?? 0}
                           onChange={(v) => vm.setCustomAmounts((prev) => ({ ...prev, [p.localId]: v }))}
-                          currency="IDR"
+                          currencyLabel="IDR"
                           className="flex-1 min-w-0 h-11 rounded-xl bg-muted/50"
                         />
                       </div>
@@ -337,7 +335,7 @@ export function SplitBillFormView({ vm }: { vm: SplitBillFormVm }) {
                       <CurrencyInput
                         value={item.price}
                         onChange={(v) => vm.updateItem(item.localId, { price: v })}
-                        currency="IDR"
+                        currencyLabel="IDR"
                         className="w-full h-11 rounded-xl bg-muted/50"
                       />
                       <div>
@@ -420,7 +418,7 @@ export function SplitBillFormView({ vm }: { vm: SplitBillFormVm }) {
                       <CurrencyInput
                         value={adj.value}
                         onChange={(v) => vm.updateAdjustment(adj.localId, { value: v })}
-                        currency="IDR"
+                        currencyLabel="IDR"
                         className="flex-1 min-w-0 h-11 rounded-xl bg-muted/50"
                       />
                     ) : (

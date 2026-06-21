@@ -3,12 +3,10 @@
 import { useState, useRef } from 'react';
 import Link from 'next/link';
 import { Upload, X, ImageIcon, Luggage } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { useSplitBillPublicViewModel } from './useSplitBillPublicViewModel';
-import { formatCurrency } from '@/shared/presentation/utils/formatCurrency';
-import { PaymentAccountList } from '@/shared/presentation/common/organisms/PaymentAccountList';
-import { PublicParticipantCard } from '@/shared/presentation/common/organisms/PublicParticipantCard';
+import { Button, PaymentAccountList, PublicParticipantCard } from '@handharr-labs/ui-xpnsio';
+import { formatCurrency } from '@handharr-labs/core';
 import { ROUTES } from '@/shared/presentation/navigation/routes';
+import { useSplitBillPublicViewModel } from './useSplitBillPublicViewModel';
 import type { SplitBillParticipant } from '../domain/entities/SplitBillParticipant';
 
 export function SplitBillPublicView({ billId }: { billId: string }) {
@@ -128,7 +126,7 @@ export function SplitBillPublicView({ billId }: { billId: string }) {
               <PublicParticipantCard
                 key={p.id}
                 name={p.name}
-                amount={p.finalAmount}
+                formattedAmount={formatCurrency(p.finalAmount, 'IDR')}
                 isCreator={p.isCreator}
                 creatorBadgeLabel="Bill creator"
                 status={p.status}

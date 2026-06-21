@@ -2,14 +2,13 @@
 
 import { useRouter } from 'next/navigation';
 import { Layers, Wallet, Settings, CheckCircle2, Plus, Trash2, Check } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { useSetupViewModel } from './useSetupViewModel';
-import type { SetupCategory } from './useSetupViewModel';
-import { CurrencyInput } from '@/shared/presentation/common/atoms/CurrencyInput';
-import { formatCurrency } from '@/shared/presentation/utils/formatCurrency';
-import { getOrdinalSuffix } from '@/shared/core/utils/formatOrdinal';
+import { Button, CurrencyInput } from '@handharr-labs/ui-xpnsio';
+import { formatCurrency } from '@handharr-labs/core';
 import { ROUTES } from '@/shared/presentation/navigation/routes';
 import { CURRENCY_OPTIONS } from '@/shared/presentation/constants/currencyOptions';
+import { useSetupViewModel } from './useSetupViewModel';
+import type { SetupCategory } from './useSetupViewModel';
+import { getOrdinalSuffix } from '@/shared/core/utils/formatOrdinal';
 
 const COLOR_OPTIONS = [
   '#6366f1', '#ec4899', '#f59e0b', '#10b981', '#3b82f6',
@@ -216,7 +215,7 @@ export function SetupView() {
                     <CurrencyInput
                       value={cat.amount}
                       onChange={(v) => updateCategory(index, 'amount', v)}
-                      currency={currency}
+                      currencyLabel={currency}
                       className="w-40"
                     />
                   </div>

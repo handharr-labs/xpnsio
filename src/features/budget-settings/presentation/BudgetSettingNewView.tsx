@@ -2,12 +2,10 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { useBudgetSettingNewViewModel } from './useBudgetSettingNewViewModel';
-import { CurrencyInput } from '@/shared/presentation/common/atoms/CurrencyInput';
+import { Card, CardContent, CardHeader, CardTitle, Button, CurrencyInput } from '@handharr-labs/ui-xpnsio';
 import { ROUTES } from '@/shared/presentation/navigation/routes';
 import { CURRENCY_OPTIONS } from '@/shared/presentation/constants/currencyOptions';
+import { useBudgetSettingNewViewModel } from './useBudgetSettingNewViewModel';
 
 const COLOR_OPTIONS = [
   '#6366f1', '#ec4899', '#f59e0b', '#10b981', '#3b82f6',
@@ -189,7 +187,7 @@ export function BudgetSettingNewView() {
                     <CurrencyInput
                       value={item.monthlyAmount}
                       onChange={(v) => updateItem(index, 'monthlyAmount', v)}
-                      currency={currency}
+                      currencyLabel={currency}
                     />
                   </div>
                 </div>

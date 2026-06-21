@@ -3,10 +3,9 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { ArrowLeft, Calendar, Check } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { useTransactionNewViewModel } from './useTransactionNewViewModel';
-import { CurrencyInput } from '@/shared/presentation/common/atoms/CurrencyInput';
+import { Button, CurrencyInput } from '@handharr-labs/ui-xpnsio';
 import { ROUTES } from '@/shared/presentation/navigation/routes';
+import { useTransactionNewViewModel } from './useTransactionNewViewModel';
 
 export function TransactionNewView() {
   const router = useRouter();
@@ -78,7 +77,7 @@ export function TransactionNewView() {
                 <CurrencyInput
                   value={amount}
                   onChange={setAmount}
-                  currency={currency}
+                  currencyLabel={currency}
                   required
                   className="text-lg h-14 rounded-xl"
                 />

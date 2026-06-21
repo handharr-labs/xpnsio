@@ -3,9 +3,9 @@
 import { useState, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { Search, SlidersHorizontal, Plus, X } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { useTransactionsViewModel } from './useTransactionsViewModel';
+import { Button } from '@handharr-labs/ui-xpnsio';
 import { ROUTES } from '@/shared/presentation/navigation/routes';
+import { useTransactionsViewModel } from './useTransactionsViewModel';
 import { TransactionFilterPanel } from './organisms/TransactionFilterPanel';
 import { TransactionListSection } from './organisms/TransactionListSection';
 import type { Transaction } from '@/features/transactions/domain/entities/Transaction';
@@ -161,7 +161,7 @@ export function TransactionsView() {
               dates={dates}
               grouped={grouped}
               categoryMap={categoryMap}
-              currency={currency}
+              currencyLabel={currency}
               hasMore={hasMore}
               onLoadMore={loadMore}
               onSelect={(id) => router.push(ROUTES.transactionDetail(id))}
