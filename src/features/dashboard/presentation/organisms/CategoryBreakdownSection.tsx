@@ -1,39 +1,23 @@
 import { Card, CardContent } from '@handharr-labs/ui-xpnsio';
-import { formatCurrency, formatCompactCurrency, formatWeekRange } from '@handharr-labs/core';
 import { ChevronRight } from 'lucide-react';
-import type { CategoryBudgetInfo } from '@/features/dashboard/domain/entities/CategoryBudgetInfo';
-import type { BudgetStatus } from '@/features/dashboard/domain/services/BudgetProgressService';
 
-const formatCompact = (amount: number) => formatCompactCurrency(amount, 'IDR');
-const formatBudgetLabel = (remaining: number, isOverrun: boolean) =>
-  isOverrun ? `over ${formatCompact(Math.abs(remaining))}` : `${formatCompact(remaining)} left`;
+type StatusVariant = 'on-track' | 'at-risk' | 'over';
 
-const MASTER_LABELS: Record<string, string> = {
-  daily: 'Daily',
-  weekly: 'Weekly',
-  monthly: 'Monthly',
-};
-
-const STATUS_COLOR: Record<BudgetStatus, string> = {
+const STATUS_COLOR: Record<StatusVariant, string> = {
   'on-track': 'bg-emerald-400',
   'at-risk':  'bg-yellow-400',
   'over':     'bg-red-400',
 };
 
-const STATUS_TEXT: Record<BudgetStatus, string> = {
+const STATUS_TEXT: Record<StatusVariant, string> = {
   'on-track': 'text-emerald-600 dark:text-emerald-300',
   'at-risk':  'text-yellow-600 dark:text-yellow-300',
   'over':     'text-red-600 dark:text-red-300',
 };
 
-interface CategoryBreakdownSectionProps {
-  categories: ReadonlyArray<CategoryBudgetInfo>;
-  isCurrentPeriod: boolean;
-}
-
 interface ProgressBarProps {
   percent: number;
-  status: BudgetStatus;
+  status: StatusVariant;
   height?: 'sm' | 'md';
 }
 
@@ -48,12 +32,7 @@ function ProgressBar({ percent, status, height = 'sm' }: ProgressBarProps) {
   );
 }
 
-interface StatusBadgeProps {
-  label: string;
-  status: BudgetStatus;
-}
-
-function StatusBadge({ label, status }: StatusBadgeProps) {
+function StatusBadge({ label, status }: { label: string; status: StatusVariant }) {
   return (
     <span className={`text-xs font-medium ${STATUS_TEXT[status]}`}>
       {label}
@@ -61,53 +40,94 @@ function StatusBadge({ label, status }: StatusBadgeProps) {
   );
 }
 
+interface ProgressDisplay {
+  percent: number;
+  status: StatusVariant;
+  label: string;
+}
 
-function DailyCategoryCard({ c, isCurrentPeriod }: { c: CategoryBudgetInfo; isCurrentPeriod: boolean }) {
-  const dailyProgress = c.dailyProgress;
-  const todayProgress = c.todayProgress;
-  const thisWeekProgress = c.thisWeekProgress;
+export interface DailyCategoryCardVM {
+  type: 'daily';
+  id: string;
+  name: string;
+  budgetBadge: string;
+  todayLabel: string;
+  todayProgress: ProgressDisplay;
+  todaySpentLabel: string;
+  pacingLabel: string;
+  pacingProgress: ProgressDisplay;
+  weekLabel: string;
+  weekProgress: ProgressDisplay;
+}
 
-  if (!dailyProgress || !todayProgress || !thisWeekProgress || c.dailyBudget == null || c.availableToday == null || c.spentToday == null) return null;
+export interface WeeklyCategoryCardVM {
+  type: 'weekly';
+  id: string;
+  name: string;
+  budgetBadge: string;
+  weekLabel: string;
+  weekSubLabel: string;
+  weekProgress: ProgressDisplay;
+  weekSpentLabel: string;
+  pacingLabel: string;
+  pacingProgress: ProgressDisplay;
+  monthlyProgress: ProgressDisplay;
+}
 
+export interface MonthlyCategoryCardVM {
+  type: 'monthly';
+  id: string;
+  name: string;
+  progress: ProgressDisplay;
+  spentLabel: string;
+}
+
+export type CategoryCardVM = DailyCategoryCardVM | WeeklyCategoryCardVM | MonthlyCategoryCardVM;
+
+export interface CategoryGroupVM {
+  period: string;
+  label: string;
+  items: CategoryCardVM[];
+}
+
+interface CategoryBreakdownSectionProps {
+  title: string;
+  groups: CategoryGroupVM[];
+}
+
+function DailyCategoryCard({ vm }: { vm: DailyCategoryCardVM }) {
   return (
     <Card size="sm" className="hover:ring-foreground/20 transition-all cursor-pointer group">
       <CardContent className="pt-3 space-y-4">
-        {/* Header */}
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <span className="text-sm font-semibold">{c.categoryName}</span>
+            <span className="text-sm font-semibold">{vm.name}</span>
             <span className="text-xs text-muted-foreground bg-muted px-2 py-0.5 rounded-full">
-              {formatCompact(c.dailyBudget)}/day
+              {vm.budgetBadge}
             </span>
           </div>
           <ChevronRight className="w-4 h-4 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity" />
         </div>
 
-        {/* Today - Primary Focus */}
         <div className="p-3 rounded-lg bg-muted/50 space-y-2">
           <div className="flex items-center justify-between">
-            <span className="text-xs font-medium uppercase tracking-wide text-muted-foreground">{isCurrentPeriod ? 'Today' : 'Last Day'}</span>
-            <StatusBadge label={formatBudgetLabel(todayProgress.remaining, todayProgress.isOverrun)} status={todayProgress.status} />
+            <span className="text-xs font-medium uppercase tracking-wide text-muted-foreground">{vm.todayLabel}</span>
+            <StatusBadge label={vm.todayProgress.label} status={vm.todayProgress.status} />
           </div>
-          <ProgressBar percent={todayProgress.percent} status={todayProgress.status} height="md" />
-          <p className="text-xs text-muted-foreground">
-            {formatCurrency(c.spentToday, 'IDR')} of {formatCurrency(c.availableToday, 'IDR')}
-          </p>
+          <ProgressBar percent={vm.todayProgress.percent} status={vm.todayProgress.status} height="md" />
+          <p className="text-xs text-muted-foreground">{vm.todaySpentLabel}</p>
         </div>
 
-        {/* Pacing & This Week - Compact Grid */}
         <div className="grid grid-cols-2 gap-4 pt-2 border-t border-border/50">
           <div className="space-y-1.5">
-            <p className="text-xs text-muted-foreground">Pacing ({c.periodDaysElapsed}d)</p>
-            <ProgressBar percent={dailyProgress.percent} status={dailyProgress.status} />
-            <p className={`text-xs font-medium ${STATUS_TEXT[dailyProgress.status]}`}>{dailyProgress.percent}%</p>
+            <p className="text-xs text-muted-foreground">{vm.pacingLabel}</p>
+            <ProgressBar percent={vm.pacingProgress.percent} status={vm.pacingProgress.status} />
+            <p className={`text-xs font-medium ${STATUS_TEXT[vm.pacingProgress.status]}`}>{vm.pacingProgress.label}</p>
           </div>
           <div className="space-y-1.5">
-            <p className="text-xs text-muted-foreground">{isCurrentPeriod ? 'This Week' : 'Last Week'}</p>
-            <ProgressBar percent={thisWeekProgress.percent} status={thisWeekProgress.status} />
-            <p className={`text-xs font-medium ${STATUS_TEXT[thisWeekProgress.status]}`}>
-              {formatBudgetLabel(thisWeekProgress.remaining, thisWeekProgress.isOverrun)}
-            </p>
+            <p className="text-xs text-muted-foreground">{vm.weekLabel}</p>
+            <ProgressBar percent={vm.weekProgress.percent} status={vm.weekProgress.status} />
+            <p className={`text-xs font-medium ${STATUS_TEXT[vm.weekProgress.status]}`}>{vm.weekProgress.label}</p>
           </div>
         </div>
       </CardContent>
@@ -115,55 +135,42 @@ function DailyCategoryCard({ c, isCurrentPeriod }: { c: CategoryBudgetInfo; isCu
   );
 }
 
-function WeeklyCategoryCard({ c, isCurrentPeriod }: { c: CategoryBudgetInfo; isCurrentPeriod: boolean }) {
-  const weeklyProgress = c.weeklyProgress;
-  const thisWeekProgress = c.thisWeekProgress;
-  const monthlyProgress = c.monthlyProgress;
-
-  if (!weeklyProgress || !thisWeekProgress || !monthlyProgress || c.weeklyBudget == null || c.availableThisWeek == null || c.spentThisWeek == null) return null;
-
+function WeeklyCategoryCard({ vm }: { vm: WeeklyCategoryCardVM }) {
   return (
     <Card size="sm" className="hover:ring-foreground/20 transition-all cursor-pointer group">
       <CardContent className="pt-3 space-y-4">
-        {/* Header */}
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <span className="text-sm font-semibold">{c.categoryName}</span>
+            <span className="text-sm font-semibold">{vm.name}</span>
             <span className="text-xs text-muted-foreground bg-muted px-2 py-0.5 rounded-full">
-              {formatCompact(c.weeklyBudget)}/wk
+              {vm.budgetBadge}
             </span>
           </div>
           <ChevronRight className="w-4 h-4 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity" />
         </div>
 
-        {/* This Week - Primary Focus */}
         <div className="p-3 rounded-lg bg-muted/50 space-y-2">
           <div className="flex items-center justify-between">
             <span className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
-              {isCurrentPeriod ? 'This Week' : 'Last Week'}
-              <span className="font-normal ml-1">({formatWeekRange(c.weekStartStr)})</span>
+              {vm.weekLabel}
+              <span className="font-normal ml-1">({vm.weekSubLabel})</span>
             </span>
-            <StatusBadge label={formatBudgetLabel(thisWeekProgress.remaining, thisWeekProgress.isOverrun)} status={thisWeekProgress.status} />
+            <StatusBadge label={vm.weekProgress.label} status={vm.weekProgress.status} />
           </div>
-          <ProgressBar percent={thisWeekProgress.percent} status={thisWeekProgress.status} height="md" />
-          <p className="text-xs text-muted-foreground">
-            {formatCurrency(c.spentThisWeek, 'IDR')} of {formatCurrency(c.availableThisWeek, 'IDR')}
-          </p>
+          <ProgressBar percent={vm.weekProgress.percent} status={vm.weekProgress.status} height="md" />
+          <p className="text-xs text-muted-foreground">{vm.weekSpentLabel}</p>
         </div>
 
-        {/* Pacing & Monthly - Compact Grid */}
         <div className="grid grid-cols-2 gap-4 pt-2 border-t border-border/50">
           <div className="space-y-1.5">
-            <p className="text-xs text-muted-foreground">Pacing (Week {c.periodWeeksElapsed})</p>
-            <ProgressBar percent={weeklyProgress.percent} status={weeklyProgress.status} />
-            <p className={`text-xs font-medium ${STATUS_TEXT[weeklyProgress.status]}`}>{weeklyProgress.percent}%</p>
+            <p className="text-xs text-muted-foreground">{vm.pacingLabel}</p>
+            <ProgressBar percent={vm.pacingProgress.percent} status={vm.pacingProgress.status} />
+            <p className={`text-xs font-medium ${STATUS_TEXT[vm.pacingProgress.status]}`}>{vm.pacingProgress.label}</p>
           </div>
           <div className="space-y-1.5">
             <p className="text-xs text-muted-foreground">Monthly</p>
-            <ProgressBar percent={monthlyProgress.percent} status={monthlyProgress.status} />
-            <p className={`text-xs font-medium ${STATUS_TEXT[monthlyProgress.status]}`}>
-              {formatBudgetLabel(monthlyProgress.remaining, monthlyProgress.isOverrun)}
-            </p>
+            <ProgressBar percent={vm.monthlyProgress.percent} status={vm.monthlyProgress.status} />
+            <p className={`text-xs font-medium ${STATUS_TEXT[vm.monthlyProgress.status]}`}>{vm.monthlyProgress.label}</p>
           </div>
         </div>
       </CardContent>
@@ -171,76 +178,49 @@ function WeeklyCategoryCard({ c, isCurrentPeriod }: { c: CategoryBudgetInfo; isC
   );
 }
 
-function MonthlyCategoryCard({ c }: { c: CategoryBudgetInfo }) {
-  const progress = c.monthlyProgress;
-  const percent = progress?.percent ?? 0;
-  const status: BudgetStatus = progress?.status ?? 'on-track';
-  const remaining = progress?.remaining ?? c.remaining;
-  const isOverrun = progress?.isOverrun ?? false;
-
+function MonthlyCategoryCard({ vm }: { vm: MonthlyCategoryCardVM }) {
   return (
     <Card size="sm" className="hover:ring-foreground/20 transition-all cursor-pointer group">
       <CardContent className="pt-3 space-y-3">
-        {/* Header */}
         <div className="flex items-center justify-between">
-          <span className="text-sm font-semibold">{c.categoryName}</span>
+          <span className="text-sm font-semibold">{vm.name}</span>
           <ChevronRight className="w-4 h-4 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity" />
         </div>
-
-        {/* Progress */}
-        <ProgressBar percent={percent} status={status} height="md" />
-
-        {/* Stats Row */}
+        <ProgressBar percent={vm.progress.percent} status={vm.progress.status} height="md" />
         <div className="flex items-center justify-between">
-          <span className="text-xs text-muted-foreground">
-            {formatCurrency(c.totalSpent, 'IDR')} / {formatCurrency(c.monthlyBudget, 'IDR')}
-          </span>
-          <StatusBadge label={formatBudgetLabel(remaining, isOverrun)} status={status} />
+          <span className="text-xs text-muted-foreground">{vm.spentLabel}</span>
+          <StatusBadge label={vm.progress.label} status={vm.progress.status} />
         </div>
       </CardContent>
     </Card>
   );
 }
 
-export function CategoryBreakdownSection({ categories, isCurrentPeriod }: CategoryBreakdownSectionProps) {
-  if (categories.length === 0) return null;
+export function CategoryBreakdownSection({ title, groups }: CategoryBreakdownSectionProps) {
+  if (groups.length === 0) return null;
 
   return (
     <section className="space-y-5">
-      <h2 className="text-lg font-semibold text-white">Categories</h2>
+      <h2 className="text-lg font-semibold text-white">{title}</h2>
 
-      {(['daily', 'weekly', 'monthly'] as const).map((period) => {
-        const items = categories.filter((c) => c.masterCategory === period);
-        if (items.length === 0) return null;
-
-        return (
-          <div key={period} className="space-y-3">
-            <div className="flex items-center gap-2">
-              <h3 className="text-xs font-semibold uppercase tracking-wider text-zinc-400">
-                {MASTER_LABELS[period]}
-              </h3>
-              <div className="flex-1 h-px bg-white/10" />
-            </div>
-
-            <div className="grid gap-3 md:grid-cols-2">
-              {items.map((c) => {
-                const isDaily =
-                  c.masterCategory === 'daily' &&
-                  c.dailyBudget != null &&
-                  c.accumulatedBudgetToDate != null;
-                const isWeekly =
-                  c.masterCategory === 'weekly' &&
-                  c.weeklyBudget != null &&
-                  c.accumulatedWeeklyBudget != null;
-
-                if (isDaily) return <DailyCategoryCard key={c.categoryId} c={c} isCurrentPeriod={isCurrentPeriod} />;
-                if (isWeekly) return <WeeklyCategoryCard key={c.categoryId} c={c} isCurrentPeriod={isCurrentPeriod} />;
-                return <MonthlyCategoryCard key={c.categoryId} c={c} />;
-              })}
-            </div>
+      {groups.map((group) => (
+        <div key={group.period} className="space-y-3">
+          <div className="flex items-center gap-2">
+            <h3 className="text-xs font-semibold uppercase tracking-wider text-zinc-400">
+              {group.label}
+            </h3>
+            <div className="flex-1 h-px bg-white/10" />
           </div>
-        );
-      })}
+
+          <div className="grid gap-3 md:grid-cols-2">
+            {group.items.map((vm) => {
+              if (vm.type === 'daily') return <DailyCategoryCard key={vm.id} vm={vm} />;
+              if (vm.type === 'weekly') return <WeeklyCategoryCard key={vm.id} vm={vm} />;
+              return <MonthlyCategoryCard key={vm.id} vm={vm} />;
+            })}
+          </div>
+        </div>
+      ))}
     </section>
   );
 }

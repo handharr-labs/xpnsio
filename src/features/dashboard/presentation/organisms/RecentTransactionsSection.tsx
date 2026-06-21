@@ -1,17 +1,22 @@
 import { ChevronRight } from 'lucide-react';
-import type { Transaction } from '@/features/transactions/domain/entities/Transaction';
-import { formatCurrency, formatRelativeDate } from '@handharr-labs/core';
+
+export interface RecentTransactionVM {
+  id: string;
+  label: string;
+  description?: string;
+  formattedAmount: string;
+  formattedDate: string;
+  variant: 'income' | 'expense';
+}
 
 interface RecentTransactionsSectionProps {
-  transactions: ReadonlyArray<Transaction>;
-  currency: string;
+  transactions: ReadonlyArray<RecentTransactionVM>;
   onViewAll: () => void;
   onSelect: (id: string) => void;
 }
 
 export function RecentTransactionsSection({
   transactions,
-  currency,
   onViewAll,
   onSelect,
 }: RecentTransactionsSectionProps) {
@@ -38,36 +43,30 @@ export function RecentTransactionsSection({
             className="flex items-center gap-3 w-full p-4 text-left hover:bg-muted/50 active:bg-muted transition-colors min-h-[56px]"
             onClick={() => onSelect(tx.id)}
           >
-            {/* Color Indicator */}
             <div
               className={`w-2.5 h-2.5 rounded-full shrink-0 ${
-                tx.type === 'income' ? 'bg-emerald-400' : 'bg-red-400'
+                tx.variant === 'income' ? 'bg-emerald-400' : 'bg-red-400'
               }`}
             />
 
-            {/* Content */}
             <div className="flex-1 min-w-0">
-              <p className="text-sm font-medium truncate">
-                {tx.categoryName ?? (tx.type === 'income' ? 'Income' : 'Expense')}
-              </p>
+              <p className="text-sm font-medium truncate">{tx.label}</p>
               {tx.description && (
                 <p className="text-xs text-muted-foreground truncate">{tx.description}</p>
               )}
             </div>
 
-            {/* Amount & Date */}
             <div className="text-right shrink-0">
               <p
                 className={`text-sm font-semibold tabular-nums ${
-                  tx.type === 'income' ? 'text-emerald-400' : 'text-red-400'
+                  tx.variant === 'income' ? 'text-emerald-400' : 'text-red-400'
                 }`}
               >
-                {tx.type === 'income' ? '+' : '-'}{formatCurrency(tx.amount, currency)}
+                {tx.formattedAmount}
               </p>
-              <p className="text-xs text-muted-foreground">{formatRelativeDate(tx.date)}</p>
+              <p className="text-xs text-muted-foreground">{tx.formattedDate}</p>
             </div>
 
-            {/* Chevron */}
             <ChevronRight className="w-4 h-4 text-muted-foreground shrink-0" />
           </button>
         ))}

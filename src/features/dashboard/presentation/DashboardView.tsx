@@ -3,12 +3,105 @@
 import { useRouter } from 'next/navigation';
 import { Card, CardContent, Button, MonthNavigator } from '@handharr-labs/ui-xpnsio';
 import { usePullToRefresh } from '@handharr-labs/web-client';
+import { formatCurrency, formatCompactCurrency, formatWeekRange, formatRelativeDate } from '@handharr-labs/core';
 import { ROUTES } from '@/shared/presentation/navigation/routes';
 import { useDashboardViewModel } from './useDashboardViewModel';
 import { BudgetProgressServiceImpl } from '@/features/dashboard/data/services/BudgetProgressServiceImpl';
 import { BudgetOverviewCard } from './organisms/BudgetOverviewCard';
 import { CategoryBreakdownSection } from './organisms/CategoryBreakdownSection';
+import type { CategoryGroupVM, CategoryCardVM } from './organisms/CategoryBreakdownSection';
 import { RecentTransactionsSection } from './organisms/RecentTransactionsSection';
+import type { RecentTransactionVM } from './organisms/RecentTransactionsSection';
+import type { CategoryBudgetInfo } from '@/features/dashboard/domain/entities/CategoryBudgetInfo';
+import type { BudgetProgressData } from '@/features/dashboard/domain/entities/BudgetProgressData';
+
+const STATUS_LABELS: Record<string, string> = {
+  'on-track': 'On Track',
+  'at-risk': 'At Risk',
+  'over': 'Over Budget',
+};
+
+const MASTER_LABELS: Record<string, string> = {
+  daily: 'Daily',
+  weekly: 'Weekly',
+  monthly: 'Monthly',
+};
+
+function formatCompact(amount: number) {
+  return formatCompactCurrency(amount, 'IDR');
+}
+
+function budgetLabel(remaining: number, isOverrun: boolean) {
+  return isOverrun ? `over ${formatCompact(Math.abs(remaining))}` : `${formatCompact(remaining)} left`;
+}
+
+function toProgressDisplay(p: BudgetProgressData, labelOverride?: string) {
+  return { percent: p.percent, status: p.status, label: labelOverride ?? budgetLabel(p.remaining, p.isOverrun) };
+}
+
+function mapCategoryToCardVM(c: CategoryBudgetInfo, isCurrentPeriod: boolean): CategoryCardVM | null {
+  if (c.masterCategory === 'daily' && c.dailyBudget != null && c.accumulatedBudgetToDate != null) {
+    if (!c.dailyProgress || !c.todayProgress || !c.thisWeekProgress || c.availableToday == null || c.spentToday == null) return null;
+    return {
+      type: 'daily',
+      id: c.categoryId,
+      name: c.categoryName,
+      budgetBadge: `${formatCompact(c.dailyBudget)}/day`,
+      todayLabel: isCurrentPeriod ? 'Today' : 'Last Day',
+      todayProgress: toProgressDisplay(c.todayProgress),
+      todaySpentLabel: `${formatCurrency(c.spentToday, 'IDR')} of ${formatCurrency(c.availableToday, 'IDR')}`,
+      pacingLabel: `Pacing (${c.periodDaysElapsed}d)`,
+      pacingProgress: toProgressDisplay(c.dailyProgress, `${c.dailyProgress.percent}%`),
+      weekLabel: isCurrentPeriod ? 'This Week' : 'Last Week',
+      weekProgress: toProgressDisplay(c.thisWeekProgress),
+    };
+  }
+
+  if (c.masterCategory === 'weekly' && c.weeklyBudget != null && c.accumulatedWeeklyBudget != null) {
+    if (!c.weeklyProgress || !c.thisWeekProgress || !c.monthlyProgress || c.availableThisWeek == null || c.spentThisWeek == null) return null;
+    return {
+      type: 'weekly',
+      id: c.categoryId,
+      name: c.categoryName,
+      budgetBadge: `${formatCompact(c.weeklyBudget)}/wk`,
+      weekLabel: isCurrentPeriod ? 'This Week' : 'Last Week',
+      weekSubLabel: formatWeekRange(c.weekStartStr),
+      weekProgress: toProgressDisplay(c.thisWeekProgress),
+      weekSpentLabel: `${formatCurrency(c.spentThisWeek, 'IDR')} of ${formatCurrency(c.availableThisWeek, 'IDR')}`,
+      pacingLabel: `Pacing (Week ${c.periodWeeksElapsed})`,
+      pacingProgress: toProgressDisplay(c.weeklyProgress, `${c.weeklyProgress.percent}%`),
+      monthlyProgress: toProgressDisplay(c.monthlyProgress),
+    };
+  }
+
+  const progress = c.monthlyProgress;
+  const percent = progress?.percent ?? 0;
+  const status = progress?.status ?? 'on-track';
+  const remaining = progress?.remaining ?? c.remaining;
+  const isOverrun = progress?.isOverrun ?? false;
+
+  return {
+    type: 'monthly',
+    id: c.categoryId,
+    name: c.categoryName,
+    progress: { percent, status, label: budgetLabel(remaining, isOverrun) },
+    spentLabel: `${formatCurrency(c.totalSpent, 'IDR')} / ${formatCurrency(c.monthlyBudget, 'IDR')}`,
+  };
+}
+
+function buildCategoryGroups(categories: ReadonlyArray<CategoryBudgetInfo>, isCurrentPeriod: boolean): CategoryGroupVM[] {
+  const groups: CategoryGroupVM[] = [];
+  for (const period of ['daily', 'weekly', 'monthly'] as const) {
+    const items = categories
+      .filter((c) => c.masterCategory === period)
+      .map((c) => mapCategoryToCardVM(c, isCurrentPeriod))
+      .filter((vm): vm is CategoryCardVM => vm !== null);
+    if (items.length > 0) {
+      groups.push({ period, label: MASTER_LABELS[period], items });
+    }
+  }
+  return groups;
+}
 
 export function DashboardView() {
   const router = useRouter();
@@ -109,15 +202,24 @@ export function DashboardView() {
             /* Main Content */
             <div className="space-y-8">
               <BudgetOverviewCard
-                totalMonthlyBudget={dashboardData.totalMonthlyBudget}
-                totalSpent={dashboardData.totalSpent}
-                totalRemaining={dashboardData.totalRemaining}
-                budgetStatus={budgetStatus}
+                formattedRemaining={formatCurrency(dashboardData.totalRemaining)}
+                formattedBudget={formatCurrency(dashboardData.totalMonthlyBudget)}
+                formattedSpent={formatCurrency(dashboardData.totalSpent)}
+                percentage={dashboardData.totalMonthlyBudget > 0 ? Math.min(Math.round((dashboardData.totalSpent / dashboardData.totalMonthlyBudget) * 100), 100) : 0}
+                status={budgetStatus}
+                statusLabel={STATUS_LABELS[budgetStatus]}
+                isOverrun={dashboardData.totalRemaining < 0}
               />
-              <CategoryBreakdownSection categories={dashboardData.categories} isCurrentPeriod={isCurrentMonth} />
+              <CategoryBreakdownSection title="Categories" groups={buildCategoryGroups(dashboardData.categories, isCurrentMonth)} />
               <RecentTransactionsSection
-                transactions={dashboardData.recentTransactions}
-                currency={dashboardData.currency}
+                transactions={dashboardData.recentTransactions.map((tx): RecentTransactionVM => ({
+                  id: tx.id,
+                  label: tx.categoryName ?? (tx.type === 'income' ? 'Income' : 'Expense'),
+                  description: tx.description ?? undefined,
+                  formattedAmount: `${tx.type === 'income' ? '+' : '-'}${formatCurrency(tx.amount, dashboardData.currency)}`,
+                  formattedDate: formatRelativeDate(tx.date),
+                  variant: tx.type === 'income' ? 'income' : 'expense',
+                }))}
                 onViewAll={() => router.push(ROUTES.transactions)}
                 onSelect={(id) => router.push(ROUTES.transactionDetail(id))}
               />
