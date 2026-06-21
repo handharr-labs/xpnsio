@@ -3,8 +3,8 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Plus, MapPin, X } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { useTripListViewModel } from '../state/useTripListViewModel';
+import { Button } from '@handharr-labs/ui-xpnsio';
+import { useTripListViewModel } from '../hooks/useTripListViewModel';
 import { TripCardComponent } from './TripCardComponent';
 
 export function TripListView() {

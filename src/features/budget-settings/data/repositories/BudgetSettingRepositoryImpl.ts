@@ -2,7 +2,7 @@ import type { BudgetSettingRepository } from '@/features/budget-settings/domain/
 import type { BudgetSetting } from '@/features/budget-settings/domain/entities/BudgetSetting';
 import type { BudgetSettingDbDataSource } from '@/features/budget-settings/data/data-sources/budget-settings/BudgetSettingDbDataSource';
 import { BudgetSettingMapperImpl, type BudgetSettingMapper } from '@/features/budget-settings/data/mappers/BudgetSettingMapper';
-import { DomainError } from '@/shared/domain/errors/DomainError';
+import { UnexpectedError } from '@handharr-labs/core';
 
 export class BudgetSettingRepositoryImpl implements BudgetSettingRepository {
   constructor(
@@ -15,7 +15,7 @@ export class BudgetSettingRepositoryImpl implements BudgetSettingRepository {
       const records = await this.dataSource.getByUser(userId);
       return records.map((r) => this.mapper.toDomain(r));
     } catch (error) {
-      throw DomainError.serverError(String(error));
+      throw new UnexpectedError(error);
     }
   }
 
@@ -24,7 +24,7 @@ export class BudgetSettingRepositoryImpl implements BudgetSettingRepository {
       const record = await this.dataSource.getById(id);
       return record ? this.mapper.toDomain(record) : null;
     } catch (error) {
-      throw DomainError.serverError(String(error));
+      throw new UnexpectedError(error);
     }
   }
 
@@ -52,7 +52,7 @@ export class BudgetSettingRepositoryImpl implements BudgetSettingRepository {
       );
       return this.mapper.toDomain(record);
     } catch (error) {
-      throw DomainError.serverError(String(error));
+      throw new UnexpectedError(error);
     }
   }
 
@@ -81,7 +81,7 @@ export class BudgetSettingRepositoryImpl implements BudgetSettingRepository {
       const record = await this.dataSource.update(id, settingData, items);
       return this.mapper.toDomain(record);
     } catch (error) {
-      throw DomainError.serverError(String(error));
+      throw new UnexpectedError(error);
     }
   }
 
@@ -89,7 +89,7 @@ export class BudgetSettingRepositoryImpl implements BudgetSettingRepository {
     try {
       await this.dataSource.delete(id);
     } catch (error) {
-      throw DomainError.serverError(String(error));
+      throw new UnexpectedError(error);
     }
   }
 }

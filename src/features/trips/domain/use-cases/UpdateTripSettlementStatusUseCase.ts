@@ -1,6 +1,6 @@
 import type { SettlementStatus } from '../entities/TripParticipantSettlement';
 import type { TripRepository } from '../repositories/TripRepository';
-import { DomainError } from '@/shared/domain/errors/DomainError';
+import { ValidationError } from '@handharr-labs/core';
 
 export interface UpdateTripSettlementStatusParams {
   settlementId: string;
@@ -17,12 +17,12 @@ export class UpdateTripSettlementStatusUseCaseImpl implements UpdateTripSettleme
 
   async execute(params: UpdateTripSettlementStatusParams): Promise<void> {
     if (!params.settlementId.trim()) {
-      throw DomainError.validationFailed('settlementId', 'Settlement ID is required');
+      throw new ValidationError('Settlement ID is required');
     }
 
     const validStatuses: Exclude<SettlementStatus, 'pending'>[] = ['proof_uploaded', 'approved', 'rejected'];
     if (!validStatuses.includes(params.status)) {
-      throw DomainError.validationFailed('status', `Status must be one of: ${validStatuses.join(', ')}`);
+      throw new ValidationError(`Status must be one of: ${validStatuses.join(', ')}`);
     }
 
     return this.repository.updateSettlementStatus(params.settlementId, params.status, params.userId);

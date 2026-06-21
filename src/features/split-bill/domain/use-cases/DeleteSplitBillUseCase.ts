@@ -1,5 +1,5 @@
 import type { SplitBillRepository } from '../repositories/SplitBillRepository';
-import { DomainError } from '@/shared/domain/errors/DomainError';
+import { NotFoundError, UnauthorizedError } from '@handharr-labs/core';
 
 export interface DeleteSplitBillUseCase {
   execute(billId: string, userId: string): Promise<void>;
@@ -10,8 +10,8 @@ export class DeleteSplitBillUseCaseImpl implements DeleteSplitBillUseCase {
 
   async execute(billId: string, userId: string): Promise<void> {
     const bill = await this.repository.getById(billId);
-    if (!bill) throw DomainError.notFound('SplitBill', billId);
-    if (bill.userId !== userId) throw DomainError.unauthorized();
+    if (!bill) throw new NotFoundError('SplitBill');
+    if (bill.userId !== userId) throw new UnauthorizedError();
     await this.repository.delete(billId);
   }
 }

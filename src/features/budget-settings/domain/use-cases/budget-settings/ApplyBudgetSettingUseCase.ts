@@ -1,6 +1,6 @@
 import type { BudgetSettingRepository } from '@/features/budget-settings/domain/repositories/BudgetSettingRepository';
 import type { BudgetRepository } from '@/features/budget-settings/domain/repositories/BudgetRepository';
-import { DomainError } from '@/shared/domain/errors/DomainError';
+import { NotFoundError } from '@handharr-labs/core';
 
 export interface ApplyBudgetSettingParams {
   userId: string;
@@ -24,7 +24,7 @@ export class ApplyBudgetSettingUseCaseImpl implements ApplyBudgetSettingUseCase 
 
     const setting = await this.budgetSettingRepository.getById(budgetSettingId);
     if (!setting) {
-      throw DomainError.notFound('BudgetSetting', budgetSettingId);
+      throw new NotFoundError('BudgetSetting');
     }
 
     const items = setting.items.map((item) => ({

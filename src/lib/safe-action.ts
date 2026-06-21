@@ -1,13 +1,10 @@
 import { createSafeActionClient } from 'next-safe-action';
 import { createSupabaseServerClient } from '@/lib/auth';
-import { DomainError } from '@/shared/domain/errors/DomainError';
+import { handleServerActionError } from '@handharr-labs/web-server';
 
 // Public action client — no auth required
 export const actionClient = createSafeActionClient({
-  handleServerError(error) {
-    if (error instanceof DomainError) return error.message;
-    return 'An unexpected error occurred.';
-  },
+  handleServerError: handleServerActionError,
 });
 
 // Authenticated action client — throws if no valid Supabase session

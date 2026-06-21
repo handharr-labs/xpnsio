@@ -1,6 +1,6 @@
 import type { Category, MasterCategory } from '@/features/categories/domain/entities/Category';
 import type { CategoryRepository } from '@/features/categories/domain/repositories/CategoryRepository';
-import { DomainError } from '@/shared/domain/errors/DomainError';
+import { ValidationError } from '@handharr-labs/core';
 
 export interface CreateCategoryInput {
   userId: string;
@@ -19,7 +19,7 @@ export class CreateCategoryUseCaseImpl implements CreateCategoryUseCase {
 
   async execute(data: CreateCategoryInput): Promise<Category> {
     if (!data.name.trim()) {
-      throw DomainError.validationFailed('name', 'Name is required');
+      throw new ValidationError('Name is required');
     }
 
     return this.repository.create({

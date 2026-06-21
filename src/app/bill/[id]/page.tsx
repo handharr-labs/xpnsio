@@ -1,4 +1,4 @@
-import { SplitBillPublicView } from '@/features/split-bill/presentation/SplitBillPublicView';
+import { SplitBillPublicView } from '@/features/split-bill/presentation/views/SplitBillPublicView';
 
 // Public page — no authentication required
 export default async function BillPublicPage({ params }: { params: Promise<{ id: string }> }) {

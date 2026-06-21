@@ -1,4 +1,4 @@
-import { DomainError } from '@/shared/domain/errors/DomainError';
+import { UnexpectedError } from '@handharr-labs/core';
 import type { AuthAdminRepository } from '@/features/auth/domain/repositories/AuthAdminRepository';
 import type { AuthAdminRemoteDataSource } from '@/features/auth/data/data-sources/auth/AuthAdminRemoteDataSource';
 
@@ -9,7 +9,7 @@ export class AuthAdminRepositoryImpl implements AuthAdminRepository {
     try {
       await this.dataSource.deleteUser(userId);
     } catch (error) {
-      throw DomainError.serverError(String(error));
+      throw new UnexpectedError(error);
     }
   }
 }

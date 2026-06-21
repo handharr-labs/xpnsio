@@ -2,7 +2,7 @@ import type { PaymentAccount } from '../../domain/entities/PaymentAccount';
 import type { PaymentAccountRepository } from '../../domain/repositories/PaymentAccountRepository';
 import type { PaymentAccountDbDataSource } from '../data-sources/PaymentAccountDbDataSource';
 import { PaymentAccountMapper } from '../mappers/PaymentAccountMapper';
-import { DomainError } from '@/shared/domain/errors/DomainError';
+import { UnexpectedError } from '@handharr-labs/core';
 
 export class PaymentAccountRepositoryImpl implements PaymentAccountRepository {
   private readonly mapper = new PaymentAccountMapper();
@@ -14,7 +14,7 @@ export class PaymentAccountRepositoryImpl implements PaymentAccountRepository {
       const rows = await this.dataSource.getByUserId(userId);
       return rows.map((r) => this.mapper.toEntity(r));
     } catch (error) {
-      throw DomainError.serverError(String(error));
+      throw new UnexpectedError(error);
     }
   }
 
@@ -25,7 +25,7 @@ export class PaymentAccountRepositoryImpl implements PaymentAccountRepository {
     try {
       await this.dataSource.upsertMany(userId, accounts);
     } catch (error) {
-      throw DomainError.serverError(String(error));
+      throw new UnexpectedError(error);
     }
   }
 }

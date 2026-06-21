@@ -2,7 +2,7 @@ import type { TransactionRepository, TransactionFilter } from '@/features/transa
 import type { Transaction } from '@/features/transactions/domain/entities/Transaction';
 import type { TransactionDbDataSource } from '@/features/transactions/data/data-sources/transactions/TransactionDbDataSource';
 import { TransactionMapperImpl, type TransactionMapper } from '@/features/transactions/data/mappers/TransactionMapper';
-import { DomainError } from '@/shared/domain/errors/DomainError';
+import { UnexpectedError } from '@handharr-labs/core';
 
 export class TransactionRepositoryImpl implements TransactionRepository {
   constructor(
@@ -15,7 +15,7 @@ export class TransactionRepositoryImpl implements TransactionRepository {
       const records = await this.dataSource.getFiltered(filter);
       return records.map((r) => this.mapper.toDomain(r));
     } catch (error) {
-      throw DomainError.serverError(String(error));
+      throw new UnexpectedError(error);
     }
   }
 
@@ -24,7 +24,7 @@ export class TransactionRepositoryImpl implements TransactionRepository {
       const record = await this.dataSource.getById(id);
       return record ? this.mapper.toDomain(record) : null;
     } catch (error) {
-      throw DomainError.serverError(String(error));
+      throw new UnexpectedError(error);
     }
   }
 
@@ -40,7 +40,7 @@ export class TransactionRepositoryImpl implements TransactionRepository {
       });
       return this.mapper.toDomain(record);
     } catch (error) {
-      throw DomainError.serverError(String(error));
+      throw new UnexpectedError(error);
     }
   }
 
@@ -59,7 +59,7 @@ export class TransactionRepositoryImpl implements TransactionRepository {
       const record = await this.dataSource.update(id, updateData);
       return this.mapper.toDomain(record);
     } catch (error) {
-      throw DomainError.serverError(String(error));
+      throw new UnexpectedError(error);
     }
   }
 
@@ -67,7 +67,7 @@ export class TransactionRepositoryImpl implements TransactionRepository {
     try {
       await this.dataSource.delete(id);
     } catch (error) {
-      throw DomainError.serverError(String(error));
+      throw new UnexpectedError(error);
     }
   }
 
@@ -81,7 +81,7 @@ export class TransactionRepositoryImpl implements TransactionRepository {
       const total = await this.dataSource.sumByMonth(userId, year, month, type);
       return parseFloat(total);
     } catch (error) {
-      throw DomainError.serverError(String(error));
+      throw new UnexpectedError(error);
     }
   }
 
@@ -95,7 +95,7 @@ export class TransactionRepositoryImpl implements TransactionRepository {
       const records = await this.dataSource.getByMonthAndCategory(userId, year, month, categoryId);
       return records.map((r) => this.mapper.toDomain(r));
     } catch (error) {
-      throw DomainError.serverError(String(error));
+      throw new UnexpectedError(error);
     }
   }
 }

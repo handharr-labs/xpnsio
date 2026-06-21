@@ -3,16 +3,11 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { ArrowLeft, Plus, Trash2 } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { useTripDetailViewModel } from '../state/useTripDetailViewModel';
-import { getStandaloneBillsAction } from '../actions/trips';
-import { formatCurrency } from '@/shared/presentation/utils/formatCurrency';
+import { Button, ShareLink, ImageModal, DeleteConfirmDialog, CopyRowList, StatusCard } from '@handharr-labs/ui-xpnsio';
+import { formatCurrency } from '@handharr-labs/core';
 import { ROUTES } from '@/shared/presentation/navigation/routes';
-import { ShareLinkRow } from '@/shared/presentation/common/organisms/ShareLinkRow';
-import { ProofImageModal } from '@/shared/presentation/common/organisms/ProofImageModal';
-import { DeleteConfirmDialog } from '@/shared/presentation/common/organisms/DeleteConfirmDialog';
-import { PaymentAccountList } from '@/shared/presentation/common/organisms/PaymentAccountList';
-import { ManageParticipantCard } from '@/shared/presentation/common/organisms/ManageParticipantCard';
+import { useTripDetailViewModel } from '../hooks/useTripDetailViewModel';
+import { getStandaloneBillsAction } from '../actions/trips';
 
 export function TripDetailView({ tripId }: { tripId: string }) {
   const router = useRouter();
@@ -153,14 +148,14 @@ export function TripDetailView({ tripId }: { tripId: string }) {
         </div>
 
         {/* Public share link */}
-        <ShareLinkRow
+        <ShareLink
           url={publicUrl}
           href={ROUTES.tripPublic(tripId)}
         />
 
         {/* Payment accounts */}
         {uniqueAccounts.length > 0 && (
-          <PaymentAccountList accounts={uniqueAccounts} />
+          <CopyRowList accounts={uniqueAccounts} />
         )}
 
         {/* Bills breakdown */}
@@ -214,24 +209,24 @@ export function TripDetailView({ tripId }: { tripId: string }) {
           )}
 
           {settlements.map((s) => (
-            <ManageParticipantCard
+            <StatusCard
               key={s.id}
               name={s.participantName}
-              amount={s.totalNetAmount}
-              status={s.status}
-              isCreator={s.participantName.toLowerCase() === 'you'}
-              creatorBadgeLabel="Trip creator"
-              proofImageUrl={s.proofImageUrl}
+              formattedAmount={formatCurrency(s.totalNetAmount, 'IDR')}
+              variant={s.participantName.toLowerCase() === 'you' || s.status === 'approved' ? 'success' : s.status === 'proof_uploaded' ? 'warning' : s.status === 'rejected' ? 'danger' : 'default'}
+              statusLabel={s.participantName.toLowerCase() === 'you' ? 'Approved' : s.status === 'pending' ? 'Pending' : s.status === 'proof_uploaded' ? 'Proof uploaded' : s.status === 'approved' ? 'Approved' : 'Rejected'}
+              badge={s.participantName.toLowerCase() === 'you' ? 'Trip creator' : undefined}
+              imageUrl={s.proofImageUrl}
+              onViewImage={s.proofImageUrl ? () => setProofModal(s.proofImageUrl!) : undefined}
               isUpdating={isUpdatingStatus}
-              onViewProof={s.proofImageUrl ? () => setProofModal(s.proofImageUrl!) : undefined}
-              onApprove={() => updateSettlementStatus(s.id, 'approved')}
-              onReject={() => updateSettlementStatus(s.id, 'rejected')}
+              onApprove={s.status === 'proof_uploaded' && s.participantName.toLowerCase() !== 'you' ? () => updateSettlementStatus(s.id, 'approved') : undefined}
+              onReject={s.status === 'proof_uploaded' && s.participantName.toLowerCase() !== 'you' ? () => updateSettlementStatus(s.id, 'rejected') : undefined}
             />
           ))}
         </div>
       </div>
 
-      <ProofImageModal
+      <ImageModal
         imageUrl={proofModal}
         onClose={() => setProofModal(null)}
       />

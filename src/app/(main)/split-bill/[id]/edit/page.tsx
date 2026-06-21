@@ -1,4 +1,4 @@
-import { SplitBillEditView } from '@/features/split-bill/presentation/SplitBillEditView';
+import { SplitBillEditView } from '@/features/split-bill/presentation/views/SplitBillEditView';
 
 export default async function SplitBillEditPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
