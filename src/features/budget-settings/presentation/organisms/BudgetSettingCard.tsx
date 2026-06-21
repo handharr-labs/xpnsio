@@ -1,10 +1,15 @@
 import { Play, Pencil, Trash2, Layers } from 'lucide-react';
 import { Button } from '@handharr-labs/ui-xpnsio';
-import { formatCurrency } from '@handharr-labs/core';
-import type { BudgetSetting } from '@/features/budget-settings/domain/entities/BudgetSetting';
+
+export interface BudgetSettingCardVM {
+  id: string;
+  name: string;
+  formattedBudget: string;
+  categoryCountLabel: string;
+}
 
 interface BudgetSettingCardProps {
-  setting: BudgetSetting;
+  setting: BudgetSettingCardVM;
   isApplying: boolean;
   onApply: (id: string) => void;
   onEdit: (id: string) => void;
@@ -18,35 +23,26 @@ export function BudgetSettingCard({
   onEdit,
   onDelete,
 }: BudgetSettingCardProps) {
-  const categoryCount = setting.items.length;
-
   return (
     <div className="rounded-2xl ring-1 ring-border bg-card overflow-hidden">
-      {/* Header */}
       <div className="p-5 space-y-4">
-        {/* Title & Amount */}
         <div className="space-y-1">
           <h3 className="text-lg font-semibold tracking-tight">{setting.name}</h3>
           <p className="text-2xl font-bold text-primary">
-            {formatCurrency(setting.totalMonthlyBudget, 'IDR')}
+            {setting.formattedBudget}
             <span className="text-sm font-normal text-muted-foreground">/month</span>
           </p>
         </div>
 
-        {/* Category Count Badge */}
         <div className="flex items-center gap-2">
           <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-muted/50 text-xs font-medium text-muted-foreground">
             <Layers className="w-3.5 h-3.5" />
-            <span>
-              {categoryCount} {categoryCount === 1 ? 'category' : 'categories'}
-            </span>
+            <span>{setting.categoryCountLabel}</span>
           </div>
         </div>
       </div>
 
-      {/* Actions */}
       <div className="px-5 pb-5 space-y-3">
-        {/* Primary CTA */}
         <Button
           onClick={() => onApply(setting.id)}
           disabled={isApplying}
@@ -56,7 +52,6 @@ export function BudgetSettingCard({
           {isApplying ? 'Applying...' : 'Apply to This Month'}
         </Button>
 
-        {/* Secondary Actions */}
         <div className="flex gap-2">
           <Button
             variant="outline"

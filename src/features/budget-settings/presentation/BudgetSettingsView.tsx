@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Plus, FileText } from 'lucide-react';
 import { Button } from '@handharr-labs/ui-xpnsio';
+import { formatCurrency } from '@handharr-labs/core';
 import { ROUTES } from '@/shared/presentation/navigation/routes';
 import { useBudgetSettingsViewModel } from './useBudgetSettingsViewModel';
 import { BudgetSettingCard } from './organisms/BudgetSettingCard';
@@ -144,11 +145,16 @@ export function BudgetSettingsView() {
               {budgetSettings.map((setting) => (
                 <BudgetSettingCard
                   key={setting.id}
-                  setting={setting}
+                  setting={{
+                    id: setting.id,
+                    name: setting.name,
+                    formattedBudget: formatCurrency(setting.totalMonthlyBudget, 'IDR'),
+                    categoryCountLabel: `${setting.items.length} ${setting.items.length === 1 ? 'category' : 'categories'}`,
+                  }}
                   isApplying={applyingId === setting.id}
                   onApply={handleApply}
                   onEdit={(id) => router.push(ROUTES.budgetSettingEdit(id))}
-                  onDelete={(id) => setDeletingId(id)}   
+                  onDelete={(id) => setDeletingId(id)}
                 />
               ))}
             </div>
