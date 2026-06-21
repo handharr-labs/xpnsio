@@ -2,7 +2,7 @@
 
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useAction } from 'next-safe-action/hooks';
-import { getSplitBillAction, updateParticipantStatusAction, deleteSplitBillAction } from './actions/split-bill';
+import { getSplitBillAction, updateParticipantStatusAction, deleteSplitBillAction } from '../actions/split-bill';
 import { useState } from 'react';
 
 export function useSplitBillManageViewModel(billId: string) {

@@ -2,7 +2,7 @@
 
 import { Sun, Moon } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle, Button } from '@handharr-labs/ui-xpnsio';
-import { useSettingsViewModel } from './useSettingsViewModel';
+import { useSettingsViewModel } from '../hooks/useSettingsViewModel';
 
 export function SettingsView() {
   const {

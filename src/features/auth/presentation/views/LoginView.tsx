@@ -1,7 +1,7 @@
 'use client';
 
 import Image from 'next/image';
-import { useLoginViewModel } from './useLoginViewModel';
+import { useLoginViewModel } from '../hooks/useLoginViewModel';
 
 export function LoginView() {
   const { isLoading, error, handleGoogleSignIn } = useLoginViewModel();

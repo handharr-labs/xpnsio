@@ -3,7 +3,7 @@
 import { useQuery } from '@tanstack/react-query';
 import { useAction } from 'next-safe-action/hooks';
 import { useState, useEffect } from 'react';
-import { getSplitBillsAction } from './actions/split-bill';
+import { getSplitBillsAction } from '../actions/split-bill';
 
 export function useSplitBillListViewModel() {
   const { executeAsync: fetchBills } = useAction(getSplitBillsAction);

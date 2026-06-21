@@ -3,122 +3,125 @@
 import { useState, useCallback, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAction } from 'next-safe-action/hooks';
-import { createSplitBillAction, getPaymentAccountsAction } from './actions/split-bill';
+import { getSplitBillAction, updateSplitBillAction, getPaymentAccountsAction } from '../actions/split-bill';
 import { BillAmountCalculationServiceImpl } from '@/features/split-bill/domain/services/BillAmountCalculationService';
 import type { SplitMode } from '@/features/split-bill/domain/entities/SplitBill';
 import type { AdjustmentType, AdjustmentDistribution } from '@/features/split-bill/domain/entities/SplitBillAdjustment';
+import type { ParticipantForm, ItemForm, AdjustmentForm, AccountForm, FormStep } from './useSplitBillNewViewModel';
 import { ROUTES } from '@/shared/presentation/navigation/routes';
 import { createSupabaseBrowserClient } from '@/lib/supabase-browser';
 
-export type FormStep = 0 | 1 | 2 | 3 | 4;
-// 0: bill info + mode
-// 1: participants & amounts
-// 2: adjustments (optional)
-// 3: review
-// 4: payment accounts → submit
-
-export interface ParticipantForm {
-  localId: string;
-  name: string;
-  email?: string;
-  /** DB id — set when loaded from an existing bill for edit mode */
-  dbId?: string;
-  /** Participant's payment status — set in edit mode to prevent removing non-pending participants */
-  status?: import('../domain/entities/SplitBillParticipant').ParticipantStatus;
-  isCreator?: boolean;
-}
-
-export interface ItemForm {
-  localId: string;
-  name: string;
-  price: number;
-  assignedParticipantLocalIds: string[];
-}
-
-export interface AdjustmentForm {
-  localId: string;
-  label: string;
-  type: AdjustmentType;
-  value: number; // percentage × 100 or fixed IDR
-  distribution: AdjustmentDistribution;
-}
-
-export interface AccountForm {
-  localId: string;
-  bankName: string;
-  accountNumber: string;
-}
-
 const calcService = new BillAmountCalculationServiceImpl();
 
-let _idCounter = 0;
-const newId = () => `local-${++_idCounter}`;
+let _idCounter = 1000; // different range from new vm to avoid collisions
+const newId = () => `edit-local-${++_idCounter}`;
 
-export function useSplitBillNewViewModel() {
+export function useSplitBillEditViewModel(billId: string) {
   const router = useRouter();
-  const { executeAsync: createBill, isExecuting: isSubmitting } = useAction(createSplitBillAction);
+  const { executeAsync: updateBill, isExecuting: isSubmitting } = useAction(updateSplitBillAction);
+  const { executeAsync: fetchBill } = useAction(getSplitBillAction);
   const { executeAsync: fetchPaymentAccounts } = useAction(getPaymentAccountsAction);
   const [error, setError] = useState<string | null>(null);
+  const [isLoadingBill, setIsLoadingBill] = useState(true);
   const [currentUserName, setCurrentUserName] = useState<string>('You');
 
   // Step
   const [step, setStep] = useState<FormStep>(0);
 
-  // Step 0: bill info + mode
+  // Step 0
   const [title, setTitle] = useState('');
   const [date, setDate] = useState(new Date().toISOString().split('T')[0]);
   const [description, setDescription] = useState('');
   const [splitMode, setSplitMode] = useState<SplitMode>('equal');
 
-  // Step 1: participants & amounts
-  const [participants, setParticipants] = useState<ParticipantForm[]>([
-    { localId: newId(), name: currentUserName, isCreator: true },
-  ]);
-  const [totalAmount, setTotalAmount] = useState(0); // equal mode
-  const [customAmounts, setCustomAmounts] = useState<Record<string, number>>({}); // custom mode
-  const [items, setItems] = useState<ItemForm[]>([]); // itemized mode
+  // Step 1
+  const [participants, setParticipants] = useState<ParticipantForm[]>([]);
+  const [totalAmount, setTotalAmount] = useState(0);
+  const [customAmounts, setCustomAmounts] = useState<Record<string, number>>({});
+  const [items, setItems] = useState<ItemForm[]>([]);
 
-  // Step 2: adjustments
+  // Step 2
   const [adjustments, setAdjustments] = useState<AdjustmentForm[]>([]);
 
-  // Step 4: accounts
-  const [accounts, setAccounts] = useState<AccountForm[]>([
-    { localId: newId(), bankName: '', accountNumber: '' },
-  ]);
+  // Step 4
+  const [accounts, setAccounts] = useState<AccountForm[]>([]);
 
-  // Load current user and payment accounts on mount
+  // Load current user on mount
   useEffect(() => {
-    const loadInitialData = async () => {
-      // Load current user
+    const loadCurrentUser = async () => {
       const supabase = createSupabaseBrowserClient();
       const { data: { user } } = await supabase.auth.getUser();
       if (user) {
         const fullName = user.user_metadata?.full_name ?? user.email ?? 'You';
         setCurrentUserName(fullName);
-        setParticipants([{ localId: newId(), name: fullName, isCreator: true }]);
       }
+    };
+    loadCurrentUser();
+  }, []);
 
-      // Load payment accounts
-      try {
-        const result = await fetchPaymentAccounts({});
-        const savedAccounts = result?.data ?? [];
-        if (savedAccounts.length > 0) {
-          setAccounts(
-            savedAccounts.map((acc) => ({
-              localId: newId(),
-              bankName: acc.bankName,
-              accountNumber: acc.accountNumber,
+  // Load existing bill on mount
+  useEffect(() => {
+    fetchBill({ id: billId })
+      .then((result) => {
+        const bill = result?.data;
+        if (!bill) return;
+
+        setTitle(bill.title);
+        setDate(bill.date);
+        setDescription(bill.description ?? '');
+        setSplitMode(bill.splitMode);
+
+        // Participants: use DB id as localId so item assignment mapping works
+        const mappedParticipants: ParticipantForm[] = bill.participants.map((p) => ({
+          localId: p.id,
+          dbId: p.id,
+          name: p.name,
+          email: p.email ?? undefined,
+          status: p.status,
+          isCreator: p.isCreator,
+        }));
+        setParticipants(mappedParticipants);
+
+        // Derive split-mode-specific state
+        if (bill.splitMode === 'equal') {
+          setTotalAmount(bill.participants.reduce((sum, p) => sum + p.finalAmount, 0));
+        } else if (bill.splitMode === 'custom') {
+          const amounts: Record<string, number> = {};
+          bill.participants.forEach((p) => { amounts[p.id] = p.finalAmount; });
+          setCustomAmounts(amounts);
+        } else if (bill.splitMode === 'itemized') {
+          setItems(
+            bill.items.map((item) => ({
+              localId: item.id,
+              name: item.name,
+              price: item.price,
+              // assignedParticipantIds are DB ids, which match participant localIds
+              assignedParticipantLocalIds: item.assignedParticipantIds,
             }))
           );
         }
-      } catch {
-        // If loading fails, keep the default empty account
-      }
-    };
 
-    loadInitialData();
+        setAdjustments(
+          bill.adjustments.map((a) => ({
+            localId: a.id,
+            label: a.label,
+            type: a.type as AdjustmentType,
+            value: a.value,
+            distribution: a.distribution as AdjustmentDistribution,
+          }))
+        );
+
+        setAccounts(
+          bill.accounts.map((a) => ({
+            localId: a.id,
+            bankName: a.bankName,
+            accountNumber: a.accountNumber,
+          }))
+        );
+      })
+      .finally(() => setIsLoadingBill(false));
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [billId]);
 
   // --- Participants helpers ---
   const addParticipant = () =>
@@ -184,10 +187,10 @@ export function useSplitBillNewViewModel() {
   const submit = async () => {
     setError(null);
     const finalAmounts = computedFinalAmounts();
-    const participantLocalIds = participants.map((p) => p.localId);
 
     try {
-      const result = await createBill({
+      const result = await updateBill({
+        billId,
         title: title.trim(),
         description: description.trim() || undefined,
         date,
@@ -196,6 +199,8 @@ export function useSplitBillNewViewModel() {
           .filter((a) => a.bankName.trim() && a.accountNumber.trim())
           .map(({ bankName, accountNumber }) => ({ bankName, accountNumber })),
         participants: participants.map((p) => ({
+          dbId: p.dbId,
+          formId: p.localId,
           name: p.isCreator ? 'You' : p.name.trim(),
           email: p.email,
           finalAmount: finalAmounts[p.localId] ?? 0,
@@ -205,7 +210,7 @@ export function useSplitBillNewViewModel() {
           name: item.name.trim(),
           price: item.price,
           orderIndex: i,
-          assignedParticipantLocalIds: item.assignedParticipantLocalIds,
+          assignedParticipantFormIds: item.assignedParticipantLocalIds,
         })),
         adjustments: adjustments.map((a, i) => ({
           label: a.label.trim(),
@@ -214,39 +219,30 @@ export function useSplitBillNewViewModel() {
           distribution: a.distribution,
           orderIndex: i,
         })),
-        participantLocalIds,
       });
 
-      if (result?.data?.id) {
-        router.push(ROUTES.splitBillManage(result.data.id));
+      if (result?.data?.billId) {
+        router.push(ROUTES.splitBillManage(result.data.billId));
       }
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to create bill');
+      setError(err instanceof Error ? err.message : 'Failed to save changes');
     }
   };
 
   return {
-    // Step state
     step, setStep,
-    // Bill info
     title, setTitle,
     date, setDate,
     description, setDescription,
     splitMode, setSplitMode,
-    // Participants
     participants, addParticipant, removeParticipant, updateParticipant,
-    // Amounts
     totalAmount, setTotalAmount,
     customAmounts, setCustomAmounts,
-    // Items
     items, addItem, removeItem, updateItem, toggleItemAssignee,
-    // Adjustments
     adjustments, addAdjustment, removeAdjustment, updateAdjustment,
-    // Accounts
     accounts, addAccount, removeAccount, updateAccount,
-    // Computed
     computedFinalAmounts,
-    // Submit
-    isSubmitting, error, submit,
+    isSubmitting, isLoadingBill, error, submit,
+    submitLabel: 'Save Changes',
   };
 }

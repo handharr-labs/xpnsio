@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 import { Card, CardContent, CardHeader, CardTitle, Button, CurrencyInput } from '@handharr-labs/ui-xpnsio';
 import { ROUTES } from '@/shared/presentation/navigation/routes';
 import { CURRENCY_OPTIONS } from '@/shared/presentation/constants/currencyOptions';
-import { useBudgetSettingNewViewModel } from './useBudgetSettingNewViewModel';
+import { useBudgetSettingNewViewModel } from '../hooks/useBudgetSettingNewViewModel';
 
 const COLOR_OPTIONS = [
   '#6366f1', '#ec4899', '#f59e0b', '#10b981', '#3b82f6',

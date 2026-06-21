@@ -6,8 +6,8 @@ import { Button, CurrencyInput } from '@handharr-labs/ui-xpnsio';
 import { formatCurrency } from '@handharr-labs/core';
 import { ROUTES } from '@/shared/presentation/navigation/routes';
 import { CURRENCY_OPTIONS } from '@/shared/presentation/constants/currencyOptions';
-import { useSetupViewModel } from './useSetupViewModel';
-import type { SetupCategory } from './useSetupViewModel';
+import { useSetupViewModel } from '../hooks/useSetupViewModel';
+import type { SetupCategory } from '../hooks/useSetupViewModel';
 import { getOrdinalSuffix } from '@/shared/core/utils/formatOrdinal';
 
 const COLOR_OPTIONS = [

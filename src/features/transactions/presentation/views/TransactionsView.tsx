@@ -7,7 +7,7 @@ import { Button, FilterPanel, GroupedListSection } from '@handharr-labs/ui-xpnsi
 import type { DateGroupVM, FilterState } from '@handharr-labs/ui-xpnsio';
 import { formatCurrency, formatRelativeDate } from '@handharr-labs/core';
 import { ROUTES } from '@/shared/presentation/navigation/routes';
-import { useTransactionsViewModel } from './useTransactionsViewModel';
+import { useTransactionsViewModel } from '../hooks/useTransactionsViewModel';
 import type { Transaction } from '@/features/transactions/domain/entities/Transaction';
 
 const EMPTY_FILTERS: FilterState = {

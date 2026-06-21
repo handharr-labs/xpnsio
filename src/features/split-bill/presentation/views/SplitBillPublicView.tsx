@@ -6,8 +6,8 @@ import { Upload, X, ImageIcon, Luggage } from 'lucide-react';
 import { Button, CopyRowList, StatusCard } from '@handharr-labs/ui-xpnsio';
 import { formatCurrency } from '@handharr-labs/core';
 import { ROUTES } from '@/shared/presentation/navigation/routes';
-import { useSplitBillPublicViewModel } from './useSplitBillPublicViewModel';
-import type { SplitBillParticipant } from '../domain/entities/SplitBillParticipant';
+import { useSplitBillPublicViewModel } from '../hooks/useSplitBillPublicViewModel';
+import type { SplitBillParticipant } from '../../domain/entities/SplitBillParticipant';
 
 export function SplitBillPublicView({ billId }: { billId: string }) {
   const { bill, isLoading, isUploading, uploadError, uploadProof } =

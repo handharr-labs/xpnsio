@@ -6,7 +6,7 @@ import { Plus, FileText } from 'lucide-react';
 import { Button, ActionCard } from '@handharr-labs/ui-xpnsio';
 import { formatCurrency } from '@handharr-labs/core';
 import { ROUTES } from '@/shared/presentation/navigation/routes';
-import { useBudgetSettingsViewModel } from './useBudgetSettingsViewModel';
+import { useBudgetSettingsViewModel } from '../hooks/useBudgetSettingsViewModel';
 
 export function BudgetSettingsView() {
   const router = useRouter();

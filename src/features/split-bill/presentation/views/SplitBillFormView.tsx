@@ -4,8 +4,8 @@ import { useRouter } from 'next/navigation';
 import { ArrowLeft, ArrowRight, Plus, Trash2, Check, Lock } from 'lucide-react';
 import { Button, CurrencyInput, Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@handharr-labs/ui-xpnsio';
 import { formatCurrency } from '@handharr-labs/core';
-import type { SplitMode } from '../domain/entities/SplitBill';
-import type { ParticipantForm, ItemForm, AdjustmentForm, AccountForm, FormStep } from './useSplitBillNewViewModel';
+import type { SplitMode } from '../../domain/entities/SplitBill';
+import type { ParticipantForm, ItemForm, AdjustmentForm, AccountForm, FormStep } from '../hooks/useSplitBillNewViewModel';
 
 const STEPS = ['Bill Info', 'Participants', 'Adjustments', 'Review', 'Payment'];
 

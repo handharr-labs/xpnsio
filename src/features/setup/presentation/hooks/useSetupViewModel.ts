@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { completeSetupAction } from './actions/setup';
+import { completeSetupAction } from '../actions/setup';
 
 export type SetupCategory = {
   name: string;

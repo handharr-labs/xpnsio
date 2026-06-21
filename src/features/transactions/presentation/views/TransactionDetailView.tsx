@@ -6,7 +6,7 @@ import { ArrowLeft, Calendar, Tag, FileText, Pencil, Trash2, Check } from 'lucid
 import { Button, CurrencyInput } from '@handharr-labs/ui-xpnsio';
 import { formatCurrency, formatFullDate } from '@handharr-labs/core';
 import { ROUTES } from '@/shared/presentation/navigation/routes';
-import { useTransactionDetailViewModel } from './useTransactionDetailViewModel';
+import { useTransactionDetailViewModel } from '../hooks/useTransactionDetailViewModel';
 
 export function TransactionDetailView({ id }: { id: string }) {
   const router = useRouter();

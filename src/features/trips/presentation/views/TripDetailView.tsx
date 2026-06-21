@@ -6,7 +6,7 @@ import { ArrowLeft, Plus, Trash2 } from 'lucide-react';
 import { Button, ShareLink, ImageModal, DeleteConfirmDialog, CopyRowList, StatusCard } from '@handharr-labs/ui-xpnsio';
 import { formatCurrency } from '@handharr-labs/core';
 import { ROUTES } from '@/shared/presentation/navigation/routes';
-import { useTripDetailViewModel } from '../state/useTripDetailViewModel';
+import { useTripDetailViewModel } from '../hooks/useTripDetailViewModel';
 import { getStandaloneBillsAction } from '../actions/trips';
 
 export function TripDetailView({ tripId }: { tripId: string }) {

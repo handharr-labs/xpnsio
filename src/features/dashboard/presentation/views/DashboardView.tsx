@@ -9,7 +9,7 @@ import type { ProgressGroupVM, ProgressCardVM, ListPreviewItemVM } from '@handha
 import { usePullToRefresh } from '@handharr-labs/web-client';
 import { formatCurrency, formatCompactCurrency, formatWeekRange, formatRelativeDate } from '@handharr-labs/core';
 import { ROUTES } from '@/shared/presentation/navigation/routes';
-import { useDashboardViewModel } from './useDashboardViewModel';
+import { useDashboardViewModel } from '../hooks/useDashboardViewModel';
 import { BudgetProgressServiceImpl } from '@/features/dashboard/data/services/BudgetProgressServiceImpl';
 import type { CategoryBudgetInfo } from '@/features/dashboard/domain/entities/CategoryBudgetInfo';
 import type { BudgetProgressData } from '@/features/dashboard/domain/entities/BudgetProgressData';

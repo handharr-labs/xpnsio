@@ -5,7 +5,7 @@ import { Luggage, Plus, Receipt } from 'lucide-react';
 import { Button } from '@handharr-labs/ui-xpnsio';
 import { formatRelativeDate } from '@handharr-labs/core';
 import { ROUTES } from '@/shared/presentation/navigation/routes';
-import { useSplitBillListViewModel } from './useSplitBillListViewModel';
+import { useSplitBillListViewModel } from '../hooks/useSplitBillListViewModel';
 import { TripListView } from '@/features/trips/presentation/views/TripListView';
 
 export function SplitBillListView() {

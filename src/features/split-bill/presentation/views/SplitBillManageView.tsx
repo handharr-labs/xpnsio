@@ -4,7 +4,7 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { ArrowLeft, ArrowRight, Luggage, Pencil, Trash2 } from 'lucide-react';
 import { useState } from 'react';
-import { useSplitBillManageViewModel } from './useSplitBillManageViewModel';
+import { useSplitBillManageViewModel } from '../hooks/useSplitBillManageViewModel';
 import { ShareLink, CopyRowList, ImageModal, DeleteConfirmDialog, StatusCard } from '@handharr-labs/ui-xpnsio';
 import { formatCurrency } from '@handharr-labs/core';
 import { ROUTES } from '@/shared/presentation/navigation/routes';

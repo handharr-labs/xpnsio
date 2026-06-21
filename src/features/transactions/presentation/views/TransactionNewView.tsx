@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 import { ArrowLeft, Calendar, Check } from 'lucide-react';
 import { Button, CurrencyInput } from '@handharr-labs/ui-xpnsio';
 import { ROUTES } from '@/shared/presentation/navigation/routes';
-import { useTransactionNewViewModel } from './useTransactionNewViewModel';
+import { useTransactionNewViewModel } from '../hooks/useTransactionNewViewModel';
 
 export function TransactionNewView() {
   const router = useRouter();

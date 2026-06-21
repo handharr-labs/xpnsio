@@ -1,6 +1,6 @@
 'use client';
 
-import { useSplitBillEditViewModel } from './useSplitBillEditViewModel';
+import { useSplitBillEditViewModel } from '../hooks/useSplitBillEditViewModel';
 import { SplitBillFormView } from './SplitBillFormView';
 
 export function SplitBillEditView({ billId }: { billId: string }) {

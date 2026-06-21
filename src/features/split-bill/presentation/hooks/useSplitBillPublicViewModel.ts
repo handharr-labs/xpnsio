@@ -2,7 +2,7 @@
 
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useAction } from 'next-safe-action/hooks';
-import { getSplitBillPublicAction, uploadPaymentProofAction } from './actions/split-bill';
+import { getSplitBillPublicAction, uploadPaymentProofAction } from '../actions/split-bill';
 import { useState } from 'react';
 import { createSupabaseBrowserClient } from '@/lib/supabase-browser';
 
