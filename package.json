@@ -17,6 +17,7 @@
     "@handharr-labs/core": "^0.3.0",
     "@handharr-labs/ui-xpnsio": "^1.1.0",
     "@handharr-labs/web-client": "^0.3.0",
+    "@handharr-labs/web-server": "^0.1.0",
     "@supabase/ssr": "0.9.0",
     "@supabase/supabase-js": "2.98.0",
     "@tanstack/react-query": "5.90.21",
