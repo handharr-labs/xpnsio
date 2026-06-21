@@ -1,7 +1,7 @@
 import type { SplitBillDetail } from '../entities/SplitBillDetail';
 import type { SplitBillRepository, CreateSplitBillParams } from '../repositories/SplitBillRepository';
 import type { SavePaymentAccountsUseCase } from './SavePaymentAccountsUseCase';
-import { DomainError } from '@/shared/domain/errors/DomainError';
+import { ValidationError } from '@handharr-labs/core';
 
 export interface CreateSplitBillUseCase {
   execute(params: CreateSplitBillParams): Promise<SplitBillDetail>;
@@ -15,19 +15,19 @@ export class CreateSplitBillUseCaseImpl implements CreateSplitBillUseCase {
 
   async execute(params: CreateSplitBillParams): Promise<SplitBillDetail> {
     if (!params.title.trim()) {
-      throw DomainError.validationFailed('title', 'Title is required');
+      throw new ValidationError('Title is required');
     }
     if (params.accounts.length === 0) {
-      throw DomainError.validationFailed('accounts', 'At least one payment account is required');
+      throw new ValidationError('At least one payment account is required');
     }
     if (params.participants.length === 0) {
-      throw DomainError.validationFailed('participants', 'At least one participant is required');
+      throw new ValidationError('At least one participant is required');
     }
     if (params.participants.some((p) => p.finalAmount <= 0)) {
-      throw DomainError.validationFailed('participants', 'All participant amounts must be greater than 0');
+      throw new ValidationError('All participant amounts must be greater than 0');
     }
     if (params.participants.filter((p) => p.isCreator).length > 1) {
-      throw DomainError.validationFailed('participants', 'At most one participant can be marked as creator');
+      throw new ValidationError('At most one participant can be marked as creator');
     }
     const bill = await this.repository.create(params);
     await this.savePaymentAccountsUseCase.execute({

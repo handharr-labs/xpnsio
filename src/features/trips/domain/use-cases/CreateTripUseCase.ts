@@ -1,6 +1,6 @@
 import type { Trip } from '../entities/Trip';
 import type { TripRepository, CreateTripParams } from '../repositories/TripRepository';
-import { DomainError } from '@/shared/domain/errors/DomainError';
+import { ValidationError } from '@handharr-labs/core';
 
 export interface CreateTripUseCase {
   execute(params: CreateTripParams): Promise<Trip>;
@@ -11,11 +11,11 @@ export class CreateTripUseCaseImpl implements CreateTripUseCase {
 
   async execute(params: CreateTripParams): Promise<Trip> {
     if (!params.name.trim()) {
-      throw DomainError.validationFailed('name', 'Trip name is required');
+      throw new ValidationError('Trip name is required');
     }
 
     if (params.endDate && params.endDate < params.startDate) {
-      throw DomainError.validationFailed('endDate', 'End date must be on or after start date');
+      throw new ValidationError('End date must be on or after start date');
     }
 
     return this.repository.create(params);

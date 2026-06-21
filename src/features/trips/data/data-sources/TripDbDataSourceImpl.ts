@@ -9,7 +9,7 @@ import {
   type TripParticipantSettlementRow,
 } from '@/lib/schema';
 import type { TripDbDataSource, TripDetailRecord } from './TripDbDataSource';
-import { DomainError } from '@/shared/domain/errors/DomainError';
+import { NotFoundError, ValidationError, UnauthorizedError } from '@handharr-labs/core';
 
 export class TripDbDataSourceImpl implements TripDbDataSource {
   async create(data: {
@@ -115,7 +115,7 @@ export class TripDbDataSourceImpl implements TripDbDataSource {
         .limit(1);
 
       if (!tripCheck[0]) {
-        throw DomainError.notFound('Trip', tripId);
+        throw new NotFoundError('Trip');
       }
 
       // 2. Verify all bills exist, belong to userId, and have trip_id IS NULL (standalone)
@@ -125,15 +125,15 @@ export class TripDbDataSourceImpl implements TripDbDataSource {
         .where(inArray(splitBills.id, billIds));
 
       if (billCheck.length !== billIds.length) {
-        throw DomainError.validationFailed('billIds', 'One or more bills not found');
+        throw new ValidationError('One or more bills not found');
       }
 
       for (const bill of billCheck) {
         if (bill.userId !== userId) {
-          throw DomainError.unauthorized();
+          throw new UnauthorizedError();
         }
         if (bill.tripId !== null) {
-          throw DomainError.validationFailed('billIds', 'One or more bills are already assigned to a trip');
+          throw new ValidationError('One or more bills are already assigned to a trip');
         }
       }
 

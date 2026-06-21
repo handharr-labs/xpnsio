@@ -1,6 +1,6 @@
 import type { Transaction } from '@/features/transactions/domain/entities/Transaction';
 import type { TransactionRepository } from '@/features/transactions/domain/repositories/TransactionRepository';
-import { DomainError } from '@/shared/domain/errors/DomainError';
+import { ValidationError } from '@handharr-labs/core';
 
 export interface CreateTransactionInput {
   userId: string;
@@ -20,7 +20,7 @@ export class CreateTransactionUseCaseImpl implements CreateTransactionUseCase {
 
   async execute(data: CreateTransactionInput): Promise<Transaction> {
     if (data.amount <= 0) {
-      throw DomainError.validationFailed('amount', 'Amount must be greater than 0');
+      throw new ValidationError('Amount must be greater than 0');
     }
 
     return this.repository.create({

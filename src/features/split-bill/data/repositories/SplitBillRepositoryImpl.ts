@@ -4,7 +4,7 @@ import type { SplitBillParticipant, ParticipantStatus } from '@/features/split-b
 import type { SplitBillRepository, CreateSplitBillParams, UpdateSplitBillParams } from '@/features/split-bill/domain/repositories/SplitBillRepository';
 import type { SplitBillDbDataSource } from '@/features/split-bill/data/data-sources/SplitBillDbDataSource';
 import { SplitBillMapper } from '@/features/split-bill/data/mappers/SplitBillMapper';
-import { DomainError } from '@/shared/domain/errors/DomainError';
+import { UnexpectedError } from '@handharr-labs/core';
 
 export class SplitBillRepositoryImpl implements SplitBillRepository {
   private readonly mapper = new SplitBillMapper();
@@ -16,7 +16,7 @@ export class SplitBillRepositoryImpl implements SplitBillRepository {
       const record = await this.dataSource.findById(id);
       return record ? this.mapper.toDetail(record) : null;
     } catch (error) {
-      throw DomainError.serverError(String(error));
+      throw new UnexpectedError(error);
     }
   }
 
@@ -25,7 +25,7 @@ export class SplitBillRepositoryImpl implements SplitBillRepository {
       const rows = await this.dataSource.findByUserId(userId);
       return rows.map((r) => this.mapper.toBill(r));
     } catch (error) {
-      throw DomainError.serverError(String(error));
+      throw new UnexpectedError(error);
     }
   }
 
@@ -34,7 +34,7 @@ export class SplitBillRepositoryImpl implements SplitBillRepository {
       const rows = await this.dataSource.findStandaloneByUserId(userId);
       return rows.map((r) => this.mapper.toBill(r));
     } catch (error) {
-      throw DomainError.serverError(String(error));
+      throw new UnexpectedError(error);
     }
   }
 
@@ -54,7 +54,7 @@ export class SplitBillRepositoryImpl implements SplitBillRepository {
       });
       return this.mapper.toDetail(record);
     } catch (error) {
-      throw DomainError.serverError(String(error));
+      throw new UnexpectedError(error);
     }
   }
 
@@ -62,7 +62,7 @@ export class SplitBillRepositoryImpl implements SplitBillRepository {
     try {
       await this.dataSource.updateBill(params);
     } catch (error) {
-      throw DomainError.serverError(String(error));
+      throw new UnexpectedError(error);
     }
   }
 
@@ -70,7 +70,7 @@ export class SplitBillRepositoryImpl implements SplitBillRepository {
     try {
       await this.dataSource.deleteBill(billId);
     } catch (error) {
-      throw DomainError.serverError(String(error));
+      throw new UnexpectedError(error);
     }
   }
 
@@ -79,7 +79,7 @@ export class SplitBillRepositoryImpl implements SplitBillRepository {
       const row = await this.dataSource.updateParticipantProof(participantId, imageUrl);
       return this.mapper.toParticipant(row);
     } catch (error) {
-      throw DomainError.serverError(String(error));
+      throw new UnexpectedError(error);
     }
   }
 
@@ -91,7 +91,7 @@ export class SplitBillRepositoryImpl implements SplitBillRepository {
       const row = await this.dataSource.updateParticipantStatus(participantId, status);
       return this.mapper.toParticipant(row);
     } catch (error) {
-      throw DomainError.serverError(String(error));
+      throw new UnexpectedError(error);
     }
   }
 }

@@ -1,11 +1,11 @@
 import { createSafeActionClient } from 'next-safe-action';
 import { createSupabaseServerClient } from '@/lib/auth';
-import { DomainError } from '@/shared/domain/errors/DomainError';
+import { isDomainError } from '@handharr-labs/core';
 
 // Public action client — no auth required
 export const actionClient = createSafeActionClient({
   handleServerError(error) {
-    if (error instanceof DomainError) return error.message;
+    if (isDomainError(error)) return error.message;
     return 'An unexpected error occurred.';
   },
 });

@@ -2,7 +2,7 @@ import type { CategoryRepository } from '@/features/categories/domain/repositori
 import type { Category } from '@/features/categories/domain/entities/Category';
 import type { CategoryDbDataSource } from '@/features/categories/data/data-sources/categories/CategoryDbDataSource';
 import { CategoryMapperImpl, type CategoryMapper } from '@/features/categories/data/mappers/CategoryMapper';
-import { DomainError } from '@/shared/domain/errors/DomainError';
+import { DomainError, NotFoundError, UnexpectedError } from '@handharr-labs/core';
 
 export class CategoryRepositoryImpl implements CategoryRepository {
   constructor(
@@ -15,7 +15,7 @@ export class CategoryRepositoryImpl implements CategoryRepository {
       const records = await this.dataSource.getByUser(userId);
       return records.map((r) => this.mapper.toDomain(r));
     } catch (error) {
-      throw DomainError.serverError(String(error));
+      throw new UnexpectedError(error);
     }
   }
 
@@ -24,7 +24,7 @@ export class CategoryRepositoryImpl implements CategoryRepository {
       const record = await this.dataSource.getById(id);
       return record ? this.mapper.toDomain(record) : null;
     } catch (error) {
-      throw DomainError.serverError(String(error));
+      throw new UnexpectedError(error);
     }
   }
 
@@ -39,7 +39,7 @@ export class CategoryRepositoryImpl implements CategoryRepository {
       });
       return this.mapper.toDomain(record);
     } catch (error) {
-      throw DomainError.serverError(String(error));
+      throw new UnexpectedError(error);
     }
   }
 
@@ -54,11 +54,11 @@ export class CategoryRepositoryImpl implements CategoryRepository {
         icon: data.icon,
         masterCategory: data.masterCategory,
       });
-      if (!record) throw DomainError.notFound('Category', id);
+      if (!record) throw new NotFoundError('Category');
       return this.mapper.toDomain(record);
     } catch (error) {
       if (error instanceof DomainError) throw error;
-      throw DomainError.serverError(String(error));
+      throw new UnexpectedError(error);
     }
   }
 
@@ -66,7 +66,7 @@ export class CategoryRepositoryImpl implements CategoryRepository {
     try {
       await this.dataSource.delete(id);
     } catch (error) {
-      throw DomainError.serverError(String(error));
+      throw new UnexpectedError(error);
     }
   }
 
@@ -75,7 +75,7 @@ export class CategoryRepositoryImpl implements CategoryRepository {
       const count = await this.dataSource.countTransactions(id);
       return count > 0;
     } catch (error) {
-      throw DomainError.serverError(String(error));
+      throw new UnexpectedError(error);
     }
   }
 }

@@ -1,5 +1,5 @@
 import type { TripRepository } from '../repositories/TripRepository';
-import { DomainError } from '@/shared/domain/errors/DomainError';
+import { ValidationError } from '@handharr-labs/core';
 
 export interface UploadTripSettlementProofParams {
   settlementId: string;
@@ -15,11 +15,11 @@ export class UploadTripSettlementProofUseCaseImpl implements UploadTripSettlemen
 
   async execute(params: UploadTripSettlementProofParams): Promise<void> {
     if (!params.settlementId.trim()) {
-      throw DomainError.validationFailed('settlementId', 'Settlement ID is required');
+      throw new ValidationError('Settlement ID is required');
     }
 
     if (!params.proofImageUrl.trim()) {
-      throw DomainError.validationFailed('proofImageUrl', 'Proof image URL is required');
+      throw new ValidationError('Proof image URL is required');
     }
 
     return this.repository.uploadSettlementProof(params.settlementId, params.proofImageUrl);

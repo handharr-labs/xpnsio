@@ -2,7 +2,7 @@ import type { AuthRepository } from '@/features/auth/domain/repositories/AuthRep
 import type { User } from '@/features/auth/domain/entities/User';
 import type { AuthRemoteDataSource } from '@/features/auth/data/data-sources/auth/AuthRemoteDataSource';
 import { UserMapperImpl, type UserMapper } from '@/features/auth/data/mappers/UserMapper';
-import { DomainError } from '@/shared/domain/errors/DomainError';
+import { UnexpectedError } from '@handharr-labs/core';
 
 export class AuthRepositoryImpl implements AuthRepository {
   constructor(
@@ -14,7 +14,7 @@ export class AuthRepositoryImpl implements AuthRepository {
     try {
       await this.dataSource.signInWithGoogle();
     } catch (error) {
-      throw DomainError.serverError(String(error));
+      throw new UnexpectedError(error);
     }
   }
 
@@ -22,7 +22,7 @@ export class AuthRepositoryImpl implements AuthRepository {
     try {
       await this.dataSource.signOut();
     } catch (error) {
-      throw DomainError.serverError(String(error));
+      throw new UnexpectedError(error);
     }
   }
 
@@ -31,7 +31,7 @@ export class AuthRepositoryImpl implements AuthRepository {
       const record = await this.dataSource.getCurrentUser();
       return record ? this.mapper.toDomain(record) : null;
     } catch (error) {
-      throw DomainError.serverError(String(error));
+      throw new UnexpectedError(error);
     }
   }
 }

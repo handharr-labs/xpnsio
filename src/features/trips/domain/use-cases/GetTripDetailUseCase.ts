@@ -1,6 +1,6 @@
 import type { TripDetail } from '../entities/TripDetail';
 import type { TripRepository } from '../repositories/TripRepository';
-import { DomainError } from '@/shared/domain/errors/DomainError';
+import { ValidationError, NotFoundError } from '@handharr-labs/core';
 
 export interface GetTripDetailParams {
   tripId: string;
@@ -16,12 +16,12 @@ export class GetTripDetailUseCaseImpl implements GetTripDetailUseCase {
 
   async execute(params: GetTripDetailParams): Promise<TripDetail> {
     if (!params.tripId.trim()) {
-      throw DomainError.validationFailed('tripId', 'Trip ID is required');
+      throw new ValidationError('Trip ID is required');
     }
 
     const detail = await this.repository.getDetail(params.tripId, params.userId);
     if (!detail) {
-      throw DomainError.notFound('trip', params.tripId);
+      throw new NotFoundError('trip');
     }
 
     return detail;

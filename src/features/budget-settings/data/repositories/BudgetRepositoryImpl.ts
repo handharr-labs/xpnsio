@@ -2,7 +2,7 @@ import type { BudgetRepository } from '@/features/budget-settings/domain/reposit
 import type { Budget, MonthlyBudgetApplication } from '@/features/budget-settings/domain/entities/Budget';
 import type { BudgetDbDataSource } from '@/features/budget-settings/data/data-sources/budgets/BudgetDbDataSource';
 import { BudgetMapperImpl, type BudgetMapper } from '@/features/budget-settings/data/mappers/BudgetMapper';
-import { DomainError } from '@/shared/domain/errors/DomainError';
+import { DomainError, UnexpectedError } from '@handharr-labs/core';
 
 export class BudgetRepositoryImpl implements BudgetRepository {
   constructor(
@@ -15,7 +15,7 @@ export class BudgetRepositoryImpl implements BudgetRepository {
       const records = await this.budgetDataSource.getByMonth(userId, year, month);
       return records.map((r) => this.mapper.toDomain(r));
     } catch (error) {
-      throw DomainError.serverError(String(error));
+      throw new UnexpectedError(error);
     }
   }
 
@@ -31,7 +31,7 @@ export class BudgetRepositoryImpl implements BudgetRepository {
         }))
       );
     } catch (error) {
-      throw DomainError.serverError(String(error));
+      throw new UnexpectedError(error);
     }
   }
 
@@ -44,7 +44,7 @@ export class BudgetRepositoryImpl implements BudgetRepository {
       const record = await this.budgetDataSource.getApplication(userId, year, month);
       return record ? this.mapper.applicationToDomain(record) : null;
     } catch (error) {
-      throw DomainError.serverError(String(error));
+      throw new UnexpectedError(error);
     }
   }
 
@@ -53,7 +53,7 @@ export class BudgetRepositoryImpl implements BudgetRepository {
       const record = await this.budgetDataSource.getLastApplication(userId);
       return record ? this.mapper.applicationToDomain(record) : null;
     } catch (error) {
-      throw DomainError.serverError(String(error));
+      throw new UnexpectedError(error);
     }
   }
 
@@ -85,7 +85,7 @@ export class BudgetRepositoryImpl implements BudgetRepository {
       });
     } catch (error) {
       if (error instanceof DomainError) throw error;
-      throw DomainError.serverError(String(error));
+      throw new UnexpectedError(error);
     }
   }
 }

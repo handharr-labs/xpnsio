@@ -1,6 +1,6 @@
 import type { SplitBillParticipant } from '../entities/SplitBillParticipant';
 import type { SplitBillRepository } from '../repositories/SplitBillRepository';
-import { DomainError } from '@/shared/domain/errors/DomainError';
+import { ValidationError } from '@handharr-labs/core';
 
 export interface UploadPaymentProofInput {
   participantId: string;
@@ -16,7 +16,7 @@ export class UploadPaymentProofUseCaseImpl implements UploadPaymentProofUseCase 
 
   async execute(input: UploadPaymentProofInput): Promise<SplitBillParticipant> {
     if (!input.imageUrl) {
-      throw DomainError.validationFailed('imageUrl', 'Proof image URL is required');
+      throw new ValidationError('Proof image URL is required');
     }
     return this.repository.uploadProof(input.participantId, input.imageUrl);
   }

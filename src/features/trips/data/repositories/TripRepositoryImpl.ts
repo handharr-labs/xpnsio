@@ -9,7 +9,7 @@ import type { TripDbDataSource } from '@/features/trips/data/data-sources/TripDb
 import type { SplitBillDbDataSource } from '@/features/split-bill/data/data-sources/SplitBillDbDataSource';
 import { TripMapper } from '@/features/trips/data/mappers/TripMapper';
 import { SplitBillMapper } from '@/features/split-bill/data/mappers/SplitBillMapper';
-import { DomainError } from '@/shared/domain/errors/DomainError';
+import { DomainError, UnexpectedError } from '@handharr-labs/core';
 
 export class TripRepositoryImpl implements TripRepository {
   private readonly tripMapper = new TripMapper();
@@ -31,7 +31,7 @@ export class TripRepositoryImpl implements TripRepository {
       });
       return this.tripMapper.toTrip(row);
     } catch (error) {
-      throw DomainError.serverError(String(error));
+      throw new UnexpectedError(error);
     }
   }
 
@@ -51,7 +51,7 @@ export class TripRepositoryImpl implements TripRepository {
 
       return this.tripMapper.toDetail(record, billDetails);
     } catch (error) {
-      throw DomainError.serverError(String(error));
+      throw new UnexpectedError(error);
     }
   }
 
@@ -70,7 +70,7 @@ export class TripRepositoryImpl implements TripRepository {
 
       return this.tripMapper.toDetail(record, billDetails);
     } catch (error) {
-      throw DomainError.serverError(String(error));
+      throw new UnexpectedError(error);
     }
   }
 
@@ -79,7 +79,7 @@ export class TripRepositoryImpl implements TripRepository {
       const rows = await this.tripDataSource.findByUserId(userId);
       return rows.map((r) => this.tripMapper.toTrip(r));
     } catch (error) {
-      throw DomainError.serverError(String(error));
+      throw new UnexpectedError(error);
     }
   }
 
@@ -87,7 +87,7 @@ export class TripRepositoryImpl implements TripRepository {
     try {
       await this.tripDataSource.delete(tripId, userId);
     } catch (error) {
-      throw DomainError.serverError(String(error));
+      throw new UnexpectedError(error);
     }
   }
 
@@ -98,7 +98,7 @@ export class TripRepositoryImpl implements TripRepository {
       if (error instanceof DomainError) {
         throw error;
       }
-      throw DomainError.serverError(String(error));
+      throw new UnexpectedError(error);
     }
   }
 
@@ -106,7 +106,7 @@ export class TripRepositoryImpl implements TripRepository {
     try {
       await this.tripDataSource.syncSettlements(tripId);
     } catch (error) {
-      throw DomainError.serverError(String(error));
+      throw new UnexpectedError(error);
     }
   }
 
@@ -114,7 +114,7 @@ export class TripRepositoryImpl implements TripRepository {
     try {
       await this.tripDataSource.updateSettlementProof(settlementId, proofImageUrl);
     } catch (error) {
-      throw DomainError.serverError(String(error));
+      throw new UnexpectedError(error);
     }
   }
 
@@ -132,7 +132,7 @@ export class TripRepositoryImpl implements TripRepository {
         status as 'pending' | 'proof_uploaded' | 'approved' | 'rejected'
       );
     } catch (error) {
-      throw DomainError.serverError(String(error));
+      throw new UnexpectedError(error);
     }
   }
 }
