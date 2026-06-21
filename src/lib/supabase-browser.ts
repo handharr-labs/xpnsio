@@ -1,8 +1,8 @@
-import { createBrowserClient } from '@supabase/ssr';
+import { createSupabaseBrowserClient as createClient } from '@handharr-labs/web-client/auth/supabase';
 
 export function createSupabaseBrowserClient() {
-  return createBrowserClient(
+  return createClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
   );
 }
