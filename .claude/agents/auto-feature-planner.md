@@ -1,1 +1,0 @@
-../software-dev-agentic/lib/core/agents/builder/auto-feature-planner.md

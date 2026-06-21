@@ -1,3 +1,0 @@
-[submodule ".claude/software-dev-agentic"]
-	path = .claude/software-dev-agentic
-	url = https://github.com/handharr-labs/software-dev-agentic.git
