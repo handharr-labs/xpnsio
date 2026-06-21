@@ -1,17 +1,16 @@
 'use client';
 
 import { useRouter } from 'next/navigation';
-import { Card, CardContent, Button, MonthNavigator } from '@handharr-labs/ui-xpnsio';
+import {
+  Card, CardContent, Button, MonthNavigator,
+  BudgetOverviewCard, CategoryBreakdownSection, RecentTransactionsSection,
+} from '@handharr-labs/ui-xpnsio';
+import type { CategoryGroupVM, CategoryCardVM, RecentTransactionVM } from '@handharr-labs/ui-xpnsio';
 import { usePullToRefresh } from '@handharr-labs/web-client';
 import { formatCurrency, formatCompactCurrency, formatWeekRange, formatRelativeDate } from '@handharr-labs/core';
 import { ROUTES } from '@/shared/presentation/navigation/routes';
 import { useDashboardViewModel } from './useDashboardViewModel';
 import { BudgetProgressServiceImpl } from '@/features/dashboard/data/services/BudgetProgressServiceImpl';
-import { BudgetOverviewCard } from './organisms/BudgetOverviewCard';
-import { CategoryBreakdownSection } from './organisms/CategoryBreakdownSection';
-import type { CategoryGroupVM, CategoryCardVM } from './organisms/CategoryBreakdownSection';
-import { RecentTransactionsSection } from './organisms/RecentTransactionsSection';
-import type { RecentTransactionVM } from './organisms/RecentTransactionsSection';
 import type { CategoryBudgetInfo } from '@/features/dashboard/domain/entities/CategoryBudgetInfo';
 import type { BudgetProgressData } from '@/features/dashboard/domain/entities/BudgetProgressData';
 

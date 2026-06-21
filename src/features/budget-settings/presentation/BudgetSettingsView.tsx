@@ -3,11 +3,10 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Plus, FileText } from 'lucide-react';
-import { Button } from '@handharr-labs/ui-xpnsio';
+import { Button, BudgetSettingCard } from '@handharr-labs/ui-xpnsio';
 import { formatCurrency } from '@handharr-labs/core';
 import { ROUTES } from '@/shared/presentation/navigation/routes';
 import { useBudgetSettingsViewModel } from './useBudgetSettingsViewModel';
-import { BudgetSettingCard } from './organisms/BudgetSettingCard';
 
 export function BudgetSettingsView() {
   const router = useRouter();

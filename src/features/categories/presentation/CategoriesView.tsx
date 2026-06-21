@@ -2,11 +2,9 @@
 
 import { useState } from 'react';
 import { Plus, Layers, UtensilsCrossed, Car, Home, ShoppingBag, Heart, BookOpen, Tv, Plane, Circle } from 'lucide-react';
-import { Button } from '@handharr-labs/ui-xpnsio';
+import { Button, CategoryFormDialog, CategoryGroupSection } from '@handharr-labs/ui-xpnsio';
+import type { IconOption, CategoryFormState } from '@handharr-labs/ui-xpnsio';
 import { useCategoriesViewModel } from './useCategoriesViewModel';
-import { CategoryFormDialog } from './organisms/CategoryFormDialog';
-import type { IconOption, CategoryFormState } from './organisms/CategoryFormDialog';
-import { CategoryGroupSection } from './organisms/CategoryGroupSection';
 import type { Category } from '@/features/categories/domain/entities/Category';
 import { getCategoryIcon } from './utils/getCategoryIcon';
 

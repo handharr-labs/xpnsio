@@ -3,15 +3,12 @@
 import { useState, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { Search, SlidersHorizontal, Plus, X } from 'lucide-react';
-import { Button } from '@handharr-labs/ui-xpnsio';
+import { Button, TransactionFilterPanel, TransactionListSection } from '@handharr-labs/ui-xpnsio';
+import type { TransactionDateGroupVM, TransactionFilters } from '@handharr-labs/ui-xpnsio';
 import { formatCurrency, formatRelativeDate } from '@handharr-labs/core';
 import { ROUTES } from '@/shared/presentation/navigation/routes';
 import { useTransactionsViewModel } from './useTransactionsViewModel';
-import { TransactionFilterPanel } from './organisms/TransactionFilterPanel';
-import { TransactionListSection } from './organisms/TransactionListSection';
-import type { TransactionDateGroupVM } from './organisms/TransactionListSection';
 import type { Transaction } from '@/features/transactions/domain/entities/Transaction';
-import type { TransactionFilters } from './organisms/TransactionFilterPanel';
 
 const EMPTY_FILTERS: TransactionFilters = {
   startDate: '',
