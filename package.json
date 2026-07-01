@@ -16,7 +16,7 @@
     "@ducanh2912/next-pwa": "10.2.9",
     "@handharr-labs/core": "^0.5.0",
     "@handharr-labs/ui-xpnsio": "^1.1.0",
-    "@handharr-labs/web-auth": "^0.2.0",
+    "@handharr-labs/web-auth": "^0.2.1",
     "@handharr-labs/web-client": "^0.6.1",
     "@handharr-labs/web-server": "^0.4.1",
     "@supabase/ssr": "^0.12.0",
