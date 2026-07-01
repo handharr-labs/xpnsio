@@ -6,6 +6,7 @@ import type { BudgetComputationService } from '@/features/budget-settings/domain
 import type { BudgetProgressService } from '@/features/dashboard/domain/services/BudgetProgressService';
 import type { CategoryBudgetInfo } from '@/features/dashboard/domain/entities/CategoryBudgetInfo';
 import type { DashboardData } from '@/features/dashboard/domain/entities/DashboardData';
+import { orElse } from '@handharr-labs/core';
 
 export type { CategoryBudgetInfo, DashboardData };
 
@@ -33,18 +34,24 @@ export class GetDashboardDataUseCaseImpl implements GetDashboardDataUseCase {
   async execute(params: GetDashboardDataParams): Promise<DashboardData> {
     const { userId, year, month, today } = params;
 
-    const budgets = await this.budgetRepository.getByMonth(userId, year, month);
-    const hasActiveBudget = budgets.length > 0;
+    // These three don't depend on the period bounds, so fetch them together.
+    // The applied budget setting (starterDay/currency) is resolved via the
+    // application row; getById is chained after it but still overlaps the
+    // budgets/categories fetches.
+    const settingPromise = this.budgetRepository
+      .getApplication(userId, year, month)
+      .then((application) =>
+        application ? this.budgetSettingRepository.getById(application.budgetSettingId) : null
+      );
+    const [budgets, allCategories, setting] = await Promise.all([
+      this.budgetRepository.getByMonth(userId, year, month),
+      this.categoryRepository.getByUser(userId),
+      settingPromise,
+    ]);
 
-    // Resolve starterDay from the applied budget setting for this month
-    const application = await this.budgetRepository.getApplication(userId, year, month);
-    let starterDay = 1;
-    let currency = 'IDR';
-    if (application) {
-      const setting = await this.budgetSettingRepository.getById(application.budgetSettingId);
-      starterDay = setting?.starterDay ?? 1;
-      currency = setting?.currency ?? 'IDR';
-    }
+    const hasActiveBudget = budgets.length > 0;
+    const starterDay = orElse(setting?.starterDay, 1);
+    const currency = orElse(setting?.currency, 'IDR');
 
     const { periodStart, periodEnd, daysInPeriod } = this.computationService.getPeriodBounds(year, month, starterDay);
 
@@ -54,15 +61,22 @@ export class GetDashboardDataUseCaseImpl implements GetDashboardDataUseCase {
     // When today >= periodEnd the current period is done.
     const effectiveToday = today >= periodEnd ? periodEnd : today;
 
-    // Fetch all expense transactions and category metadata
-    const [allExpenseTransactions, allCategories] = await Promise.all([
+    // Both transaction reads depend only on the period bounds — fetch together.
+    // (recentTransactions includes income, so it can't be derived from the
+    // expense-only list below.)
+    const [allExpenseTransactions, recentTransactions] = await Promise.all([
       this.transactionRepository.getFiltered({
         userId,
         startDate: periodStart,
         endDate: periodEnd,
         type: 'expense',
       }),
-      this.categoryRepository.getByUser(userId),
+      this.transactionRepository.getFiltered({
+        userId,
+        startDate: periodStart,
+        endDate: periodEnd,
+        limit: 10,
+      }),
     ]);
 
     const categoryMap = new Map(allCategories.map((c) => [c.id, c]));
@@ -289,13 +303,6 @@ export class GetDashboardDataUseCaseImpl implements GetDashboardDataUseCase {
     const totalMonthlyBudget = budgets.reduce((sum, b) => sum + b.amount, 0);
     const totalSpent = categoryInfoList.reduce((sum, c) => sum + c.totalSpent, 0);
     const totalRemaining = totalMonthlyBudget - totalSpent;
-
-    const recentTransactions = await this.transactionRepository.getFiltered({
-      userId,
-      startDate: periodStart,
-      endDate: periodEnd,
-      limit: 10,
-    });
 
     return {
       totalMonthlyBudget,

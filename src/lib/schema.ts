@@ -34,33 +34,43 @@ export const profiles = pgTable('profiles', {
   updatedAt: timestamp('updated_at').defaultNow().notNull(),
 });
 
-export const categories = pgTable('categories', {
-  id: uuid('id').defaultRandom().primaryKey(),
-  userId: uuid('user_id')
-    .notNull()
-    .references(() => profiles.id, { onDelete: 'cascade' }),
-  name: text('name').notNull(),
-  masterCategory: masterCategoryEnum('master_category').notNull(),
-  color: text('color').notNull().default('#6366f1'),
-  icon: text('icon').notNull().default('circle'),
-  createdAt: timestamp('created_at').defaultNow().notNull(),
-});
+export const categories = pgTable(
+  'categories',
+  {
+    id: uuid('id').defaultRandom().primaryKey(),
+    userId: uuid('user_id')
+      .notNull()
+      .references(() => profiles.id, { onDelete: 'cascade' }),
+    name: text('name').notNull(),
+    masterCategory: masterCategoryEnum('master_category').notNull(),
+    color: text('color').notNull().default('#6366f1'),
+    icon: text('icon').notNull().default('circle'),
+    createdAt: timestamp('created_at').defaultNow().notNull(),
+  },
+  (t) => [index('idx_categories_user_id').on(t.userId)]
+);
 
-export const transactions = pgTable('transactions', {
-  id: uuid('id').defaultRandom().primaryKey(),
-  userId: uuid('user_id')
-    .notNull()
-    .references(() => profiles.id, { onDelete: 'cascade' }),
-  categoryId: uuid('category_id').references(() => categories.id, {
-    onDelete: 'set null',
-  }),
-  amount: numeric('amount', { precision: 12, scale: 2 }).notNull(),
-  type: transactionTypeEnum('type').notNull(),
-  description: text('description'),
-  date: date('date').notNull(),
-  createdAt: timestamp('created_at').defaultNow().notNull(),
-  updatedAt: timestamp('updated_at').defaultNow().notNull(),
-});
+export const transactions = pgTable(
+  'transactions',
+  {
+    id: uuid('id').defaultRandom().primaryKey(),
+    userId: uuid('user_id')
+      .notNull()
+      .references(() => profiles.id, { onDelete: 'cascade' }),
+    categoryId: uuid('category_id').references(() => categories.id, {
+      onDelete: 'set null',
+    }),
+    amount: numeric('amount', { precision: 12, scale: 2 }).notNull(),
+    type: transactionTypeEnum('type').notNull(),
+    description: text('description'),
+    date: date('date').notNull(),
+    createdAt: timestamp('created_at').defaultNow().notNull(),
+    updatedAt: timestamp('updated_at').defaultNow().notNull(),
+  },
+  // Covers the dashboard's hot path: filter by user + date range, ordered by
+  // date desc. Without it, every dashboard load sequentially scans the table.
+  (t) => [index('idx_transactions_user_date').on(t.userId, t.date)]
+);
 
 export const budgets = pgTable(
   'budgets',
