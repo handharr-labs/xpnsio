@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { ArrowLeft, Calendar, Check } from 'lucide-react';
 import { Button, CurrencyInput } from '@handharr-labs/ui-xpnsio';
+import { todayLocal } from '@handharr-labs/core';
 import { ROUTES } from '@/shared/presentation/navigation/routes';
 import { useTransactionNewViewModel } from '../hooks/useTransactionNewViewModel';
 
@@ -14,7 +15,7 @@ export function TransactionNewView() {
   const [amount, setAmount] = useState(0);
   const [categoryId, setCategoryId] = useState('');
   const [description, setDescription] = useState('');
-  const [date, setDate] = useState(new Date().toISOString().split('T')[0]);
+  const [date, setDate] = useState(todayLocal());
   const [localError, setLocalError] = useState<string | null>(null);
 
   const handleSubmit = async (e: React.FormEvent) => {

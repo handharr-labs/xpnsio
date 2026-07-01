@@ -8,6 +8,7 @@ import { BillAmountCalculationServiceImpl } from '@/features/split-bill/domain/s
 import type { SplitMode } from '@/features/split-bill/domain/entities/SplitBill';
 import type { AdjustmentType, AdjustmentDistribution } from '@/features/split-bill/domain/entities/SplitBillAdjustment';
 import type { ParticipantForm, ItemForm, AdjustmentForm, AccountForm, FormStep } from './useSplitBillNewViewModel';
+import { todayLocal } from '@handharr-labs/core';
 import { ROUTES } from '@/shared/presentation/navigation/routes';
 import { createSupabaseBrowserClient } from '@/lib/supabase-browser';
 
@@ -30,7 +31,7 @@ export function useSplitBillEditViewModel(billId: string) {
 
   // Step 0
   const [title, setTitle] = useState('');
-  const [date, setDate] = useState(new Date().toISOString().split('T')[0]);
+  const [date, setDate] = useState(todayLocal());
   const [description, setDescription] = useState('');
   const [splitMode, setSplitMode] = useState<SplitMode>('equal');
 

@@ -7,6 +7,7 @@ import { createSplitBillAction, getPaymentAccountsAction } from '../actions/spli
 import { BillAmountCalculationServiceImpl } from '@/features/split-bill/domain/services/BillAmountCalculationService';
 import type { SplitMode } from '@/features/split-bill/domain/entities/SplitBill';
 import type { AdjustmentType, AdjustmentDistribution } from '@/features/split-bill/domain/entities/SplitBillAdjustment';
+import { todayLocal } from '@handharr-labs/core';
 import { ROUTES } from '@/shared/presentation/navigation/routes';
 import { createSupabaseBrowserClient } from '@/lib/supabase-browser';
 
@@ -66,7 +67,7 @@ export function useSplitBillNewViewModel() {
 
   // Step 0: bill info + mode
   const [title, setTitle] = useState('');
-  const [date, setDate] = useState(new Date().toISOString().split('T')[0]);
+  const [date, setDate] = useState(todayLocal());
   const [description, setDescription] = useState('');
   const [splitMode, setSplitMode] = useState<SplitMode>('equal');
 
