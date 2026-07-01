@@ -76,7 +76,7 @@ export const createSplitBillAction = authActionClient
   )
   .action(async ({ parsedInput, ctx: { user } }) => {
     const container = createServerContainer();
-    const userFullName = user.user_metadata?.full_name ?? user.email ?? 'You';
+    const userFullName = user.name ?? user.email ?? 'You';
 
     return container.createSplitBillUseCase.execute({
       userId: user.id,
@@ -126,7 +126,7 @@ export const updateSplitBillAction = authActionClient
   )
   .action(async ({ parsedInput, ctx: { user } }) => {
     const container = createServerContainer();
-    const userFullName = user.user_metadata?.full_name ?? user.email ?? 'You';
+    const userFullName = user.name ?? user.email ?? 'You';
 
     await container.updateSplitBillUseCase.execute({
       billId: parsedInput.billId,

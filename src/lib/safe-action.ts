@@ -1,5 +1,5 @@
 import { createSafeActionClient } from 'next-safe-action';
-import { createSupabaseServerClient } from '@/lib/auth';
+import { auth } from '@/lib/auth';
 import { handleServerActionError } from '@handharr-labs/web-server';
 
 // Public action client — no auth required
@@ -7,15 +7,9 @@ export const actionClient = createSafeActionClient({
   handleServerError: handleServerActionError,
 });
 
-// Authenticated action client — throws if no valid Supabase session
+// Authenticated action client — throws UnauthorizedError if there is no valid
+// session. `ctx.user` is the auth port's `AuthUser` ({ id, email, name?, imageUrl? }).
 export const authActionClient = actionClient.use(async ({ next }) => {
-  const supabase = await createSupabaseServerClient();
-  const {
-    data: { user },
-    error,
-  } = await supabase.auth.getUser();
-
-  if (error || !user) throw new Error('Unauthorized');
-
-  return next({ ctx: { user } });
+  const session = await auth.requireSession();
+  return next({ ctx: { user: session.user } });
 });

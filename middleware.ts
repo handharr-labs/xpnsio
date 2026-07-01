@@ -1,51 +1,25 @@
-import { NextResponse, type NextRequest } from 'next/server';
-import { createServerClient } from '@supabase/ssr';
+import { createAuthMiddleware } from '@handharr-labs/web-auth/middleware';
 
-export async function middleware(request: NextRequest) {
-  let supabaseResponse = NextResponse.next({ request });
-
-  const supabase = createServerClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-    {
-      cookies: {
-        getAll: () => request.cookies.getAll(),
-        setAll: (cookiesToSet) => {
-          cookiesToSet.forEach(({ name, value }) =>
-            request.cookies.set(name, value)
-          );
-          supabaseResponse = NextResponse.next({ request });
-          cookiesToSet.forEach(({ name, value, options }) =>
-            supabaseResponse.cookies.set(name, value, options)
-          );
-        },
-      },
-    }
-  );
-
-  // Refresh session — required for Server Components to read auth state
-  const { data: { user } } = await supabase.auth.getUser();
-
-  const { pathname } = request.nextUrl;
-
-  // Redirect unauthenticated users away from protected routes.
-  // '/' is excluded — it is handled by app/page.tsx as a Server Component
-  // so that Next.js automatically merges middleware Set-Cookie headers into
-  // the page-level redirect. Doing the redirect here via NextResponse.redirect()
-  // causes iOS Safari PWA to drop the refreshed session cookies.
-  const isProtected =
-    pathname !== '/' &&
-    !pathname.startsWith('/login') &&
-    !pathname.startsWith('/auth');
-
-  if (!user && isProtected) {
-    const url = request.nextUrl.clone();
-    url.pathname = '/login';
-    return NextResponse.redirect(url);
-  }
-
-  return supabaseResponse;
-}
+/**
+ * Edge route protection via the kit's edge-safe entrypoint (no `server-only`,
+ * no Node adapter). The middleware refreshes the Supabase session on every
+ * matched request and redirects unauthenticated users to `/login` — except for
+ * `publicPaths`, which are refreshed but never redirected.
+ *
+ * `'/'` is public here on purpose: `app/page.tsx` (a Server Component) owns its
+ * redirect so Next.js merges the middleware's refreshed Set-Cookie headers into
+ * the page-level redirect. Redirecting `/` from middleware instead drops the
+ * refreshed session cookies on iOS Safari PWA.
+ */
+export default createAuthMiddleware({
+  adapter: 'supabase',
+  loginPath: '/login',
+  publicPaths: ['/', '/login', '/auth'],
+  supabase: {
+    url: process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    anonKey: process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+  },
+});
 
 export const config = {
   matcher: [

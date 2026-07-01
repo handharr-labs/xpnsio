@@ -1,18 +1,17 @@
 import { redirect } from 'next/navigation';
-import { createSupabaseServerClient } from '@/lib/auth';
+import { auth } from '@/lib/auth';
 import { createServerContainer } from '@/shared/di/container.server';
 import { DashboardView } from '@/features/dashboard/presentation/views/DashboardView';
 
 export default async function DashboardPage() {
-  const supabase = await createSupabaseServerClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const session = await auth.gateway.getSession();
 
-  if (!user) redirect('/login');
+  if (!session) redirect('/login');
 
   const container = createServerContainer();
-  const { isOnboarded } = await container.getUserOnboardingStatusUseCase.execute(user.id);
+  const { isOnboarded } = await container.getUserOnboardingStatusUseCase.execute(
+    session.user.id,
+  );
 
   if (!isOnboarded) redirect('/setup');
 

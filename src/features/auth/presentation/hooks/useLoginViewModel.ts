@@ -1,10 +1,9 @@
 'use client';
 
 import { useState } from 'react';
-import { useDI } from '@/shared/di/DIContext';
+import { authClient } from '@/lib/auth-client';
 
 export function useLoginViewModel() {
-  const { signInWithGoogleUseCase } = useDI();
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -12,7 +11,10 @@ export function useLoginViewModel() {
     setIsLoading(true);
     setError(null);
     try {
-      await signInWithGoogleUseCase.execute();
+      await authClient.signIn('google', {
+        redirectTo: `${window.location.origin}/auth/callback?next=/dashboard`,
+        queryParams: { prompt: 'select_account' },
+      });
     } catch {
       setError('Failed to sign in. Please try again.');
       setIsLoading(false);

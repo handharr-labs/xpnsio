@@ -1,32 +1,16 @@
-import { NextResponse } from 'next/server';
-import { createSupabaseServerClient } from '@/lib/auth';
-import { createServerContainer } from '@/shared/di/container.server';
+import { auth } from '@/lib/auth';
 
-export async function GET(request: Request) {
-  const { searchParams, origin } = new URL(request.url);
-  const code = searchParams.get('code');
-  const next = searchParams.get('next') ?? '/dashboard';
+/**
+ * OAuth callback. The kit's supabase adapter handles the `?code=` exchange and,
+ * because a `provisioner` is configured in `lib/auth`, upserts the user's
+ * profile on first sign-in — then redirects to `?next` (defaults to '/', which
+ * `app/page.tsx` forwards to `/dashboard` for an authenticated user).
+ *
+ * Wrapped (rather than `export const { GET } = auth.handlers`) so the handler
+ * has a concrete signature for Next.js route type generation.
+ */
+const handleGet = auth.handlers.GET as (request: Request) => Promise<Response>;
 
-  if (code) {
-    const supabase = await createSupabaseServerClient();
-    const { error } = await supabase.auth.exchangeCodeForSession(code);
-
-    if (!error) {
-      // Upsert profile on first login
-      const { data: { user } } = await supabase.auth.getUser();
-      if (user) {
-        const container = createServerContainer();
-        await container.upsertUserProfileUseCase.execute({
-          id: user.id,
-          email: user.email ?? '',
-          fullName: user.user_metadata?.full_name ?? null,
-          avatarUrl: user.user_metadata?.avatar_url ?? null,
-        });
-      }
-
-      return NextResponse.redirect(`${origin}${next}`);
-    }
-  }
-
-  return NextResponse.redirect(`${origin}/login?error=auth_callback_failed`);
+export function GET(request: Request): Promise<Response> {
+  return handleGet(request);
 }

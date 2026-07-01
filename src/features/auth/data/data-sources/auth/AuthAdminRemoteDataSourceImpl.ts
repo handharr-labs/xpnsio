@@ -1,5 +1,5 @@
 import 'server-only';
-import { supabaseAdmin } from '@/lib/auth';
+import { supabaseAdmin } from '@/lib/supabase-admin';
 import type { AuthAdminRemoteDataSource } from './AuthAdminRemoteDataSource';
 
 export class AuthAdminRemoteDataSourceImpl implements AuthAdminRemoteDataSource {

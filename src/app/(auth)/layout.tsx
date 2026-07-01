@@ -1,6 +1,5 @@
-import { DIProvider } from '@/shared/di/DIContext';
 import type { ReactNode } from 'react';
 
 export default function AuthLayout({ children }: { children: ReactNode }) {
-  return <DIProvider>{children}</DIProvider>;
+  return <>{children}</>;
 }

@@ -3,12 +3,11 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useTheme } from 'next-themes';
-import { useDI } from '@/shared/di/DIContext';
+import { authClient } from '@/lib/auth-client';
 import { ROUTES } from '@/shared/presentation/navigation/routes';
 import { deleteAccountAction } from '@/features/auth/presentation/actions/auth';
 
 export function useSettingsViewModel() {
-  const { signOutUseCase } = useDI();
   const router = useRouter();
   const { theme, setTheme } = useTheme();
 
@@ -24,8 +23,8 @@ export function useSettingsViewModel() {
   const handleSignOut = async () => {
     setIsSigningOut(true);
     try {
-      await signOutUseCase.execute();
-      router.push(ROUTES.login);
+      // The kit clears the session and hard-navigates to `redirectTo`.
+      await authClient.signOut({ redirectTo: ROUTES.login });
     } catch {
       setIsSigningOut(false);
     }

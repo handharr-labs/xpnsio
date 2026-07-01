@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Inter, Geist_Mono } from "next/font/google";
 import { QueryProvider } from "@handharr-labs/web-client";
 import { ThemeProvider } from "@handharr-labs/ui-xpnsio";
+import { AuthClientProvider } from "@/shared/presentation/providers/AuthClientProvider";
 import "./globals.css";
 
 const inter = Inter({
@@ -36,7 +37,9 @@ export default function RootLayout({
       <body className="antialiased">
         <ThemeProvider>
           <QueryProvider>
-            {children}
+            <AuthClientProvider>
+              {children}
+            </AuthClientProvider>
           </QueryProvider>
         </ThemeProvider>
       </body>
