@@ -1,4 +1,8 @@
-@import "tailwindcss";
+/* Root automatic source detection at `src/` (this file is in src/app), so
+   Tailwind never walks the project root — where the `personal-workspace`
+   symlink points outside the project and makes Turbopack panic. All app code
+   lives in src/ anyway; the node_modules packages are added explicitly below. */
+@import "tailwindcss" source("../");
 @import "tw-animate-css";
 @import "shadcn/tailwind.css";
 @import "@handharr-labs/ui-xpnsio/tokens/globals.css";
