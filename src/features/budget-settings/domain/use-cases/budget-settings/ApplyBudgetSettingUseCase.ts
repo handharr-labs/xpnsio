@@ -1,6 +1,6 @@
 import type { BudgetSettingRepository } from '@/features/budget-settings/domain/repositories/BudgetSettingRepository';
 import type { BudgetRepository } from '@/features/budget-settings/domain/repositories/BudgetRepository';
-import { NotFoundError } from '@handharr-labs/core';
+import { NotFoundError } from '@handharr-labs/forge-core';
 
 export interface ApplyBudgetSettingParams {
   userId: string;

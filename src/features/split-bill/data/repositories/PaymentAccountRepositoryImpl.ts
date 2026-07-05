@@ -2,7 +2,7 @@ import type { PaymentAccount } from '../../domain/entities/PaymentAccount';
 import type { PaymentAccountRepository } from '../../domain/repositories/PaymentAccountRepository';
 import type { PaymentAccountDbDataSource } from '../data-sources/PaymentAccountDbDataSource';
 import { PaymentAccountMapper } from '../mappers/PaymentAccountMapper';
-import { UnexpectedError } from '@handharr-labs/core';
+import { UnexpectedError } from '@handharr-labs/forge-core';
 
 export class PaymentAccountRepositoryImpl implements PaymentAccountRepository {
   private readonly mapper = new PaymentAccountMapper();

@@ -7,7 +7,7 @@ import { createSplitBillAction, getPaymentAccountsAction } from '../actions/spli
 import { BillAmountCalculationServiceImpl } from '@/features/split-bill/domain/services/BillAmountCalculationService';
 import type { SplitMode } from '@/features/split-bill/domain/entities/SplitBill';
 import type { AdjustmentType, AdjustmentDistribution } from '@/features/split-bill/domain/entities/SplitBillAdjustment';
-import { todayLocal } from '@handharr-labs/core';
+import { todayLocal } from '@handharr-labs/forge-core';
 import { ROUTES } from '@/shared/presentation/navigation/routes';
 import { createSupabaseBrowserClient } from '@/lib/supabase-browser';
 

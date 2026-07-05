@@ -3,8 +3,8 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { ArrowLeft, Plus, Trash2 } from 'lucide-react';
-import { Button, ShareLink, ImageModal, DeleteConfirmDialog, CopyRowList, StatusCard } from '@handharr-labs/ui-xpnsio';
-import { formatCurrency } from '@handharr-labs/core';
+import { Button, ShareLink, ImageModal, DeleteConfirmDialog, CopyRowList, StatusCard } from '@handharr-labs/forge-ui-uno';
+import { formatCurrency } from '@handharr-labs/forge-core';
 import { ROUTES } from '@/shared/presentation/navigation/routes';
 import { useTripDetailViewModel } from '../hooks/useTripDetailViewModel';
 import { getStandaloneBillsAction } from '../actions/trips';

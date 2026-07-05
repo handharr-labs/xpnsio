@@ -1,5 +1,5 @@
 import type { SplitBillRepository } from '../repositories/SplitBillRepository';
-import { NotFoundError, UnauthorizedError } from '@handharr-labs/core';
+import { NotFoundError, UnauthorizedError } from '@handharr-labs/forge-core';
 
 export interface DeleteSplitBillUseCase {
   execute(billId: string, userId: string): Promise<void>;

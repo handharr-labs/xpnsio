@@ -5,7 +5,7 @@
 @import "tailwindcss" source("../");
 @import "tw-animate-css";
 @import "shadcn/tailwind.css";
-@import "@handharr-labs/ui-xpnsio/tokens/globals.css";
+@import "@handharr-labs/forge-ui-uno/tokens/globals.css";
 
 @source "../**/*.{tsx,ts,jsx,js}";
 @source "../../node_modules/@handharr-labs/*/src/**/*.{tsx,ts}";

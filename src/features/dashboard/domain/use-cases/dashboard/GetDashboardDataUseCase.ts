@@ -6,7 +6,7 @@ import type { BudgetComputationService } from '@/features/budget-settings/domain
 import type { BudgetProgressService } from '@/features/dashboard/domain/services/BudgetProgressService';
 import type { CategoryBudgetInfo } from '@/features/dashboard/domain/entities/CategoryBudgetInfo';
 import type { DashboardData } from '@/features/dashboard/domain/entities/DashboardData';
-import { orElse } from '@handharr-labs/core';
+import { orElse } from '@handharr-labs/forge-core';
 
 export type { CategoryBudgetInfo, DashboardData };
 

@@ -1,5 +1,5 @@
 import 'server-only';
-import { createSupabaseAdminClient } from '@handharr-labs/web-server/db/supabase';
+import { createSupabaseAdminClient } from '@handharr-labs/forge-web-server/db/supabase';
 
 /**
  * Supabase service-role client for privileged, server-only admin operations

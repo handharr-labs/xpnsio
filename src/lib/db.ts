@@ -1,5 +1,5 @@
 import 'server-only';
-import { createDrizzlePostgresClient } from '@handharr-labs/web-server/db/drizzle';
+import { createDrizzlePostgresClient } from '@handharr-labs/forge-web-server/db/drizzle';
 
 export const { db } = createDrizzlePostgresClient({
   connectionString: process.env.DATABASE_URL!,

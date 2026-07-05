@@ -1,6 +1,6 @@
 import type { SplitBillDetail } from '../entities/SplitBillDetail';
 import type { SplitBillRepository } from '../repositories/SplitBillRepository';
-import { NotFoundError } from '@handharr-labs/core';
+import { NotFoundError } from '@handharr-labs/forge-core';
 
 export interface GetSplitBillUseCase {
   execute(id: string): Promise<SplitBillDetail>;

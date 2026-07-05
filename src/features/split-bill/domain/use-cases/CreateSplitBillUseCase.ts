@@ -1,7 +1,7 @@
 import type { SplitBillDetail } from '../entities/SplitBillDetail';
 import type { SplitBillRepository, CreateSplitBillParams } from '../repositories/SplitBillRepository';
 import type { SavePaymentAccountsUseCase } from './SavePaymentAccountsUseCase';
-import { ValidationError } from '@handharr-labs/core';
+import { ValidationError } from '@handharr-labs/forge-core';
 
 export interface CreateSplitBillUseCase {
   execute(params: CreateSplitBillParams): Promise<SplitBillDetail>;

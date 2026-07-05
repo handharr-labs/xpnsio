@@ -1,4 +1,4 @@
-import { UnexpectedError } from '@handharr-labs/core';
+import { UnexpectedError } from '@handharr-labs/forge-core';
 import type { AuthAdminRepository } from '@/features/auth/domain/repositories/AuthAdminRepository';
 import type { AuthAdminRemoteDataSource } from '@/features/auth/data/data-sources/auth/AuthAdminRemoteDataSource';
 

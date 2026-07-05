@@ -1,7 +1,7 @@
 'use client';
 
 import { Sun, Moon } from 'lucide-react';
-import { Card, CardContent, CardHeader, CardTitle, Button } from '@handharr-labs/ui-xpnsio';
+import { Card, CardContent, CardHeader, CardTitle, Button } from '@handharr-labs/forge-ui-uno';
 import { useSettingsViewModel } from '../hooks/useSettingsViewModel';
 
 export function SettingsView() {

@@ -1,4 +1,4 @@
-import { createSupabaseBrowserClient as createClient } from '@handharr-labs/web-client/data/supabase';
+import { createSupabaseBrowserClient as createClient } from '@handharr-labs/forge-web-client/data/supabase';
 
 export function createSupabaseBrowserClient() {
   return createClient(

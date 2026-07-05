@@ -1,6 +1,6 @@
 import 'server-only';
 import { cookies } from 'next/headers';
-import { defineAuth } from '@handharr-labs/web-auth/server';
+import { defineAuth } from '@handharr-labs/forge-auth/server';
 
 /**
  * The single auth config for the app. Everything auth-related — session access,

@@ -1,6 +1,6 @@
 import type { Trip } from '../entities/Trip';
 import type { TripRepository, CreateTripParams } from '../repositories/TripRepository';
-import { ValidationError } from '@handharr-labs/core';
+import { ValidationError } from '@handharr-labs/forge-core';
 
 export interface CreateTripUseCase {
   execute(params: CreateTripParams): Promise<Trip>;

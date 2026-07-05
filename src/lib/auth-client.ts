@@ -1,6 +1,6 @@
 'use client';
 
-import { defineAuthClient } from '@handharr-labs/web-auth/client';
+import { defineAuthClient } from '@handharr-labs/forge-auth/client';
 
 /**
  * The single client-side auth surface — session hook + sign-in/out — behind the

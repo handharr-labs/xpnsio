@@ -1,6 +1,6 @@
 import type { SplitBillParticipant } from '../entities/SplitBillParticipant';
 import type { SplitBillRepository } from '../repositories/SplitBillRepository';
-import { ValidationError } from '@handharr-labs/core';
+import { ValidationError } from '@handharr-labs/forge-core';
 
 export interface UploadPaymentProofInput {
   participantId: string;

@@ -1,5 +1,5 @@
 import type { SplitBillRepository, UpdateSplitBillParams } from '../repositories/SplitBillRepository';
-import { ValidationError } from '@handharr-labs/core';
+import { ValidationError } from '@handharr-labs/forge-core';
 
 export interface UpdateSplitBillUseCase {
   execute(params: UpdateSplitBillParams): Promise<void>;

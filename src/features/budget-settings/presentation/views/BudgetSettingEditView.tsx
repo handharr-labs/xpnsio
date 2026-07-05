@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { Card, CardContent, CardHeader, CardTitle, Button, CurrencyInput } from '@handharr-labs/ui-xpnsio';
+import { Card, CardContent, CardHeader, CardTitle, Button, CurrencyInput } from '@handharr-labs/forge-ui-uno';
 import { ROUTES } from '@/shared/presentation/navigation/routes';
 import { CURRENCY_OPTIONS } from '@/shared/presentation/constants/currencyOptions';
 import { useBudgetSettingEditViewModel } from '../hooks/useBudgetSettingEditViewModel';

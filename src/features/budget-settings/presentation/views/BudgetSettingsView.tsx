@@ -3,8 +3,8 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Plus, FileText } from 'lucide-react';
-import { Button, ActionCard } from '@handharr-labs/ui-xpnsio';
-import { formatCurrency } from '@handharr-labs/core';
+import { Button, ActionCard } from '@handharr-labs/forge-ui-uno';
+import { formatCurrency } from '@handharr-labs/forge-core';
 import { ROUTES } from '@/shared/presentation/navigation/routes';
 import { useBudgetSettingsViewModel } from '../hooks/useBudgetSettingsViewModel';
 

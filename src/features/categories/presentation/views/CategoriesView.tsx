@@ -2,8 +2,8 @@
 
 import { useState } from 'react';
 import { Plus, Layers, UtensilsCrossed, Car, Home, ShoppingBag, Heart, BookOpen, Tv, Plane, Circle } from 'lucide-react';
-import { Button, FormDialog, ItemGroupSection } from '@handharr-labs/ui-xpnsio';
-import type { IconOption, FormDialogState } from '@handharr-labs/ui-xpnsio';
+import { Button, FormDialog, ItemGroupSection } from '@handharr-labs/forge-ui-uno';
+import type { IconOption, FormDialogState } from '@handharr-labs/forge-ui-uno';
 import { useCategoriesViewModel } from '../hooks/useCategoriesViewModel';
 import type { Category } from '@/features/categories/domain/entities/Category';
 import { getCategoryIcon } from '../utils/getCategoryIcon';

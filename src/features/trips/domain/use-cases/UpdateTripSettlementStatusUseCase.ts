@@ -1,6 +1,6 @@
 import type { SettlementStatus } from '../entities/TripParticipantSettlement';
 import type { TripRepository } from '../repositories/TripRepository';
-import { ValidationError } from '@handharr-labs/core';
+import { ValidationError } from '@handharr-labs/forge-core';
 
 export interface UpdateTripSettlementStatusParams {
   settlementId: string;

@@ -2,7 +2,7 @@ import type { TransactionRepository, TransactionFilter } from '@/features/transa
 import type { Transaction } from '@/features/transactions/domain/entities/Transaction';
 import type { TransactionDbDataSource } from '@/features/transactions/data/data-sources/transactions/TransactionDbDataSource';
 import { TransactionMapperImpl, type TransactionMapper } from '@/features/transactions/data/mappers/TransactionMapper';
-import { UnexpectedError } from '@handharr-labs/core';
+import { UnexpectedError } from '@handharr-labs/forge-core';
 
 export class TransactionRepositoryImpl implements TransactionRepository {
   constructor(

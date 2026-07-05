@@ -3,8 +3,8 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { ArrowLeft, Calendar, Check } from 'lucide-react';
-import { Button, CurrencyInput } from '@handharr-labs/ui-xpnsio';
-import { todayLocal } from '@handharr-labs/core';
+import { Button, CurrencyInput } from '@handharr-labs/forge-ui-uno';
+import { todayLocal } from '@handharr-labs/forge-core';
 import { ROUTES } from '@/shared/presentation/navigation/routes';
 import { useTransactionNewViewModel } from '../hooks/useTransactionNewViewModel';
 

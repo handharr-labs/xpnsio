@@ -2,8 +2,8 @@
 
 import { useRouter } from 'next/navigation';
 import { Layers, Wallet, Settings, CheckCircle2, Plus, Trash2, Check } from 'lucide-react';
-import { Button, CurrencyInput } from '@handharr-labs/ui-xpnsio';
-import { formatCurrency, getOrdinalSuffix } from '@handharr-labs/core';
+import { Button, CurrencyInput } from '@handharr-labs/forge-ui-uno';
+import { formatCurrency, getOrdinalSuffix } from '@handharr-labs/forge-core';
 import { ROUTES } from '@/shared/presentation/navigation/routes';
 import { CURRENCY_OPTIONS } from '@/shared/presentation/constants/currencyOptions';
 import { useSetupViewModel } from '../hooks/useSetupViewModel';

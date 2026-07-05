@@ -1,6 +1,6 @@
 import type { Transaction } from '@/features/transactions/domain/entities/Transaction';
 import type { TransactionRepository } from '@/features/transactions/domain/repositories/TransactionRepository';
-import { ValidationError } from '@handharr-labs/core';
+import { ValidationError } from '@handharr-labs/forge-core';
 
 export interface CreateTransactionInput {
   userId: string;

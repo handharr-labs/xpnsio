@@ -4,10 +4,10 @@ import { useRouter } from 'next/navigation';
 import {
   Card, CardContent, Button, MonthNavigator,
   StatOverviewCard, ProgressCardGrid, ListPreviewSection,
-} from '@handharr-labs/ui-xpnsio';
-import type { ProgressGroupVM, ProgressCardVM, ListPreviewItemVM } from '@handharr-labs/ui-xpnsio';
-import { usePullToRefresh } from '@handharr-labs/web-client';
-import { formatCurrency, formatCompactCurrency, formatWeekRange, formatRelativeDate } from '@handharr-labs/core';
+} from '@handharr-labs/forge-ui-uno';
+import type { ProgressGroupVM, ProgressCardVM, ListPreviewItemVM } from '@handharr-labs/forge-ui-uno';
+import { usePullToRefresh } from '@handharr-labs/forge-web-client';
+import { formatCurrency, formatCompactCurrency, formatWeekRange, formatRelativeDate } from '@handharr-labs/forge-core';
 import { ROUTES } from '@/shared/presentation/navigation/routes';
 import { useDashboardViewModel } from '../hooks/useDashboardViewModel';
 import { BudgetProgressServiceImpl } from '@/features/dashboard/data/services/BudgetProgressServiceImpl';

@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { Inter, Geist_Mono } from "next/font/google";
-import { QueryProvider } from "@handharr-labs/web-client";
-import { ThemeProvider } from "@handharr-labs/ui-xpnsio";
+import { QueryProvider } from "@handharr-labs/forge-web-client";
+import { ThemeProvider } from "@handharr-labs/forge-ui-uno";
 import { AuthClientProvider } from "@/shared/presentation/providers/AuthClientProvider";
 import "./globals.css";
 

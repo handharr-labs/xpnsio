@@ -1,4 +1,4 @@
-import { createAuthMiddleware } from '@handharr-labs/web-auth/middleware';
+import { createAuthMiddleware } from '@handharr-labs/forge-auth/middleware';
 
 /**
  * Edge route protection via the kit's edge-safe entrypoint (no `server-only`,

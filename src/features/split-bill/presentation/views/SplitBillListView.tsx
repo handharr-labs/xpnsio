@@ -2,8 +2,8 @@
 
 import { useRouter } from 'next/navigation';
 import { Luggage, Plus, Receipt } from 'lucide-react';
-import { Button } from '@handharr-labs/ui-xpnsio';
-import { formatRelativeDate } from '@handharr-labs/core';
+import { Button } from '@handharr-labs/forge-ui-uno';
+import { formatRelativeDate } from '@handharr-labs/forge-core';
 import { ROUTES } from '@/shared/presentation/navigation/routes';
 import { useSplitBillListViewModel } from '../hooks/useSplitBillListViewModel';
 import { TripListView } from '@/features/trips/presentation/views/TripListView';

@@ -2,7 +2,7 @@ import type { BudgetRepository } from '@/features/budget-settings/domain/reposit
 import type { Budget, MonthlyBudgetApplication } from '@/features/budget-settings/domain/entities/Budget';
 import type { BudgetDbDataSource } from '@/features/budget-settings/data/data-sources/budgets/BudgetDbDataSource';
 import { BudgetMapperImpl, type BudgetMapper } from '@/features/budget-settings/data/mappers/BudgetMapper';
-import { DomainError, UnexpectedError } from '@handharr-labs/core';
+import { DomainError, UnexpectedError } from '@handharr-labs/forge-core';
 
 export class BudgetRepositoryImpl implements BudgetRepository {
   constructor(

@@ -3,8 +3,8 @@
 import { useState, useRef } from 'react';
 import Link from 'next/link';
 import { Upload, X, ImageIcon, Luggage } from 'lucide-react';
-import { Button, CopyRowList, StatusCard } from '@handharr-labs/ui-xpnsio';
-import { formatCurrency } from '@handharr-labs/core';
+import { Button, CopyRowList, StatusCard } from '@handharr-labs/forge-ui-uno';
+import { formatCurrency } from '@handharr-labs/forge-core';
 import { ROUTES } from '@/shared/presentation/navigation/routes';
 import { useSplitBillPublicViewModel } from '../hooks/useSplitBillPublicViewModel';
 import type { SplitBillParticipant } from '../../domain/entities/SplitBillParticipant';

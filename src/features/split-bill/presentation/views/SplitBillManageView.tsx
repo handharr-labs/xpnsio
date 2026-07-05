@@ -5,8 +5,8 @@ import Link from 'next/link';
 import { ArrowLeft, ArrowRight, Luggage, Pencil, Trash2 } from 'lucide-react';
 import { useState } from 'react';
 import { useSplitBillManageViewModel } from '../hooks/useSplitBillManageViewModel';
-import { ShareLink, CopyRowList, ImageModal, DeleteConfirmDialog, StatusCard } from '@handharr-labs/ui-xpnsio';
-import { formatCurrency } from '@handharr-labs/core';
+import { ShareLink, CopyRowList, ImageModal, DeleteConfirmDialog, StatusCard } from '@handharr-labs/forge-ui-uno';
+import { formatCurrency } from '@handharr-labs/forge-core';
 import { ROUTES } from '@/shared/presentation/navigation/routes';
 
 export function SplitBillManageView({ billId }: { billId: string }) {

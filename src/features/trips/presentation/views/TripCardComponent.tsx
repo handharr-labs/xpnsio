@@ -2,7 +2,7 @@
 
 import { useRouter } from 'next/navigation';
 import { MapPin } from 'lucide-react';
-import { formatRelativeDate } from '@handharr-labs/core';
+import { formatRelativeDate } from '@handharr-labs/forge-core';
 import { ROUTES } from '@/shared/presentation/navigation/routes';
 import type { Trip } from '../../domain/entities/Trip';
 

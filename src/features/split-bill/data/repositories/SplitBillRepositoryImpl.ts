@@ -4,7 +4,7 @@ import type { SplitBillParticipant, ParticipantStatus } from '@/features/split-b
 import type { SplitBillRepository, CreateSplitBillParams, UpdateSplitBillParams } from '@/features/split-bill/domain/repositories/SplitBillRepository';
 import type { SplitBillDbDataSource } from '@/features/split-bill/data/data-sources/SplitBillDbDataSource';
 import { SplitBillMapper } from '@/features/split-bill/data/mappers/SplitBillMapper';
-import { UnexpectedError } from '@handharr-labs/core';
+import { UnexpectedError } from '@handharr-labs/forge-core';
 
 export class SplitBillRepositoryImpl implements SplitBillRepository {
   private readonly mapper = new SplitBillMapper();

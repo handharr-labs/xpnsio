@@ -2,7 +2,7 @@ import type { CategoryRepository } from '@/features/categories/domain/repositori
 import type { Category } from '@/features/categories/domain/entities/Category';
 import type { CategoryDbDataSource } from '@/features/categories/data/data-sources/categories/CategoryDbDataSource';
 import { CategoryMapperImpl, type CategoryMapper } from '@/features/categories/data/mappers/CategoryMapper';
-import { DomainError, NotFoundError, UnexpectedError } from '@handharr-labs/core';
+import { DomainError, NotFoundError, UnexpectedError } from '@handharr-labs/forge-core';
 
 export class CategoryRepositoryImpl implements CategoryRepository {
   constructor(

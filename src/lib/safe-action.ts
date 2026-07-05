@@ -1,6 +1,6 @@
 import { createSafeActionClient } from 'next-safe-action';
 import { auth } from '@/lib/auth';
-import { handleServerActionError } from '@handharr-labs/web-server';
+import { handleServerActionError } from '@handharr-labs/forge-web-server';
 
 // Public action client — no auth required
 export const actionClient = createSafeActionClient({

@@ -2,7 +2,7 @@ import type { BudgetSettingRepository } from '@/features/budget-settings/domain/
 import type { BudgetSetting } from '@/features/budget-settings/domain/entities/BudgetSetting';
 import type { BudgetSettingDbDataSource } from '@/features/budget-settings/data/data-sources/budget-settings/BudgetSettingDbDataSource';
 import { BudgetSettingMapperImpl, type BudgetSettingMapper } from '@/features/budget-settings/data/mappers/BudgetSettingMapper';
-import { UnexpectedError } from '@handharr-labs/core';
+import { UnexpectedError } from '@handharr-labs/forge-core';
 
 export class BudgetSettingRepositoryImpl implements BudgetSettingRepository {
   constructor(

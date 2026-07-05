@@ -9,7 +9,7 @@ import {
   type TripParticipantSettlementRow,
 } from '@/lib/schema';
 import type { TripDbDataSource, TripDetailRecord } from './TripDbDataSource';
-import { NotFoundError, ValidationError, UnauthorizedError } from '@handharr-labs/core';
+import { NotFoundError, ValidationError, UnauthorizedError } from '@handharr-labs/forge-core';
 
 export class TripDbDataSourceImpl implements TripDbDataSource {
   async create(data: {

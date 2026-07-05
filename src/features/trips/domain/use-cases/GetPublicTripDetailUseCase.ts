@@ -1,6 +1,6 @@
 import type { TripDetail } from '../entities/TripDetail';
 import type { TripRepository } from '../repositories/TripRepository';
-import { ValidationError } from '@handharr-labs/core';
+import { ValidationError } from '@handharr-labs/forge-core';
 
 export interface GetPublicTripDetailUseCase {
   execute(tripId: string): Promise<TripDetail | null>;

@@ -9,7 +9,7 @@ import type { TripDbDataSource } from '@/features/trips/data/data-sources/TripDb
 import type { SplitBillDbDataSource } from '@/features/split-bill/data/data-sources/SplitBillDbDataSource';
 import { TripMapper } from '@/features/trips/data/mappers/TripMapper';
 import { SplitBillMapper } from '@/features/split-bill/data/mappers/SplitBillMapper';
-import { DomainError, UnexpectedError } from '@handharr-labs/core';
+import { DomainError, UnexpectedError } from '@handharr-labs/forge-core';
 
 export class TripRepositoryImpl implements TripRepository {
   private readonly tripMapper = new TripMapper();

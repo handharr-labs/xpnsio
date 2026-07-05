@@ -1,6 +1,6 @@
 import type { Category, MasterCategory } from '@/features/categories/domain/entities/Category';
 import type { CategoryRepository } from '@/features/categories/domain/repositories/CategoryRepository';
-import { ValidationError } from '@handharr-labs/core';
+import { ValidationError } from '@handharr-labs/forge-core';
 
 export interface CreateCategoryInput {
   userId: string;

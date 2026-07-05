@@ -2,8 +2,8 @@
 
 import { useRouter, usePathname } from 'next/navigation';
 import { Home, Receipt, Plus, Wallet, Settings } from 'lucide-react';
-import { BottomNav } from '@handharr-labs/ui-xpnsio';
-import type { BottomNavItem } from '@handharr-labs/ui-xpnsio';
+import { BottomNav } from '@handharr-labs/forge-ui-uno';
+import type { BottomNavItem } from '@handharr-labs/forge-ui-uno';
 import { ROUTES } from '@/shared/presentation/navigation/routes';
 
 const NAV_ITEMS: BottomNavItem[] = [

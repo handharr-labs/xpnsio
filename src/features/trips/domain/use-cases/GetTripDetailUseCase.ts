@@ -1,6 +1,6 @@
 import type { TripDetail } from '../entities/TripDetail';
 import type { TripRepository } from '../repositories/TripRepository';
-import { ValidationError, NotFoundError } from '@handharr-labs/core';
+import { ValidationError, NotFoundError } from '@handharr-labs/forge-core';
 
 export interface GetTripDetailParams {
   tripId: string;
