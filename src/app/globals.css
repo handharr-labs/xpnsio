@@ -1,5 +1,5 @@
 /* Root automatic source detection at `src/` (this file is in src/app), so
-   Tailwind never walks the project root — where the `personal-workspace`
+   Tailwind never walks the project root — where the `personal-workdocs`
    symlink points outside the project and makes Turbopack panic. All app code
    lives in src/ anyway; the node_modules packages are added explicitly below. */
 @import "tailwindcss" source("../");

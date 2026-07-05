@@ -45,11 +45,3 @@ next-env.d.ts
 /public/swe-worker-*.js
 /public/sw.js.map
 /public/workbox-*.js.map
-
-# Claude Code — agentic state (delegation flags, session state, run artifacts)
-.claude/agentic-state/
-
-# personal docs symlink (→ ../personal-workdocs) — points outside the project,
-# so exclude it from git and from Tailwind's automatic source scanning (Turbopack
-# panics resolving a symlink target that escapes the project root).
-/personal-workspace
